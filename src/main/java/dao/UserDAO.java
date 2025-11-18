@@ -1,6 +1,7 @@
 package dao;
 
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 
@@ -8,19 +9,29 @@ import static utils.DBUtil.getConnection;
 
 public class UserDAO {
     public User checkLogin(String userOrEmail, String password) {
-        String sql = "SELECT * FROM user WHERE (username = ? OR email = ?) AND password = ?";
+        String sql = "SELECT * FROM user WHERE username = ? OR email = ?";
+
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, userOrEmail);
             stmt.setString(2, userOrEmail);
-            stmt.setString(3, password);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    User u = new User();
-                    u.setUsername(rs.getString("username"));
-                    u.setEmail(rs.getString("email"));
-                    u.setFullname(rs.getString("fullname"));
-                    return u;
+
+                    String hashedPassword = rs.getString("password");
+
+                    // So sánh bằng BCrypt
+                    if (BCrypt.checkpw(password, hashedPassword)) {
+                        User u = new User();
+                        u.setId(rs.getInt("id"));
+                        u.setUsername(rs.getString("username"));
+                        u.setEmail(rs.getString("email"));
+                        u.setFullname(rs.getString("fullname"));
+                        u.setStatus(rs.getBoolean("status"));
+                        return u;
+                    }
                 }
             }
         } catch (Exception e) {
@@ -45,28 +56,30 @@ public class UserDAO {
     }
 
     public boolean addUser(User user) {
-        String sql = "INSERT INTO user (fullname, username, email, password, status)"
-                + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO user (fullname, username, email, password, status) VALUES (?, ?, ?, ?, ?)";
+
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            // Mã hóa password
+            String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+
             stmt.setString(1, user.getFullname());
             stmt.setString(2, user.getUsername());
             stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPassword());
+            stmt.setString(4, hashed);
             stmt.setBoolean(5, user.isStatus());
 
-            // Lấy ID
             if (stmt.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int generatedId = generatedKeys.getInt(1);
-                        user.setId(generatedId);
+                        user.setId(generatedKeys.getInt(1));
                     }
                 }
                 return true;
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            return false;
+            return false; // trùng email/username
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,10 +98,14 @@ public class UserDAO {
     }
 
     public boolean updatePasswordByEmail(String email, String newPassword) {
-        String sql = "UPDATE users SET password = ? WHERE email = ?";
+        String sql = "UPDATE user SET password = ? WHERE email = ?";
+
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, newPassword);
+
+            String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
+            stmt.setString(1, hashed);
             stmt.setString(2, email);
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {

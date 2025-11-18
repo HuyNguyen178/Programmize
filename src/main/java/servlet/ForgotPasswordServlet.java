@@ -17,8 +17,6 @@ public class ForgotPasswordServlet extends HttpServlet {
 
         String step = request.getParameter("step");
         HttpSession session = request.getSession();
-
-        // Xử lý resend code
         if ("resend".equals(step)) {
             String email = (String) session.getAttribute("resetEmail");
 
@@ -27,7 +25,6 @@ public class ForgotPasswordServlet extends HttpServlet {
                 return;
             }
 
-            // Tạo mã mới
             String newCode = String.valueOf((int) (Math.random() * 900000) + 100000);
             session.setAttribute("resetCode", newCode);
 
@@ -41,8 +38,6 @@ public class ForgotPasswordServlet extends HttpServlet {
             }
             return;
         }
-
-        // Mặc định hiển thị trang nhập email
         request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
     }
 
@@ -55,25 +50,20 @@ public class ForgotPasswordServlet extends HttpServlet {
         UserDAO dao = new UserDAO();
 
         try {
-            // Gửi mã xác thực
             if ("send".equals(step)) {
                 String email = request.getParameter("email");
 
-                // Kiểm tra email có tồn tại không
                 if (!dao.checkUserOrEmailExists(email)) {
                     request.setAttribute("error", "Email does not exist!");
                     request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
                     return;
                 }
 
-                // Tạo mã xác thực ngẫu nhiên
                 String code = String.valueOf((int) (Math.random() * 900000) + 100000);
 
-                // Lưu tạm thông tin vào session
                 session.setAttribute("resetEmail", email);
                 session.setAttribute("resetCode", code);
 
-                // Gửi mail xác thực
                 try {
                     EmailUtil.sendEmail(email, "Your password verification code is: " + code);
                     request.getRequestDispatcher("/WEB-INF/views/verifyReset.jsp").forward(request, response);
@@ -83,32 +73,56 @@ public class ForgotPasswordServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
                 }
 
-                // Xác minh mã
-            } else if ("verify".equals(step)) {
+                return;
+            }
+
+            else if ("verify".equals(step)) {
                 String codeInput = request.getParameter("code");
                 String codeSession = (String) session.getAttribute("resetCode");
 
                 if (codeSession != null && codeSession.equals(codeInput)) {
-                    // Mã đúng → chuyển sang trang nhập mật khẩu mới
                     request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Incorrect verification code!");
                     request.getRequestDispatcher("/WEB-INF/views/verifyReset.jsp").forward(request, response);
                 }
 
-                // Cập nhật mật khẩu mới
-            } else if ("change".equals(step)) {
-                String newPassword = request.getParameter("newPassword");
-                String email = (String) session.getAttribute("resetEmail");
+                return;
+            }
 
+            else if ("change".equals(step)) {
+                String newPassword = request.getParameter("newPassword");
+                String confirmPassword = request.getParameter("confirmPassword");
+
+                // Validate password
+                if (newPassword == null || newPassword.length() < 6) {
+                    request.setAttribute("error", "Password must be at least 6 characters!");
+                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    return;
+                }
+
+                if (!newPassword.equals(confirmPassword)) {
+                    request.setAttribute("error", "Passwords do not match!");
+                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    return;
+                }
+
+                String email = (String) session.getAttribute("resetEmail");
                 if (email == null) {
                     response.sendRedirect("forgot-password");
                     return;
                 }
 
-                dao.updatePasswordByEmail(email, newPassword);
+                // Update password (DAO tự hash)
+                boolean success = dao.updatePasswordByEmail(email, newPassword);
 
-                // Xoá session
+                if (!success) {
+                    request.setAttribute("error", "Failed to update password!");
+                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    return;
+                }
+
+                // Clear session
                 session.removeAttribute("resetEmail");
                 session.removeAttribute("resetCode");
 
