@@ -13,28 +13,6 @@
             background-color: #f8f9fa;
         }
 
-        /* Navbar */
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 28px;
-            color: #007bff !important;
-        }
-
-        .nav-link {
-            color: #333 !important;
-            font-weight: 500;
-            margin-left: 15px;
-        }
-
-        .nav-link:hover {
-            color: #007bff !important;
-        }
-
         .auth-buttons a {
             margin-left: 10px;
             font-weight: 500;
@@ -171,11 +149,6 @@
         </div>
     </div>
 </section>
-
-<!-- Footer -->
-<footer>
-    <p>&copy; 2025 Programmize. Nền tảng học lập trình cho tất cả mọi người.</p>
-</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

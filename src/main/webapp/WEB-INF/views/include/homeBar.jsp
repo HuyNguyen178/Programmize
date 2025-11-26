@@ -3,6 +3,29 @@
     String username = (String) session.getAttribute("username");
     if(username == null) username = "Guest";
 %>
+<style>
+    /* Navbar */
+    .navbar {
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        font-size: 28px;
+        color: #007bff !important;
+    }
+
+    .nav-link {
+        color: #333 !important;
+        font-weight: 500;
+        margin-left: 15px;
+    }
+
+    .nav-link:hover {
+        color: #007bff !important;
+    }
+</style>
 
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
@@ -26,10 +49,12 @@
             <% } else { %>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
+                    <%--Avatar đang fix cứng--%>
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                         <img src="<%=request.getContextPath()%>/assets/img/admin-avatar.png" class="rounded-circle me-2" width="35" height="35" alt="Avatar">
                         <%= username %>
                     </a>
+
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li><a class="dropdown-item" href="#">My Courses</a></li>
