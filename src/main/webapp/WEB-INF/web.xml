@@ -3,4 +3,55 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
+
+    <display-name>MyWebApp</display-name>
+
+    <!-- DB params: sửa cho đúng môi trường của bạn -->
+    <context-param>
+        <param-name>db.url</param-name>
+        <param-value>
+            jdbc:mysql://localhost:3306/programmize?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+        </param-value>
+    </context-param>
+    <context-param>
+        <param-name>db.username</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>db.password</param-name>
+        <param-value>your_password_here</param-value>
+    </context-param>
+    <context-param>
+        <param-name>hikari.maximumPoolSize</param-name>
+        <param-value>10</param-value>
+    </context-param>
+    <!-- src/main/webapp/WEB-INF/web.xml -->
+    <context-param>
+        <param-name>skip.db</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!-- ROUTING 2 màn hình -->
+    <servlet>
+        <servlet-name>PublicClassesServlet</servlet-name>
+        <servlet-class>servlet.PublicClassesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PublicClassesServlet</servlet-name>
+        <url-pattern>/public-classes</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>PublicClassDetailsServlet</servlet-name>
+        <servlet-class>servlet.PublicClassDetailsServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PublicClassDetailsServlet</servlet-name>
+        <url-pattern>/public-class-details</url-pattern>
+    </servlet-mapping>
+
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
 </web-app>
