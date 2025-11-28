@@ -25,7 +25,7 @@ public class UserDAO {
                     // So sánh bằng BCrypt
                     if (BCrypt.checkpw(password, hashedPassword)) {
                         User u = new User();
-                        u.setId(rs.getInt("id"));
+                        u.setId(rs.getInt("user_id"));
                         u.setUsername(rs.getString("username"));
                         u.setEmail(rs.getString("email"));
                         u.setFullname(rs.getString("fullname"));

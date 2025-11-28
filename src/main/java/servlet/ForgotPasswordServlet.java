@@ -95,8 +95,8 @@ public class ForgotPasswordServlet extends HttpServlet {
                 String confirmPassword = request.getParameter("confirmPassword");
 
                 // Validate password
-                if (newPassword == null || newPassword.length() < 6) {
-                    request.setAttribute("error", "Password must be at least 6 characters!");
+                if (newPassword == null || newPassword.length() < 8) {
+                    request.setAttribute("error", "Password must be at least 8 characters!");
                     request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
                     return;
                 }
