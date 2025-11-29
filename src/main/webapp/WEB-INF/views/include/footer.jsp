@@ -1,7 +1,37 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<footer>
-    <p>&copy; 2025 Programmize.</p>
+<style>
+    footer {
+        background-color: #0a2259;
+        color: white;
+        padding: 40px 0;
+        margin-top: 80px;
+    }
 
+    footer p {
+        margin: 0 0 20px 0;
+        color: #ddd;
+        text-align: center;
+    }
+
+    .footer-container {
+        display: flex;
+        justify-content: center;
+        gap: 80px;
+        text-align: left;
+        flex-wrap: wrap;
+    }
+
+    .footer-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .footer-column strong {
+        font-size: 18px;
+    }
+</style>
+<footer>
     <div class="footer-container">
 
         <div class="footer-column">
@@ -25,4 +55,5 @@
         </div>
 
     </div>
+    <p>&copy; 2025 Programmize.</p>
 </footer>

@@ -16,7 +16,7 @@
         /* Navbar */
         .navbar {
             background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
 
         .navbar-brand {
@@ -34,82 +34,98 @@
         .nav-link:hover {
             color: #007bff !important;
         }
-
-        /* Section */
-        .section-title {
-            text-align: center;
-            font-weight: 700;
-            color: whitesmoke;
-            margin-top: 60px;
-            margin-bottom: 30px;
+        .courses-section {
+            margin-top: 100px;
+            padding: 60px 0 80px 0;
         }
 
-        /* Courses Section */
-        .courses-section {
-            background: linear-gradient(135deg, #637ea8 0%, #2c4c8a 50%, #102a54 100%);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            padding: 40px;
-            margin: 20px auto;
-            max-width: 900px;
-            text-align: center;
-            color: white;
+        .section-title {
+            text-align: left;
+            font-weight: 800;
+            color: #242424;
+            margin-top: 0;
+            margin-bottom: 50px;
+            font-size: 2.2rem;
         }
 
         .courses-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 0;
         }
 
-        .course-column {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* Background course card */
         .course-item {
             position: relative;
-            height: 160px;
+            height: 220px;
             display: flex;
             align-items: flex-end;
-            padding: 20px;
-            font-size: 20px;
+            padding: 24px;
+            font-size: 19px;
             font-weight: 700;
             color: white;
-            border-radius: 12px;
+            border-radius: 16px;
             background-size: cover;
             background-position: center;
             overflow: hidden;
             cursor: pointer;
-            transition: 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .course-item::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.35);
-            border-radius: 12px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+            border-radius: 16px;
             transition: 0.3s ease;
         }
 
         .course-item span {
             position: relative;
             z-index: 2;
+            text-align: left;
+            width: 100%;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .course-item:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
 
         .course-item:hover::after {
-            background: rgba(0, 0, 0, 0.45);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
         }
-
+        @media (max-width: 992px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            .section-title {
+                text-align: left;
+                font-weight: 800;
+                color: #242424;
+                margin-top: 0;
+                margin-bottom: 50px;
+                font-size: 2.2rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            .section-title {
+                text-align: left;
+                font-weight: 800;
+                color: #242424;
+                margin-top: 0;
+                margin-bottom: 65px;
+                font-size: 2.2rem;
+            }
+        }
         /* Background images */
         .webdev { background-image: url('<%= request.getContextPath() %>/assets/img/home/WebDevelopment.png'); }
         .datascience { background-image: url('<%= request.getContextPath() %>/assets/img/home/DataScience.png'); }
@@ -119,171 +135,55 @@
         .uiux { background-image: url('<%= request.getContextPath() %>/assets/img/home/UIUXDesign.png'); }
         .cyber { background-image: url('<%= request.getContextPath() %>/assets/img/home/Cybersecurity.png'); }
         .cloud { background-image: url('<%= request.getContextPath() %>/assets/img/home/CloudComputing.png'); }
-
-        /* Contact section */
-        .contact-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        .social-item,
-        .contact-item {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #0a2259;
-            color: white;
-            padding: 40px 0;
-            margin-top: 80px;
-        }
-
-        footer p {
-            margin: 0 0 20px 0;
-            color: #ddd;
-            text-align: center;
-        }
-
-        .footer-container {
-            display: flex;
-            justify-content: center;
-            gap: 80px;
-            text-align: left;
-            flex-wrap: wrap;
-        }
-
-        .footer-column {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .footer-column strong {
-            font-size: 18px;
-        }
-
-        .contact-item, .social-item {
-            color: #ddd;
-        }
-        .user-dashboard .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            height: 100%;
-        }
-
-        .user-dashboard .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .user-dashboard .card-title {
-            color: #2c4c8a;
-            font-weight: 600;
-        }
-
-        .user-dashboard .card-text {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .input-field {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid #e5e7eb;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .input-field:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px #bfdbfe;
-        }
-        .card {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            border: 1px solid #f3f4f6;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: whitesmoke;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .badge {
-            background-color: #dbeafe;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.25rem;
-            font-size: 1.125rem;
-        }
-
-        .user-badge {
-            background-color: #ecfeff;
-            border-left: 4px solid #06b6d4;
-            padding: 0.75rem;
-            margin-bottom: 1.25rem;
-            color: #0e7490;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .pm-option {
-            cursor: pointer;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.25rem;
-            padding: 0.75rem;
-            text-align: center;
-            transition: background-color 0.2s;
-        }
     </style>
 </head>
 
 <body>
 
-<!-- Include Header -->
 <jsp:include page="../views/include/header.jsp" />
 <%@ page session="true" %>
 <main>
     <section class="courses-section">
         <div class="container">
 
-            <h1 class="section-title">Highlighted Courses</h1>
+            <h1 class="section-title"> Highlighted Courses </h1>
 
             <div class="courses-grid">
-                <div class="course-column">
-                    <div class="course-item webdev"><span>Web Development</span></div>
-                    <div class="course-item datascience"><span>Data Science</span></div>
-                    <div class="course-item machinelearning"><span>Machine Learning</span></div>
-                    <div class="course-item appdev"><span>App Development</span></div>
-                </div>
+                <div class="course-item webdev"><span> Web Development </span></div>
+                <div class="course-item datascience"><span> Data Science </span></div>
+                <div class="course-item machinelearning"><span> Machine Learning </span></div>
+                <div class="course-item appdev"><span> App Development </span></div>
 
-                <div class="course-column">
-                    <div class="course-item python"><span>Python Programming</span></div>
-                    <div class="course-item uiux"><span>UI/UX Design</span></div>
-                    <div class="course-item cyber"><span>Cybersecurity</span></div>
-                    <div class="course-item cloud"><span>Cloud Computing</span></div>
-                </div>
+                <div class="course-item python"><span> Python Programming </span></div>
+                <div class="course-item uiux"><span> UI/UX Design </span></div>
+                <div class="course-item cyber"><span> Cybersecurity </span></div>
+                <div class="course-item cloud"><span> Cloud Computing </span></div>
             </div>
+
         </div>
+    </section>
+    <br>
+    <section class="courses-section">
+        <div class="container">
+
+            <h1 class="section-title"> Advanced Courses </h1>
+
+            <div class="courses-grid">
+                <div class="course-item webdev"><span>  Advanced Web Development </span></div>
+                <div class="course-item datascience"><span>Advanced Data Science </span></div>
+                <div class="course-item machinelearning"><span> Advanced Machine Learning </span></div>
+                <div class="course-item appdev"><span> Advanced App Development </span></div>
+
+                <div class="course-item python"><span> Advanced Python Programming </span></div>
+                <div class="course-item uiux"><span> Advanced UI/UX Design </span></div>
+                <div class="course-item cyber"><span> Advanced Cybersecurity </span></div>
+                <div class="course-item cloud"><span> Advanced Cloud Computing </span></div>
+            </div>
 
         </div>
     </section>
 </main>
 
-<!-- Footer -->
 <jsp:include page="../views/include/footer.jsp" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

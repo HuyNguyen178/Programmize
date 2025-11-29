@@ -16,13 +16,13 @@
             <% if("Guest".equals(username)) { %>
             <ul class="navbar-nav me-auto ms-4">
                 <li class="nav-item"><a class="nav-link" href="#">Course</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Class</a></li>
+                <li class="nav-item"><a class="nav-link" href="public-classes">Class</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Flashcard</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
             </ul>
             <% } else { %>
             <ul class="navbar-nav me-auto ms-4">
-                <li class="nav-item"><a class="nav-link" href="#">My Courses</a></li>
+                <li class="nav-item"><a class="nav-link" href="my-courses">My Courses</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">My Classes</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Practice</a></li>
             </ul>
