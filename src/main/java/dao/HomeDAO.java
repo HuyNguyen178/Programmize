@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeDao {
+public class HomeDAO {
     public List<Course> getFeaturedCourses() {
         List<Course> list = new ArrayList<>();
         String sql = "SELECT c.course_id, c.course_name, c.thumbnail_url, c.description, " +

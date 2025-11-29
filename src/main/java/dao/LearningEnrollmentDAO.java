@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LearningEnrollmentDao {
+public class LearningEnrollmentDAO {
 
     // Lấy danh sách tất cả các khóa học đang active
     public List<Course> getAllCourses() {

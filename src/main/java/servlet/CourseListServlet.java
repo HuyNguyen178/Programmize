@@ -1,15 +1,10 @@
 package servlet;
 
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import dao.CourseDAO;
 import model.Course;
-
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,8 +22,8 @@ public class CourseListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Get filter parameters
-        String category = request.getParameter("category");
-        String instructor = request.getParameter("instructor");
+        String category = request.getParameter("category");       // category_id from setting table
+        String instructor = request.getParameter("instructor");   // user_id from user table
         String status = request.getParameter("status");
         String searchKeyword = request.getParameter("search");
         String sortColumn = request.getParameter("sortColumn");
@@ -39,14 +34,14 @@ public class CourseListServlet extends HttpServlet {
                 status, searchKeyword,
                 sortColumn, sortOrder);
 
-        // Get filter options
-        List<String> categories = courseDAO.getAllCategories();
-        List<String> instructors = courseDAO.getAllInstructors();
+        // Get filter options - now returns List<String[]> with [id, name]
+        List<String[]> categories = courseDAO.getAllCategoriesFromSettings(); // Get all categories from settings
+        List<String[]> instructors = courseDAO.getAllInstructors();
 
         // Set attributes for JSP
         request.setAttribute("courses", courses);
-        request.setAttribute("categories", categories);
-        request.setAttribute("instructors", instructors);
+        request.setAttribute("categories", categories);       // List of [setting_id, setting_name]
+        request.setAttribute("instructors", instructors);     // List of [user_id, fullname]
         request.setAttribute("selectedCategory", category);
         request.setAttribute("selectedInstructor", instructor);
         request.setAttribute("selectedStatus", status);
