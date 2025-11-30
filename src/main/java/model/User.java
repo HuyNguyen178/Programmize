@@ -7,6 +7,15 @@ public class User {
     private String password;
     private String email;
     private boolean status;
+    private String avatarUrl;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     public User(){
     }

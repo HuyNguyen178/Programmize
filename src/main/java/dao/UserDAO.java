@@ -2,6 +2,7 @@ package dao;
 //Kien
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
+import utils.DBUtil;
 
 import java.sql.*;
 //Kien added
@@ -112,6 +113,27 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public User getInstructorByClassId(int classId) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT u.user_id, u.fullname, u.avatar_url FROM user u JOIN class_user cu ON cu.user_id = u.user_id JOIN user_role ur ON ur.user_id = u.user_id JOIN setting s ON s.setting_id = ur.role_id WHERE cu.class_id = ? AND s.setting_name = 'Instructor'";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, classId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt("user_id"));
+                user.setFullname(resultSet.getString("fullname"));
+                user.setAvatarUrl(resultSet.getString("avatar_url"));
+                return user;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
