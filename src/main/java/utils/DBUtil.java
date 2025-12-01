@@ -6,11 +6,11 @@ import java.sql.SQLException;
 
 public class DBUtil {
 
-    private static final String HOST = "programmize-doanminhcuong0702-0a97.g.aivencloud.com";
-    private static final String PORT = "11985";
-    private static final String DB_NAME = "programmize";
-    private static final String USER = "avnadmin";
-    private static final String PASSWORD = "AVNS_Qs2V0mmVj8lWkpgzDhJ";
+    private static final String HOST = System.getenv("DB_HOST");
+    private static final String PORT = System.getenv("DB_PORT");
+    private static final String DB_NAME = System.getenv("DB_NAME");
+    private static final String USER = System.getenv("DB_USER");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
     private static final String URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + "?sslMode=REQUIRED" + "&useSSL=true" + "&allowPublicKeyRetrieval=true";
 
     static {
