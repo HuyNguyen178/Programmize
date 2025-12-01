@@ -6,6 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Course List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/admin.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -111,6 +114,8 @@
     </style>
 </head>
 <body>
+<%@ include file="include/admin_sidebar.jsp" %>
+<%@ include file="include/admin_topbar.jsp" %>
 <div class="container">
     <h1>📚 Course List</h1>
 
@@ -266,5 +271,7 @@
     console.log("Page loaded successfully");
     console.log("Context Path: ${pageContext.request.contextPath}");
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/admin_scripts.js"></script>
 </body>
 </html>
