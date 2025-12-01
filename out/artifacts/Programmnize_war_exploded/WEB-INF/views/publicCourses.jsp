@@ -8,7 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public Courses - E-Learning Platform</title>
-
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <style>
         /* --- Global Resets & Body --- */
         * {
@@ -365,6 +366,10 @@
 <%--        </div>--%>
 <%--    </header>--%>
 
+<jsp:include page="include/homeBar.jsp"/>
+<br>
+<br>
+<br>
 <main class="page-wrapper container">
     <aside class="filters-sidebar">
         <h1>Public Courses</h1>
@@ -606,5 +611,6 @@
         document.getElementById('filterForm').submit();
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

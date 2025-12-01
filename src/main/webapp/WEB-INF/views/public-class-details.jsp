@@ -1,10 +1,27 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page import="model.PublicClass" %>
+
+<%
+    PublicClass clazz = (PublicClass) request.getAttribute("clazz");
+    if (clazz == null) {
+%>
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Class not found</title></head>
+<body>
+<p>Class not found.</p>
+</body>
+</html>
+<%
+        return;
+    }
+%>
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Java OOP Basic: Object-Oriented Fundamentals</title>
+    <title><%= clazz.getClassName() %> - Class Details</title>
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
@@ -13,7 +30,7 @@
         body {
             background: #f5f5f5;
             margin: 0;
-            padding-top: 80px; /* tránh bị đè bởi navbar fixed-top */
+            padding-top: 80px;
         }
 
         .hero-header {
@@ -60,10 +77,6 @@
             font-size: 16px;
             font-weight: 700;
             margin-bottom: 10px;
-        }
-
-        .learn-list li {
-            margin-bottom: 6px;
         }
 
         .price-box {
@@ -131,34 +144,6 @@
             font-size: 13px;
             color: #555;
         }
-
-        .instructor-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            margin-right: 12px;
-        }
-
-        .accordion-button {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .lesson-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            padding: 4px 0;
-        }
-
-        .lesson-row + .lesson-row {
-            border-top: 1px dashed #e0e0e0;
-        }
     </style>
 </head>
 <body>
@@ -169,24 +154,32 @@
 <div class="hero-header">
     <div class="container">
         <div class="breadcrumb-link mb-1">
-            <a href="<%=request.getContextPath()%>/public-classes" class="text-white text-decoration-none">
+            <a href="<%=request.getContextPath()%>/public-classes"
+               class="text-white text-decoration-none">
                 Classes
             </a>
             <span class="mx-1">›</span>
-            <span>Java OOP Fundamentals</span>
+            <span><%= clazz.getClassName() %></span>
         </div>
 
         <div class="row align-items-center">
             <div class="col-lg-9">
                 <div class="course-title">
-                    Java OOP Basic: Object-Oriented Fundamentals (Paid Course)
+                    <%= clazz.getClassName() %>
                 </div>
                 <div class="course-subtitle">
-                    Master the four pillars of OOP (Encapsulation, Inheritance, Polymorphism, Abstraction) using Java.
+                    <%= clazz.getDescription() != null ? clazz.getDescription() : "Class description" %>
                 </div>
                 <div class="hero-meta">
-                    <span>👨‍🏫 Instructor: <strong>Alex Johnson</strong></span>
-                    <span>⏱ Total Duration: <strong>~12 hours</strong></span>
+                    <span>📅 Start:
+                        <strong><%= clazz.getStartDate() != null ? clazz.getStartDate().toString() : "N/A" %></strong>
+                    </span>
+                    <span>📅 End:
+                        <strong><%= clazz.getEndDate() != null ? clazz.getEndDate().toString() : "N/A" %></strong>
+                    </span>
+                    <span>👥 Students:
+                        <strong><%= clazz.getNumberOfStudents() %></strong>
+                    </span>
                 </div>
             </div>
         </div>
@@ -200,159 +193,31 @@
         <!-- LEFT COLUMN -->
         <div class="col-lg-8">
 
-            <!-- What you will learn -->
+            <!-- What you will learn (demo text) -->
             <div class="card-section">
                 <div class="section-title">What You Will Learn</div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <ul class="learn-list list-unstyled mb-0">
-                            <li>✔ Design clean and robust OOP structures.</li>
-                            <li>✔ Implement Classes, Objects, and Constructors.</li>
-                            <li>✔ Understand and apply Inheritance (<code>extends</code>/<code>super</code>).</li>
-                            <li>✔ Work with Abstract Classes and Interfaces.</li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-6">
-                        <ul class="learn-list list-unstyled mb-0">
-                            <li>✔ Implement Polymorphism (overloading/overriding).</li>
-                            <li>✔ Utilize Encapsulation with Getters and Setters.</li>
-                            <li>✔ Apply OOP principles in small real-world projects.</li>
-                            <li>✔ Build a solid foundation for frameworks like Spring.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course description -->
-            <div class="card-section">
-                <div class="section-title">Course Description</div>
                 <p>
-                    This course provides a strong foundation in <strong>Object Oriented Programming (OOP)</strong>
-                    using the Java language. You will learn how to apply core principles like
-                    <strong>Encapsulation, Inheritance, Polymorphism, and Abstraction</strong> to build
-                    powerful, maintainable, and scalable applications.
-                </p>
-                <p>
-                    Designed for <strong>Beginners to Intermediate</strong> learners, this class moves
-                    systematically from basic Java syntax to advanced OOP design patterns, preparing you
-                    for professional development or further study in Java frameworks such as Spring Boot.
+                    This class will help you strengthen your programming foundation with hands-on exercises,
+                    projects and instructor guidance. The actual content can be mapped from chapters/lessons
+                    later; for now it’s a static description.
                 </p>
             </div>
 
-            <!-- Course content (accordion) -->
+            <!-- Course description (dùng description từ bảng class) -->
             <div class="card-section">
-                <div class="section-title">Course Content (Syllabus)</div>
-
-                <div class="accordion" id="courseAccordion">
-
-                    <!-- Module 1 -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne" aria-expanded="true"
-                                    aria-controls="collapseOne">
-                                Module 1: Introduction to Java and OOP (2 Lessons)
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show"
-                             aria-labelledby="headingOne" data-bs-parent="#courseAccordion">
-                            <div class="accordion-body">
-                                <div class="lesson-row">
-                                    <span>1.1 What is Java? Environment Setup</span>
-                                    <span>15 min</span>
-                                </div>
-                                <div class="lesson-row">
-                                    <span>1.2 Thinking in Object Oriented (OOP)</span>
-                                    <span>20 min</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Module 2 -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapseTwo" aria-expanded="false"
-                                    aria-controls="collapseTwo">
-                                Module 2: Classes and Objects (4 Lessons)
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse"
-                             aria-labelledby="headingTwo" data-bs-parent="#courseAccordion">
-                            <div class="accordion-body">
-                                <div class="lesson-row">
-                                    <span>2.1 Defining Classes and Fields</span>
-                                    <span>18 min</span>
-                                </div>
-                                <div class="lesson-row">
-                                    <span>2.2 Constructors and Overloading</span>
-                                    <span>22 min</span>
-                                </div>
-                                <div class="lesson-row">
-                                    <span>2.3 Encapsulation &amp; Access Modifiers</span>
-                                    <span>20 min</span>
-                                </div>
-                                <div class="lesson-row">
-                                    <span>2.4 Building Your First OOP Project</span>
-                                    <span>25 min</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Module 3 -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button collapsed" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapseThree" aria-expanded="false"
-                                    aria-controls="collapseThree">
-                                Module 3: Inheritance and Polymorphism (3 Lessons)
-                            </button>
-                        </h2>
-                        <div id="collapseThree" class="accordion-collapse collapse"
-                             aria-labelledby="headingThree" data-bs-parent="#courseAccordion">
-                            <div class="accordion-body">
-                                <div class="lesson-row">
-                                    <span>3.1 Extending Classes &amp; <code>super</code></span>
-                                    <span>24 min</span>
-                                </div>
-                                <div class="lesson-row">
-                                    <span>3.2 Method Overriding &amp; Dynamic Dispatch</span>
-                                    <span>26 min</span>
-                                </div>
-                                <div class="lesson-row">
-                                    <span>3.3 Abstract Classes &amp; Interfaces</span>
-                                    <span>30 min</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                <div class="section-title">Class Description</div>
+                <p>
+                    <%= clazz.getDescription() != null ? clazz.getDescription() : "No description provided." %>
+                </p>
             </div>
 
-            <!-- Instructor -->
+            <!-- Placeholder cho syllabus (sau có thể join chapter/lesson) -->
             <div class="card-section">
-                <div class="section-title">About the Instructor</div>
-                <div class="d-flex align-items-start">
-                    <div class="instructor-avatar">
-                        AJ
-                    </div>
-                    <div>
-                        <div class="fw-bold">Alex Johnson</div>
-                        <div class="text-muted" style="font-size: 13px;">
-                            Senior Software Engineer &amp; Java Expert
-                        </div>
-                        <p class="mt-2 mb-1" style="font-size: 13px;">
-                            Alex has 10+ years of experience in enterprise Java development and is passionate
-                            about teaching clean code principles. He has mentored over 5,000 students globally.
-                        </p>
-                    </div>
-                </div>
+                <div class="section-title">Class Schedule / Syllabus</div>
+                <p>
+                    You can later load real schedule from <code>chapter</code> and <code>lesson</code> tables.
+                    For now, this section is a placeholder for your timetable and topics.
+                </p>
             </div>
         </div>
 
@@ -361,36 +226,35 @@
 
             <!-- Video preview -->
             <div class="video-card">
-                <div class="video-placeholder">
-                    ▶
-                </div>
-                <div class="video-label">
-                    Preview this course
-                </div>
+                <div class="video-placeholder">▶</div>
+                <div class="video-label">Preview this class</div>
             </div>
 
-            <!-- Price / actions -->
+            <!-- Price / actions (vì bảng class chưa có giá, tạm coi là Free) -->
             <div class="price-box mb-3">
-                <div class="price-value">$49.99</div>
+                <div class="price-value">$0.00</div>
                 <button class="btn btn-danger btn-buy">
-                    Buy Course Now
+                    Join This Class
                 </button>
                 <button class="btn btn-outline-secondary btn-gift">
-                    Gift this Course
+                    Save for Later
                 </button>
 
                 <hr class="my-3"/>
 
                 <ul class="includes-list list-unstyled mb-0">
-                    <li>✅ 12 hours of On-Demand Video</li>
-                    <li>✅ 10 Coding Exercises</li>
-                    <li>✅ Certificate of Completion</li>
-                    <li>✅ Full Lifetime Access</li>
-                    <li>✅ Support via Q&amp;A Forum</li>
+                    <li>✅ Instructor-led class</li>
+                    <li>✅ Start Date:
+                        <%= clazz.getStartDate() != null ? clazz.getStartDate().toString() : "N/A" %>
+                    </li>
+                    <li>✅ End Date:
+                        <%= clazz.getEndDate() != null ? clazz.getEndDate().toString() : "N/A" %>
+                    </li>
+                    <li>✅ Up to <%= clazz.getNumberOfStudents() %> students</li>
                 </ul>
 
                 <div class="guarantee-text">
-                    30-Day Money-Back Guarantee
+                    Class information powered by table <code>class</code>.
                 </div>
             </div>
         </div>

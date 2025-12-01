@@ -1,37 +1,79 @@
 package model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class PublicClass {
 
-    private long id;
-    private String title;
-    private String instructor;
+    private int classId;
+    private String className;
     private String thumbnailUrl;
-    private int progress;
+    private int numberOfStudents;
+    private int status;
+    private String description;
     private Date startDate;
     private Date endDate;
 
-    public PublicClass() {}
+    public int getClassId() {
+        return classId;
+    }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public void setClassId(int classId) {
+        this.classId = classId;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getClassName() {
+        return className;
+    }
 
-    public String getInstructor() { return instructor; }
-    public void setInstructor(String instructor) { this.instructor = instructor; }
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
-    public String getThumbnailUrl() { return thumbnailUrl; }
-    public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
 
-    public int getProgress() { return progress; }
-    public void setProgress(int progress) { this.progress = progress; }
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
 
-    public Date getStartDate() { return startDate; }
-    public void setStartDate(Date startDate) { this.startDate = startDate; }
+    public int getNumberOfStudents() {
+        return numberOfStudents;
+    }
 
-    public Date getEndDate() { return endDate; }
-    public void setEndDate(Date endDate) { this.endDate = endDate; }
+    public void setNumberOfStudents(int numberOfStudents) {
+        this.numberOfStudents = numberOfStudents;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 }

@@ -5,7 +5,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Edit Course - ${course.courseName}</title>
+    <title>Add New Course</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -158,7 +159,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>✏️ Edit Course</h1>
+    <h1>➕ Add New Course</h1>
 
     <!-- Display messages -->
     <c:if test="${not empty sessionScope.errorMessage}">
@@ -168,25 +169,23 @@
         <c:remove var="errorMessage" scope="session"/>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/editCourse" method="post">
-        <!-- Hidden field for course ID -->
-        <input type="hidden" name="courseId" value="${course.courseId}">
+    <form action="${pageContext.request.contextPath}/addCourse" method="post">
 
         <div class="form-group">
             <label for="courseName">Course Name *</label>
             <input type="text" id="courseName" name="courseName"
-                   value="${course.courseName}" required>
+                   placeholder="Enter course name" required>
         </div>
 
         <div class="form-group">
             <label for="description">Description</label>
-            <textarea id="description" name="description">${course.description}</textarea>
+            <textarea id="description" name="description" placeholder="Enter course description"></textarea>
         </div>
 
         <div class="form-group">
             <label for="thumbnailUrl">Thumbnail URL</label>
             <input type="text" id="thumbnailUrl" name="thumbnailUrl"
-                   value="${course.thumbnailUrl}">
+                   placeholder="Enter thumbnail image URL">
         </div>
 
         <!-- Category Selection (Multiple) -->
@@ -195,11 +194,7 @@
             <div class="checkbox-group">
                 <c:forEach items="${allCategories}" var="cat">
                     <label>
-                        <input type="checkbox" name="categoryIds" value="${cat[0]}"
-                        <c:forEach items="${courseCategories}" var="cc">
-                               <c:if test="${cc[0] == cat[0]}">checked</c:if>
-                        </c:forEach>
-                        >
+                        <input type="checkbox" name="categoryIds" value="${cat[0]}">
                             ${cat[1]}
                     </label>
                 </c:forEach>
@@ -213,10 +208,7 @@
             <select id="instructorId" name="instructorId" required>
                 <option value="">-- Select Instructor --</option>
                 <c:forEach items="${allInstructors}" var="inst">
-                    <option value="${inst[0]}"
-                        ${course.instructorId == inst[0] ? 'selected' : ''}>
-                            ${inst[1]}
-                    </option>
+                    <option value="${inst[0]}">${inst[1]}</option>
                 </c:forEach>
             </select>
         </div>
@@ -224,44 +216,34 @@
         <div class="form-group">
             <label for="listedPrice">Listed Price *</label>
             <input type="number" id="listedPrice" name="listedPrice"
-                   step="0.01" min="0" value="${course.listedPrice}" required>
+                   step="0.01" min="0" placeholder="0.00" required>
         </div>
 
         <div class="form-group">
             <label for="salePrice">Sale Price</label>
             <input type="number" id="salePrice" name="salePrice"
-                   step="0.01" min="0" value="${course.salePrice}">
+                   step="0.01" min="0" placeholder="0.00">
         </div>
 
         <div class="form-group">
             <label for="duration">Duration (minutes)</label>
             <input type="number" id="duration" name="duration"
-                   min="0" value="${course.duration}">
+                   min="0" placeholder="0">
         </div>
 
         <div class="form-group">
             <label for="status">Status *</label>
             <select id="status" name="status" required>
-                <option value="1" ${course.status == '1' ? 'selected' : ''}>Active</option>
-                <option value="0" ${course.status == '0' ? 'selected' : ''}>Inactive</option>
+                <option value="1" selected>Active</option>
+                <option value="0">Inactive</option>
             </select>
         </div>
 
         <div class="form-group" style="margin-top: 20px;">
-            <button type="submit" class="btn-submit">💾 Save Changes</button>
+            <button type="submit" class="btn-submit">➕ Add Course</button>
             <a href="${pageContext.request.contextPath}/courseList" class="btn-cancel">Cancel</a>
         </div>
     </form>
-
-    <!-- Current Info Display (for debugging) -->
-    <div style="margin-top: 30px; padding: 15px; background: #f5f5f5; border-radius: 4px;">
-        <h3>Current Course Info</h3>
-        <p><strong>ID:</strong> ${course.courseId}</p>
-        <p><strong>Name:</strong> ${course.courseName}</p>
-        <p><strong>Category:</strong> ${course.courseCategory != null ? course.courseCategory : 'No category'}</p>
-        <p><strong>Instructor:</strong> ${course.courseInstructor != null ? course.courseInstructor : 'No instructor'} (ID: ${course.instructorId})</p>
-        <p><strong>Status:</strong> ${course.status == '1' ? 'Active' : 'Inactive'}</p>
-    </div>
 </div>
 </body>
 </html>
