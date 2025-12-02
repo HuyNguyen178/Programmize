@@ -59,7 +59,7 @@
                         <li><a class="dropdown-item" href="#">My Courses</a></li>
                         <li><a class="dropdown-item" href="#">My Classes</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/login_register/logout.jsp">Logout</a></li>
+                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/logout">Logout</a></li>
                     </ul>
                 </li>
             </ul>

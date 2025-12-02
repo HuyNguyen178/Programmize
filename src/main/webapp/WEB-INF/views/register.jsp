@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -90,7 +90,7 @@
 
         <div class="text-start mb-3">
             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="togglePasswords()">
-                <i id="eyeIcon" class="fa fa-eye"></i> Show Passwords
+                <i id="eyeIcon" class="fa fa-eye"></i> Show/Hide Passwords
             </button>
         </div>
 
