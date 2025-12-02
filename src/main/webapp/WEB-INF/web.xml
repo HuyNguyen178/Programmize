@@ -6,7 +6,6 @@
 
     <display-name>MyWebApp</display-name>
 
-    <!-- DB params: sửa cho đúng môi trường của bạn -->
     <context-param>
         <param-name>db.url</param-name>
         <param-value>

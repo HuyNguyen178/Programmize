@@ -206,6 +206,7 @@
 </head>
 
 <body>
+<jsp:include page="include/header.jsp"/>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">

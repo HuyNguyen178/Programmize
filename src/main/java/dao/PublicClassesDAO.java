@@ -9,9 +9,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PublicClassDAO {
+public class PublicClassesDAO {
 
-    public PublicClassDAO() {
+    public PublicClassesDAO() {
     }
 
     public List<Class> getActiveClasses() {
