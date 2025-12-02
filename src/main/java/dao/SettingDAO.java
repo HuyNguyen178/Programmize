@@ -2,10 +2,8 @@ package dao;
 
 import model.Setting;
 import utils.DBUtil;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -281,4 +279,22 @@ public class SettingDAO {
         }
         return false;
     }
+
+    public List<String> getRoleNames() {
+        List<String> roleNames = new ArrayList<>();
+        String sql = "SELECT setting_name FROM setting WHERE type_id = '1' ";  // Chưa có type_id
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                roleNames.add(rs.getString("setting_name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roleNames;
+    }
+
 }

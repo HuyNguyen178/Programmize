@@ -14,18 +14,18 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* Cấu hình Content Shift (Đồng bộ với JS) */
+        /* Content Shift Configuration (Synchronized with JS) */
         #content {
-            margin-left: 260px; /* Vị trí mặc định khi Sidebar mở */
+            margin-left: 260px; /* Default position when Sidebar is open */
             transition: margin-left 0.25s ease;
             min-height: 100vh;
             padding: 20px;
         }
         #content.expanded {
-            margin-left: 72px; /* Vị trí khi Sidebar đóng */
+            margin-left: 72px; /* Position when Sidebar is closed */
         }
 
-        /* Cấu hình Topbar Shift (Đồng bộ với JS) */
+        /* Topbar Shift Configuration (Synchronized with JS) */
         #topbar {
             margin-left: 260px;
             transition: margin-left 0.25s ease;
@@ -37,13 +37,13 @@
             margin-left: 72px;
         }
 
-        /* Các style khác */
+        /* Other styles */
         .table th, .table td { vertical-align: middle; }
         .action-btn { display: flex; justify-content: center; gap: 6px; }
         .btn-primary {
             background-color: white;
             border: 1px solid #0B5DD4;
-            color: #0B5DD4; /* Màu cho icon search */
+            color: #0B5DD4; /* Color for search icon */
             transition: background-color 0.3s ease;
         }
         .btn-primary:hover {
@@ -63,7 +63,7 @@
         <h2 class="fw-bold mb-4 text-primary">🎓 Student List</h2>
 
         <%
-            // Hiển thị thông báo hành động
+            // Display action message
             String actionMessage = (String) request.getAttribute("actionMessage");
             if (actionMessage != null && !actionMessage.isEmpty()) {
         %>
@@ -170,7 +170,7 @@
                                     <a href="student-list?action=toggleStatus&id=<%= st.getId() %>&newStatus=0"
                                        class="btn btn-sm btn-outline-danger"
                                        title="Set Inactive"
-                                       onclick="return confirm('Bạn có chắc muốn tắt trạng thái hoạt động của sinh viên <%= st.getFullname() %>?');">
+                                       onclick="return confirm('Are you sure you want to deactivate the status for student <%= st.getFullname() %>?');">
                                         <i class="fas fa-times-circle"></i>
                                     </a>
                                     <%
@@ -179,7 +179,7 @@
                                     <a href="student-list?action=toggleStatus&id=<%= st.getId() %>&newStatus=1"
                                        class="btn btn-sm btn-outline-success"
                                        title="Set Active"
-                                       onclick="return confirm('Bạn có chắc muốn kích hoạt trạng thái cho sinh viên <%= st.getFullname() %>?');">
+                                       onclick="return confirm('Are you sure you want to activate the status for student <%= st.getFullname() %>?');">
                                         <i class="fas fa-check-circle"></i>
                                     </a>
                                     <%

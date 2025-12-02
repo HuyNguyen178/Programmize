@@ -8,6 +8,15 @@ public class User {
     private String email;
     private boolean status;
     private String avatarUrl;
+    private String roleName;
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 
     public String getAvatarUrl() {
         return avatarUrl;
@@ -20,13 +29,15 @@ public class User {
     public User(){
     }
 
-    public User(int id, String fullname, String username, String password, String email, boolean status) {
+    public User(int id, String fullname, String username, String password, String email, boolean status, String avatarUrl, String roleName) {
         this.id = id;
         this.fullname = fullname;
         this.username = username;
         this.password = password;
         this.email = email;
         this.status = status;
+        this.avatarUrl = avatarUrl;
+        this.roleName = roleName;
     }
 
     public int getId() {

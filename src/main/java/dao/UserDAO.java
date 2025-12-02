@@ -5,6 +5,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import utils.DBUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 //Kien added
 import static utils.DBUtil.getConnection;
 
@@ -136,4 +138,42 @@ public class UserDAO {
         return null;
     }
 
+    public List<User> searchUsers(String keyword, String status, String roleName) {
+        List<User> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT u.user_id, u.fullname, u.username, u.email, u.status, u.avatar_url, " +
+                        "MIN(s.setting_name) AS role_name " +
+                        "FROM user u " +
+                        "LEFT JOIN user_role ur ON u.user_id = ur.user_id " +
+                        "LEFT JOIN setting s ON ur.role_id = s.setting_id " +
+                        "WHERE 1=1 "
+        );
+
+        sql.append(" GROUP BY u.user_id, u.fullname, u.username, u.email, u.status, u.avatar_url");
+        sql.append(" ORDER BY u.fullname ASC");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("user_id"));
+                u.setFullname(rs.getString("fullname"));
+                u.setUsername(rs.getString("username"));
+                u.setEmail(rs.getString("email"));
+                u.setStatus(rs.getBoolean("status"));
+                u.setAvatarUrl(rs.getString("avatar_url"));
+                u.setRoleName(rs.getString("role_name"));
+
+                list.add(u);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 }
