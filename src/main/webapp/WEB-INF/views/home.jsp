@@ -37,8 +37,96 @@
             color: #007bff !important;
         }
 
+        /* BANNER */
+        .banner-section {
+            margin-top: 80px;
+            margin-bottom: 60px;
+        }
+
+        .banner-item {
+            background: linear-gradient(90deg, #1a82a8 0%, #35b8d8 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            color: white;
+            padding: 40px 50px;
+            position: relative;
+        }
+
+        .banner-item.slide-2 {
+            background: linear-gradient(90deg, #5a37aa 0%, #8b68d9 100%);
+        }
+
+        .banner-content h2 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .banner-content p {
+            font-size: 1.15rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .btn-banner {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            font-weight: 700;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .btn-banner:hover {
+            background-color: white;
+            color: #1a82a8;
+        }
+
+        .banner-image-placeholder {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .carousel-indicators {
+            bottom: 20px;
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 1;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-control-prev {
+            left: 20px; /* Cách mép trái 20px */
+        }
+
+        .carousel-control-next {
+            right: 20px; /* Cách mép phải 20px */
+        }
+
+        .carousel-control-prev:hover, .carousel-control-next:hover {
+            background-color: rgba(255, 255, 255, 0.9); /* Sáng lên thành màu trắng */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Thêm bóng đổ */
+        }
+        .carousel-control-prev:hover .carousel-control-prev-icon,
+        .carousel-control-next:hover .carousel-control-next-icon {
+            filter: invert(1) grayscale(100);
+        }
+
         .courses-section {
-            margin-top: 100px;
+            margin-top: 0;
             padding: 60px 0 80px 0;
         }
 
@@ -74,7 +162,6 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            /* Fallback color nếu ảnh lỗi */
             background-color: #ddd;
         }
 
@@ -110,6 +197,15 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
             }
+            .banner-image-col {
+                display: none;
+            }
+            .banner-item {
+                padding: 30px;
+            }
+            .banner-content h2 {
+                font-size: 2rem;
+            }
         }
         @media (max-width: 576px) {
             .courses-grid {
@@ -119,9 +215,13 @@
             .section-title {
                 margin-bottom: 65px;
             }
+            /* mobile */
+            .carousel-control-prev, .carousel-control-next {
+                width: 35px;
+                height: 35px;
+                background-size: 50%;
+            }
         }
-
-        /* Đã xóa các class background-image cứng (.webdev, .python...) vì giờ dùng style inline */
     </style>
 </head>
 
@@ -131,31 +231,77 @@
 <jsp:include page="../views/include/header.jsp" />
 
 <%@ page session="true" %>
-
 <main>
+
+    <section class="banner-section">
+        <div class="container">
+            <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#homeBannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#homeBannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                </div>
+
+                <div class="carousel-inner">
+
+                    <div class="carousel-item active">
+                        <div class="banner-item d-flex align-items-center">
+                            <div class="row w-100 align-items-center">
+                                <div class="col-lg-7 col-md-12">
+                                    <div class="banner-content">
+                                        <h2>FullStack Online Class</h2>
+                                        <p></p>
+                                        <a href="#" class="btn btn-banner">Free Trial</a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 banner-image-col text-end">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="banner-item slide-2 d-flex align-items-center">
+                            <div class="row w-100 align-items-center">
+                                <div class="col-lg-7 col-md-12">
+                                    <div class="banner-content">
+                                        <h2> Backend Java Web </h2>
+                                        <p></p>
+                                        <a href="#" class="btn btn-banner">Detail</a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 banner-image-col text-end">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
     <section class="courses-section">
         <div class="container">
 
             <h1 class="section-title"> Highlighted Courses </h1>
 
             <div class="courses-grid">
-                <%-- Kiểm tra nếu danh sách null hoặc rỗng --%>
                 <c:if test="${empty highlightedCourses}">
                     <p>No courses available at the moment.</p>
                 </c:if>
-
-                <%-- Vòng lặp hiển thị danh sách khóa học --%>
                 <c:forEach var="course" items="${highlightedCourses}">
-                    <%--
-                        Sử dụng style inline để set background image động.
-                        Nếu thumbnail_url trong DB là đường dẫn đầy đủ thì dùng trực tiếp.
-                        Nếu là tên file, cần thêm context path.
-                        Ví dụ dưới đây giả định thumbnail_url là đường dẫn tương đối hoặc tên file.
-                    --%>
                     <div class="course-item"
                          style="background-image: url('${pageContext.request.contextPath}/${course.thumbnailUrl}');"
                          onclick="window.location.href='/public-course-details?id=${course.courseId}'"> <span> ${course.courseName} </span>
-
                     </div>
                 </c:forEach>
             </div>

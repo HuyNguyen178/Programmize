@@ -120,8 +120,6 @@
                 margin-bottom: 65px;
             }
         }
-
-        /* Đã xóa các class background-image cứng (.webdev, .python...) vì giờ dùng style inline */
     </style>
 </head>
 
@@ -131,7 +129,6 @@
 <jsp:include page="../views/include/header.jsp" />
 
 <%@ page session="true" %>
-
 <main>
     <section class="courses-section">
         <div class="container">
@@ -143,18 +140,11 @@
                 <c:if test="${empty highlightedCourses}">
                     <p>No courses available at the moment.</p>
                 </c:if>
-
                 <%-- Vòng lặp hiển thị danh sách khóa học --%>
                 <c:forEach var="course" items="${highlightedCourses}">
-                    <%--
-                        Sử dụng style inline để set background image động.
-                        Nếu thumbnail_url trong DB là đường dẫn đầy đủ thì dùng trực tiếp.
-                        Nếu là tên file, cần thêm context path.
-                        Ví dụ dưới đây giả định thumbnail_url là đường dẫn tương đối hoặc tên file.
-                    --%>
                     <div class="course-item"
                          style="background-image: url('${pageContext.request.contextPath}/${course.thumbnailUrl}');"
-                         onclick="window.location.href='course-details?id=${course.courseId}'"> <span> ${course.courseName} </span>
+                         onclick="window.location.href='/public-course-details?id=${course.courseId}'"> <span> ${course.courseName} </span>
 
                     </div>
                 </c:forEach>

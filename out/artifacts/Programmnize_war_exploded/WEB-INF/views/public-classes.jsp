@@ -1,4 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="model.Class" %>
+
+<%
+    List<Class> classes = (List<Class>) request.getAttribute("classes");
+%>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -13,7 +19,7 @@
         body {
             background: #f5f5f5;
             margin: 0;
-            padding-top: 80px; /* tránh đè lên navbar fixed-top */
+            padding-top: 80px;
         }
 
         .page-title {
@@ -35,16 +41,16 @@
 
         .class-header {
             padding: 18px 18px 24px;
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 800;
         }
 
-        .class-header.java { background: #e5f1ff; color: #1a3d91; }
-        .class-header.frontend { background: #ffe5e9; color: #c53c50; }
-        .class-header.database { background: #efe7ff; color: #4a3ab1; }
-        .class-header.python { background: #fff4dd; color: #a06c00; }
-        .class-header.scratch { background: #ffeaea; color: #c34a3a; }
-        .class-header.devops { background: #fff2d7; color: #a05700; }
+        .header-1 { background: #e5f1ff; color: #1a3d91; }
+        .header-2 { background: #ffe5e9; color: #c53c50; }
+        .header-3 { background: #efe7ff; color: #4a3ab1; }
+        .header-4 { background: #fff4dd; color: #a06c00; }
+        .header-5 { background: #ffeaea; color: #c34a3a; }
+        .header-6 { background: #fff2d7; color: #a05700; }
 
         .class-body {
             padding: 14px 18px 18px;
@@ -74,12 +80,6 @@
             margin-top: 6px;
         }
 
-        .price-paid {
-            color: #c53030;
-            font-weight: 700;
-            margin-top: 6px;
-        }
-
         .card-footer-custom {
             padding: 10px 16px 14px;
         }
@@ -104,220 +104,77 @@
 
 <div class="container mb-4">
 
-    <!-- Title -->
     <h2 class="page-title">Public Classes</h2>
 
-    <!-- Filter row -->
+    <!-- Filter row (hiện tại chỉ là UI) -->
     <div class="row g-2 mb-3">
         <div class="col-md-2 col-6">
             <select class="form-select">
                 <option>Category</option>
-                <option>Backend</option>
-                <option>Frontend</option>
-                <option>Database</option>
-                <option>AI/ML</option>
             </select>
         </div>
         <div class="col-md-2 col-6">
             <select class="form-select">
                 <option>Price</option>
-                <option>Free</option>
-                <option>Paid</option>
             </select>
         </div>
         <div class="col-md-2 col-6">
             <select class="form-select">
                 <option>Sort by</option>
-                <option>Newest</option>
-                <option>Start date</option>
-                <option>Slots left</option>
             </select>
         </div>
         <div class="col-md-6 col-12">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search for classes...">
-                <button class="btn btn-primary">
-                    🔍
-                </button>
+                <button class="btn btn-primary">🔍</button>
             </div>
         </div>
     </div>
 
-    <!-- Class cards -->
     <div class="row g-4">
-
-        <!-- Java OOP (card 1, có link sang public-class-details) -->
+        <% if (classes != null && !classes.isEmpty()) {
+            int idx = 0;
+            for (Class c : classes) {
+                idx++;
+                int colorIdx = (idx - 1) % 6 + 1;
+        %>
         <div class="col-md-4">
             <div class="class-card">
-                <div class="class-header java">
-                    Java OOP
+                <div class="class-header header-<%= colorIdx %>">
+                    <%= c.getName() %>
                 </div>
                 <div class="class-body">
-                    <p><strong>Java OOP Basic: Object-Oriented Fundamentals</strong></p>
-                    <p>Instructor: Alex Johnson</p>
+                    <p><strong><%= c.getDescription() != null ? c.getDescription() : "" %></strong></p>
                     <div class="meta-line">
-                        📅 <span>Start Date: 10/12/2025</span>
+                        📅 Start Date:
+                        <span><%= c.getStartDate() != null ? c.getStartDate().toString() : "N/A" %></span>
                     </div>
                     <div class="meta-line">
-                        👥 <span>Slots Left: 5/30</span>
+                        📅 End Date:
+                        <span><%= c.getEndDate() != null ? c.getEndDate().toString() : "N/A" %></span>
                     </div>
-                    <div class="price-free">Price: Free</div>
+                    <div class="meta-line">
+                        👥 Students:
+                        <span><%= c.getNumberOfStudents() %></span>
+                    </div>
+                    <div class="price-free">
+                        Price: Free
+                    </div>
                 </div>
                 <div class="card-footer-custom">
-                    <a href="<%=request.getContextPath()%>/public-class-details"
+                    <a href="<%=request.getContextPath()%>/public-class-details?id=<%=c.getId()%>"
                        class="btn btn-view btn-primary">
                         View Details
                     </a>
                 </div>
             </div>
         </div>
-
-        <!-- Frontend -->
-        <div class="col-md-4">
-            <div class="class-card">
-                <div class="class-header frontend">
-                    Frontend
-                </div>
-                <div class="class-body">
-                    <p><strong>Web Front-end Development Bootcamp (HTML/CSS/JS)</strong></p>
-                    <p>Instructor: Jane Smith</p>
-                    <div class="meta-line">
-                        📅 <span>Start Date: 01/01/2026</span>
-                    </div>
-                    <div class="meta-line">
-                        👥 <span>Slots Left: 25/35</span>
-                    </div>
-                    <div class="price-free">Price: Free</div>
-                </div>
-                <div class="card-footer-custom">
-                    <button class="btn btn-view btn-primary" type="button">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Database -->
-        <div class="col-md-4">
-            <div class="class-card">
-                <div class="class-header database">
-                    Database
-                </div>
-                <div class="class-body">
-                    <p><strong>Database Design Fundamentals (SQL/NoSQL)</strong></p>
-                    <p>Instructor: David Lee</p>
-                    <div class="meta-line">
-                        📅 <span>Start Date: 15/12/2025</span>
-                    </div>
-                    <div class="meta-line">
-                        👥 <span>Slots Left: Full!</span>
-                    </div>
-                    <div class="price-paid">Price: $49.99</div>
-                </div>
-                <div class="card-footer-custom">
-                    <button class="btn btn-view btn-primary" type="button">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Python -->
-        <div class="col-md-4">
-            <div class="class-card">
-                <div class="class-header python">
-                    Python
-                </div>
-                <div class="class-body">
-                    <p><strong>Python for Data Science &amp; Machine Learning</strong></p>
-                    <p>Instructor: Emily Chen</p>
-                    <div class="meta-line">
-                        📅 <span>Start Date: 20/01/2026</span>
-                    </div>
-                    <div class="meta-line">
-                        👥 <span>Slots Left: 18/20</span>
-                    </div>
-                    <div class="price-paid">Price: $69.99</div>
-                </div>
-                <div class="card-footer-custom">
-                    <button class="btn btn-view btn-primary" type="button">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Scratch -->
-        <div class="col-md-4">
-            <div class="class-card">
-                <div class="class-header scratch">
-                    Scratch
-                </div>
-                <div class="class-body">
-                    <p><strong>Introduction to Programming with Scratch (Ages 8–12)</strong></p>
-                    <p>Instructor: Alex Johnson</p>
-                    <div class="meta-line">
-                        📅 <span>Start Date: 05/01/2026</span>
-                    </div>
-                    <div class="meta-line">
-                        👥 <span>Slots Left: 10/10</span>
-                    </div>
-                    <div class="price-free">Price: Free</div>
-                </div>
-                <div class="card-footer-custom">
-                    <button class="btn btn-view btn-primary" type="button">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- DevOps -->
-        <div class="col-md-4">
-            <div class="class-card">
-                <div class="class-header devops">
-                    DevOps
-                </div>
-                <div class="class-body">
-                    <p><strong>Advanced DevOps: CI/CD &amp; Kubernetes</strong></p>
-                    <p>Instructor: David Lee</p>
-                    <div class="meta-line">
-                        📅 <span>Start Date: 01/02/2026</span>
-                    </div>
-                    <div class="meta-line">
-                        👥 <span>Slots Left: 22/25</span>
-                    </div>
-                    <div class="price-paid">Price: $149.99</div>
-                </div>
-                <div class="card-footer-custom">
-                    <button class="btn btn-view btn-primary" type="button">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        </div>
+        <%    }
+        } else { %>
+        <p>No classes found.</p>
+        <% } %>
     </div>
 
-    <!-- Pagination -->
-    <nav aria-label="Public classes pagination" class="mt-4">
-        <ul class="pagination justify-content-end">
-            <li class="page-item disabled">
-                <a class="page-link">Previous</a>
-            </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
