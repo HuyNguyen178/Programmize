@@ -154,7 +154,7 @@
                     --%>
                     <div class="course-item"
                          style="background-image: url('${pageContext.request.contextPath}/${course.thumbnailUrl}');"
-                         onclick="window.location.href='course-details?id=${course.courseId}'"> <span> ${course.courseName} </span>
+                         onclick="window.location.href='/publicCourseDetails?id=${course.courseId}'"> <span> ${course.courseName} </span>
 
                     </div>
                 </c:forEach>
