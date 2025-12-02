@@ -148,7 +148,7 @@
 </head>
 <body>
 
-<jsp:include page="include/homeBar.jsp"/>
+<jsp:include page="include/header.jsp"/>
 
 <!-- HEADER -->
 <div class="hero-header">

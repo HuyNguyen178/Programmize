@@ -23,13 +23,11 @@ public class MyClassesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        Integer userId = (Integer) request.getSession().getAttribute("userId");
-//        if (userId == null) {
-//            response.sendRedirect("login.jsp");
-//            return;
-//        }
-
-        int userId = 1; // test
+        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        if (userId == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
 
         String search = request.getParameter("search");
         String statusParam = request.getParameter("status");

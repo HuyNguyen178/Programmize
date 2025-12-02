@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.PublicClassDAO;
+import dao.PublicClassesDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 @WebServlet("/public-class-details")
 public class PublicClassDetailsServlet extends HttpServlet {
@@ -24,7 +23,7 @@ public class PublicClassDetailsServlet extends HttpServlet {
         Class clazz = null;
 
         int classId = Integer.parseInt(idParam);
-        PublicClassDAO dao = new PublicClassDAO();
+        PublicClassesDAO dao = new PublicClassesDAO();
         clazz = dao.getClassById(classId);
 
         if (clazz == null) {

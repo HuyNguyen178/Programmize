@@ -39,6 +39,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("fullname", user.getFullname());
             session.setAttribute("username", user.getUsername());
             session.setAttribute("email", user.getEmail());
+            session.setAttribute("userId", user.getId());
             request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
 
         } else {

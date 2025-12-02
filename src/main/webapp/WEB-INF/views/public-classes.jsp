@@ -17,90 +17,96 @@
 
     <style>
         body {
-            background: #f5f5f5;
+            background: #fff;
             margin: 0;
             padding-top: 80px;
         }
 
+
         .page-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0056d6;
+            font-size: 32px;
+            font-weight: 700;
+            color: #000;
             margin-bottom: 16px;
         }
+
 
         .class-card {
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             overflow: hidden;
             height: 100%;
             display: flex;
             flex-direction: column;
+            transition: transform 0.15s ease;
         }
+
+
+        .class-card:hover {
+            transform: translateY(-4px);
+        }
+
 
         .class-header {
-            padding: 18px 18px 24px;
-            font-size: 26px;
-            font-weight: 800;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
         }
 
-        .header-1 { background: #e5f1ff; color: #1a3d91; }
-        .header-2 { background: #ffe5e9; color: #c53c50; }
-        .header-3 { background: #efe7ff; color: #4a3ab1; }
-        .header-4 { background: #fff4dd; color: #a06c00; }
-        .header-5 { background: #ffeaea; color: #c34a3a; }
-        .header-6 { background: #fff2d7; color: #a05700; }
 
         .class-body {
-            padding: 14px 18px 18px;
-            font-size: 13px;
+            padding: 16px 20px;
+            font-size: 14px;
             flex: 1;
         }
 
-        .class-body p {
-            margin-bottom: 4px;
+
+        .class-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
+
 
         .meta-line {
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #555;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
         }
 
-        .meta-line + .meta-line {
-            margin-top: 2px;
-        }
 
         .price-free {
             color: #138c2e;
             font-weight: 700;
-            margin-top: 6px;
+            margin-top: 8px;
+            font-size: 16px;
         }
 
+
         .card-footer-custom {
-            padding: 10px 16px 14px;
+            padding: 14px 20px;
         }
+
 
         .btn-view {
             width: 100%;
             font-weight: 600;
-            border-radius: 8px;
-            background: #0056d6;
-            border-color: #0056d6;
+            border-radius: 6px;
+            background: #0d6efd;
         }
 
+
         .btn-view:hover {
-            background: #0043a3;
-            border-color: #0043a3;
+            background: #0b58c9;
         }
     </style>
 </head>
 <body>
 
-<jsp:include page="include/homeBar.jsp"/>
+<jsp:include page="include/header.jsp"/>
 
 <div class="container mb-4">
 

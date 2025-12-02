@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.PublicClassDAO;
+import dao.PublicClassesDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.List;
 
 @WebServlet("/public-classes")
@@ -22,7 +21,7 @@ public class PublicClassesServlet extends HttpServlet {
             throws ServletException, IOException {
 
         List<Class> classes = null;
-        PublicClassDAO dao = new PublicClassDAO();
+        PublicClassesDAO dao = new PublicClassesDAO();
         classes = dao.getActiveClasses();
 
         request.setAttribute("classes", classes);

@@ -12,342 +12,187 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <style>
         /* --- Global Resets & Body --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* GLOBAL */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f8f9fa;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f8f9fa;
             color: #333;
         }
 
-        /* --- Utility --- */
-        .container {
-            width: 90%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* --- Header --- */
-        .header {
-            background: #ffffff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
-
-        .header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #222;
-        }
-
-        .main-nav ul {
-            list-style: none;
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .main-nav a {
-            text-decoration: none;
-            color: #555;
-            font-weight: 500;
-        }
-
-        /* --- CẬP NHẬT: Page Layout --- */
-        .page-wrapper {
-            display: block; /* Đổi từ flex sang block để xếp chồng lên nhau */
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        /* --- MỚI: Horizontal Filter Bar (Giống ảnh) --- */
-        .filter-bar {
-            background: #ffffff;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
-        }
-
-        /* Style cho các ô Dropdown (Category, Price, Sort) */
-        .filter-select {
-            padding: 0.6rem 1rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            background-color: #fff;
-            color: #555;
-            font-size: 0.95rem;
-            cursor: pointer;
-            min-width: 150px;
-            outline: none;
-        }
-
-        .filter-select:focus {
-            border-color: #007bff;
-        }
-
-        /* Style cho thanh tìm kiếm nằm bên phải */
-        .search-group {
-            display: flex;
-            flex-grow: 1;
-            justify-content: flex-end; /* Đẩy search sang phải */
-            min-width: 300px;
-        }
-
-        .search-group input {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border: 1px solid #e0e0e0;
-            border-right: none;
-            border-radius: 6px 0 0 6px;
-            outline: none;
-        }
-
-        .search-group button {
-            padding: 0.6rem 1.2rem;
-            background: #007bff;
-            border: 1px solid #007bff;
-            color: white;
-            border-radius: 0 6px 6px 0;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .search-group button:hover {
-            background: #0056b3;
-        }
-
-        /* Responsive cho Search bar */
-        @media (max-width: 768px) {
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-group {
-                margin-top: 10px;
-            }
-            .filter-select {
-                width: 100%;
-            }
-        }
-
-        /* --- Classes Content --- */
-        .classes-content {
-            width: 100%; /* Chiếm toàn bộ chiều rộng */
-        }
-
-        .classes-content h1 {
+        /* Page title */
+        h1 {
             font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
         }
 
-        .results-info {
-            color: #666;
-            margin-bottom: 1.5rem;
+        /* FILTER BAR */
+        .filter-bar {
+            background: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-select {
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #dcdcdc;
+            background: #fff;
+            color: #444;
+            min-width: 140px;
             font-size: 0.95rem;
         }
 
-        /* --- Classes Grid --- */
+        /* SEARCH */
+        .search-group input {
+            padding: 0.55rem 1rem;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px 0 0 6px;
+        }
+        .search-group button {
+            padding: 0.55rem 1.1rem;
+            border-radius: 0 6px 6px 0;
+            background: #2d6cdf;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+        }
+        .search-group button:hover {
+            background: #1e54b5;
+        }
+
+        /* GRID */
         .classes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
+        /* COURSE CARD */
         .class-card {
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid #e0e0e0;
+            background: #fff;
+            border-radius: 12px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e4e4e4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.25s ease;
         }
-
         .class-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
 
+        /* THUMBNAIL */
         .card-image {
-            width: 100%;
             height: 160px;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            font-style: italic;
-            overflow: hidden;
+            background: #eee;
         }
-
         .card-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
+        /* CONTENT */
         .card-content {
-            padding: 1rem;
-            flex-grow: 1;
+            padding: 1rem 1rem 0.5rem;
         }
-
-        .class-card h3 {
+        .card-content h3 {
             font-size: 1.15rem;
-            margin-bottom: 0.5rem;
-            color: #333;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
+            color: #222;
         }
 
-        .card-meta {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 0.5rem;
-        }
-
+        /* CATEGORY LABEL */
         .card-category {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #f0f0f0;
-            border-radius: 3px;
-            font-size: 0.8rem;
-            color: #555;
-            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            background: #f1f3f5;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #444;
         }
 
-        .card-price {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #28a745;
-            margin-top: 0.5rem;
-        }
-
-        .card-price .original-price {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 0.9rem;
-            margin-right: 0.5rem;
-        }
-
-        .class-card p {
-            font-size: 0.9rem;
+        /* META */
+        .card-meta {
             color: #666;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
         }
 
+        /* DESCRIPTION */
+        .class-card p {
+            font-size: 0.88rem;
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
+
+        /* PRICE */
+        .card-price {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+        .card-price .original-price {
+            color: #999;
+            text-decoration: line-through;
+            margin-right: 4px;
+        }
+
+        /* BUTTON */
         .btn-details {
             display: block;
-            padding: 0.6rem;
-            margin: 0 1rem 1rem;
+            margin: 0.8rem 1rem 1rem;
+            padding: 0.6rem 0;
+            background: #2d6cdf;
+            color: #fff;
+            border-radius: 6px;
             text-align: center;
-            text-decoration: none;
-            background: #007bff;
-            color: white;
-            border: 1px solid #007bff;
-            border-radius: 4px;
             font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .btn-details:hover {
-            background: #0056b3;
-        }
-
-        /* --- No courses message --- */
-        .no-courses {
-            text-align: center;
-            padding: 3rem;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .no-courses h3 {
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        /* --- Pagination --- */
-        .pagination {
-            margin-top: 2.5rem;
-        }
-
-        .pagination ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .pagination a {
+            transition: 0.25s;
             text-decoration: none;
-            padding: 0.5rem 1rem;
+            border: none;
+        }
+        .btn-details:hover {
+            background: #1e54b5;
+        }
+
+        /* NO COURSE */
+        .no-courses {
+            padding: 2.5rem;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* PAGINATION */
+        .pagination a {
+            padding: 0.45rem 0.95rem;
+            border-radius: 6px;
             border: 1px solid #ccc;
-            background: #fff;
-            color: #007bff;
-            transition: all 0.3s;
+            font-size: 0.9rem;
         }
-
-        .pagination a:hover {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
         .pagination a.active {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-            font-weight: bold;
-        }
-
-        .pagination a.disabled {
-            color: #ccc;
-            cursor: not-allowed;
-            pointer-events: none;
+            background: #2d6cdf;
+            color: #fff;
+            border-color: #2d6cdf;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .page-wrapper {
+            .filter-bar {
                 flex-direction: column;
-            }
-
-            .filters-sidebar {
-                max-width: 100%;
-                position: static;
-            }
-
-            .classes-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 0.8rem;
             }
         }
+
     </style>
 </head>
 <body>
@@ -366,7 +211,7 @@
 <%--        </div>--%>
 <%--    </header>--%>
 
-<jsp:include page="include/homeBar.jsp"/>
+<jsp:include page="include/header.jsp"/>
 <br>
 <br>
 <br>
@@ -374,7 +219,7 @@
     <aside class="filters-sidebar">
         <h1>Public Courses</h1>
 
-        <form action="${pageContext.request.contextPath}/publicCourses" method="get" class="filter-bar">
+        <form action="${pageContext.request.contextPath}/public-courses" method="get" class="filter-bar">
 
             <select name="category" class="filter-select" onchange="this.form.submit()">
                 <option value="all">Category (All)</option>
@@ -438,7 +283,7 @@
                         <p><strong>Level:</strong> ${course.level}</p>
                     </div>
 
-                    <a href="courseDetail?id=${course.id}" class="view-button">View Course</a>
+                    <a href="public-course-details?id=${course.id}" class="view-button">View Course</a>
                 </div>
             </c:forEach>
         </div>
@@ -496,7 +341,7 @@
                                     </c:choose>
                                 </div>
                             </div>
-                            <a href="${pageContext.request.contextPath}/publicCourseDetails?id=${course.courseId}"
+                            <a href="${pageContext.request.contextPath}/public-course-details?id=${course.courseId}"
                                class="btn-details">VIEW DETAILS</a>
                         </article>
                     </c:forEach>
