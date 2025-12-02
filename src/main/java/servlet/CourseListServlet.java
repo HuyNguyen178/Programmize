@@ -8,7 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/courseList")
+@WebServlet("/course-list")
 public class CourseListServlet extends HttpServlet {
     private CourseDAO courseDAO;
 

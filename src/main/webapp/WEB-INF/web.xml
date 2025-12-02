@@ -31,25 +31,6 @@
         <param-value>true</param-value>
     </context-param>
 
-    <!-- ROUTING 2 màn hình -->
-    <servlet>
-        <servlet-name>PublicClassesServlet</servlet-name>
-        <servlet-class>servlet.PublicClassesServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>PublicClassesServlet</servlet-name>
-        <url-pattern>/public-classes</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>PublicClassDetailsServlet</servlet-name>
-        <servlet-class>servlet.PublicClassDetailsServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>PublicClassDetailsServlet</servlet-name>
-        <url-pattern>/public-class-details</url-pattern>
-    </servlet-mapping>
-
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

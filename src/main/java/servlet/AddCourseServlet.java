@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet("/addCourse")
+@WebServlet("/add-course")
 public class AddCourseServlet extends HttpServlet {
     private CourseDAO courseDAO;
 

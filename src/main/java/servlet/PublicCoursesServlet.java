@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
-@WebServlet("/publicCourses")
+@WebServlet("/public-courses")
 public class PublicCoursesServlet extends HttpServlet {
     private CourseDAO courseDAO;
     private static final int COURSES_PER_PAGE = 16;

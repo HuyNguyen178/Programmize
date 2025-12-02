@@ -7,7 +7,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
-@WebServlet("/publicCourseDetails")
+@WebServlet("/public-course-details")
 public class PublicCourseDetailsServlet extends HttpServlet {
     private CourseDAO courseDAO;
 

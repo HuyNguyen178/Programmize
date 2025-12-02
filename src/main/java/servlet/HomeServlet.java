@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 // Map servlet này với đường dẫn gốc hoặc /home
-@WebServlet(name = "HomeServlet", urlPatterns = {"/home", ""})
+@WebServlet("/home")
 public class HomeServlet extends HttpServlet {
 
     @Override

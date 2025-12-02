@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/student-detail")
+@WebServlet("/student-details")
 public class StudentDetailsServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
