@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ page import="model.PublicClass" %>
+<%@ page import="model.Class" %>
 
 <%
-    PublicClass clazz = (PublicClass) request.getAttribute("clazz");
+    Class clazz = (Class) request.getAttribute("clazz");
     if (clazz == null) {
 %>
 <!DOCTYPE html>
@@ -21,7 +21,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title><%= clazz.getClassName() %> - Class Details</title>
+    <title><%= clazz.getName() %> - Class Details</title>
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
@@ -159,13 +159,13 @@
                 Classes
             </a>
             <span class="mx-1">›</span>
-            <span><%= clazz.getClassName() %></span>
+            <span><%= clazz.getName() %></span>
         </div>
 
         <div class="row align-items-center">
             <div class="col-lg-9">
                 <div class="course-title">
-                    <%= clazz.getClassName() %>
+                    <%= clazz.getName() %>
                 </div>
                 <div class="course-subtitle">
                     <%= clazz.getDescription() != null ? clazz.getDescription() : "Class description" %>

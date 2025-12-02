@@ -1,12 +1,12 @@
 package servlet;
 
-import dao.PublicClassDao;
-import model.PublicClass;
+import dao.PublicClassDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Class;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -21,9 +21,9 @@ public class PublicClassesServlet extends HttpServlet {
 
         Connection conn = (Connection) getServletContext().getAttribute("DBConnection");
 
-        List<PublicClass> classes = null;
+        List<Class> classes = null;
         if (conn != null) {
-            PublicClassDao dao = new PublicClassDao(conn);
+            PublicClassDAO dao = new PublicClassDAO(conn);
             classes = dao.getActiveClasses();
         }
 

@@ -1,9 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="model.PublicClass" %>
+<%@ page import="model.Class" %>
 
 <%
-    List<PublicClass> classes = (List<PublicClass>) request.getAttribute("classes");
+    List<Class> classes = (List<Class>) request.getAttribute("classes");
 %>
 
 <!DOCTYPE html>
@@ -134,14 +134,14 @@
     <div class="row g-4">
         <% if (classes != null && !classes.isEmpty()) {
             int idx = 0;
-            for (PublicClass c : classes) {
+            for (Class c : classes) {
                 idx++;
                 int colorIdx = (idx - 1) % 6 + 1;
         %>
         <div class="col-md-4">
             <div class="class-card">
                 <div class="class-header header-<%= colorIdx %>">
-                    <%= c.getClassName() %>
+                    <%= c.getName() %>
                 </div>
                 <div class="class-body">
                     <p><strong><%= c.getDescription() != null ? c.getDescription() : "" %></strong></p>
@@ -162,7 +162,7 @@
                     </div>
                 </div>
                 <div class="card-footer-custom">
-                    <a href="<%=request.getContextPath()%>/public-class-details?id=<%=c.getClassId()%>"
+                    <a href="<%=request.getContextPath()%>/public-class-details?id=<%=c.getId()%>"
                        class="btn btn-view btn-primary">
                         View Details
                     </a>
