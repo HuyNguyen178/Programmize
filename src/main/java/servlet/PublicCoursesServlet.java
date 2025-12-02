@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
-@WebServlet("/publicCourses")
-public class PublicCourseServlet extends HttpServlet {
+@WebServlet("/public-courses")
+public class PublicCoursesServlet extends HttpServlet {
     private CourseDAO courseDAO;
     private static final int COURSES_PER_PAGE = 16;
 
@@ -75,7 +75,7 @@ public class PublicCourseServlet extends HttpServlet {
         request.setAttribute("searchKeyword", searchKeyword);
 
         // Forward to JSP
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/publicCourses.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/public-courses.jsp");
         dispatcher.forward(request, response);
     }
 }

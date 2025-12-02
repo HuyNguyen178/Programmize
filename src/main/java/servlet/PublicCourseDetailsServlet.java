@@ -7,7 +7,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
-@WebServlet("/publicCourseDetails")
+@WebServlet("/public-course-details")
 public class PublicCourseDetailsServlet extends HttpServlet {
     private CourseDAO courseDAO;
 
@@ -58,7 +58,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             request.setAttribute("enrollmentCount", enrollmentCount);
 
             // Forward to JSP
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/publicCourseDetails.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/public-course-details.jsp");
             dispatcher.forward(request, response);
 
         } catch (NumberFormatException e) {

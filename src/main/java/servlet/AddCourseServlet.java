@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet("/addCourse")
+@WebServlet("/add-course")
 public class AddCourseServlet extends HttpServlet {
     private CourseDAO courseDAO;
 
@@ -33,7 +33,7 @@ public class AddCourseServlet extends HttpServlet {
             request.setAttribute("allInstructors", allInstructors);    // List of [user_id, fullname]
 
             // Forward đến trang add
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/addCourse.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/add-course.jsp");
             dispatcher.forward(request, response);
 
         } catch (Exception e) {

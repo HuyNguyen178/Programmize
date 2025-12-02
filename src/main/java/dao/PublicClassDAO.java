@@ -1,6 +1,7 @@
 package dao;
 
 import model.Class;
+import utils.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,25 +11,16 @@ import java.util.List;
 
 public class PublicClassDAO {
 
-    private final Connection conn;
-
-    public PublicClassDAO(Connection conn) {
-        this.conn = conn;
+    public PublicClassDAO() {
     }
 
-    // Lấy tất cả class đang active (status = 1)
     public List<Class> getActiveClasses() {
         List<Class> list = new ArrayList<>();
 
-        String sql =
-                "SELECT class_id, class_name, thumbnail_url, number_of_students, " +
-                        "       status, description, start_date, end_date " +
-                        "FROM class " +
-                        "WHERE status = 1 " +
-                        "ORDER BY start_date DESC";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT class_id, class_name, thumbnail_url, number_of_students, status, description, start_date, end_date FROM class WHERE status = 1 ORDER BY start_date DESC";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 Class c = new Class();
                 c.setId(rs.getInt("class_id"));
@@ -48,17 +40,12 @@ public class PublicClassDAO {
         return list;
     }
 
-    // Lấy chi tiết 1 class theo id
     public Class getClassById(int id) {
-        String sql =
-                "SELECT class_id, class_name, thumbnail_url, number_of_students, " +
-                        "       status, description, start_date, end_date " +
-                        "FROM class " +
-                        "WHERE class_id = ?";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT class_id, class_name, thumbnail_url, number_of_students, status, description, start_date, end_date FROM class WHERE class_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 Class c = new Class();
                 c.setId(rs.getInt("class_id"));

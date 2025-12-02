@@ -8,7 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/courseList")
+@WebServlet("/course-list")
 public class CourseListServlet extends HttpServlet {
     private CourseDAO courseDAO;
 
@@ -48,7 +48,7 @@ public class CourseListServlet extends HttpServlet {
         request.setAttribute("searchKeyword", searchKeyword);
 
         // Forward to JSP
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/courseList.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/course-list.jsp");
         dispatcher.forward(request, response);
     }
 }

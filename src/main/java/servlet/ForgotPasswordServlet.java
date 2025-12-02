@@ -30,15 +30,15 @@ public class ForgotPasswordServlet extends HttpServlet {
 
             try {
                 EmailUtil.sendEmail(email, "Your new verification code is: " + newCode);
-                request.getRequestDispatcher("/WEB-INF/views/verifyReset.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/verify-reset.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("error", "Failed to resend verification code!");
-                request.getRequestDispatcher("/WEB-INF/views/verifyReset.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/verify-reset.jsp").forward(request, response);
             }
             return;
         }
-        request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/forgot-password.jsp").forward(request, response);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
                 if (!dao.checkUserOrEmailExists(email)) {
                     request.setAttribute("error", "Email does not exist!");
-                    request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/forgot-password.jsp").forward(request, response);
                     return;
                 }
 
@@ -66,11 +66,11 @@ public class ForgotPasswordServlet extends HttpServlet {
 
                 try {
                     EmailUtil.sendEmail(email, "Your password verification code is: " + code);
-                    request.getRequestDispatcher("/WEB-INF/views/verifyReset.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/verify-reset.jsp").forward(request, response);
                 } catch (Exception e) {
                     e.printStackTrace();
                     request.setAttribute("error", "Failed to send email. Please try again.");
-                    request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/forgot-password.jsp").forward(request, response);
                 }
 
                 return;
@@ -81,10 +81,10 @@ public class ForgotPasswordServlet extends HttpServlet {
                 String codeSession = (String) session.getAttribute("resetCode");
 
                 if (codeSession != null && codeSession.equals(codeInput)) {
-                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/new-password.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Incorrect verification code!");
-                    request.getRequestDispatcher("/WEB-INF/views/verifyReset.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/verify-reset.jsp").forward(request, response);
                 }
 
                 return;
@@ -97,13 +97,13 @@ public class ForgotPasswordServlet extends HttpServlet {
                 // Validate password
                 if (newPassword == null || newPassword.length() < 8) {
                     request.setAttribute("error", "Password must be at least 8 characters!");
-                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/new-password.jsp").forward(request, response);
                     return;
                 }
 
                 if (!newPassword.equals(confirmPassword)) {
                     request.setAttribute("error", "Passwords do not match!");
-                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/new-password.jsp").forward(request, response);
                     return;
                 }
 
@@ -118,7 +118,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
                 if (!success) {
                     request.setAttribute("error", "Failed to update password!");
-                    request.getRequestDispatcher("/WEB-INF/views/newPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/new-password.jsp").forward(request, response);
                     return;
                 }
 
@@ -126,13 +126,13 @@ public class ForgotPasswordServlet extends HttpServlet {
                 session.removeAttribute("resetEmail");
                 session.removeAttribute("resetCode");
 
-                request.getRequestDispatcher("/WEB-INF/views/resetSuccess.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/reset-success.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "An unexpected error occurred!");
-            request.getRequestDispatcher("/WEB-INF/views/forgotPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/forgot-password.jsp").forward(request, response);
         }
     }
 }

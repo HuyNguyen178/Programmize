@@ -3,6 +3,7 @@ package servlet;
 import dao.PublicClassDAO;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 
+@WebServlet("/public-classes")
 public class PublicClassesServlet extends HttpServlet {
 
     @Override
@@ -19,13 +21,9 @@ public class PublicClassesServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        Connection conn = (Connection) getServletContext().getAttribute("DBConnection");
-
         List<Class> classes = null;
-        if (conn != null) {
-            PublicClassDAO dao = new PublicClassDAO(conn);
-            classes = dao.getActiveClasses();
-        }
+        PublicClassDAO dao = new PublicClassDAO();
+        classes = dao.getActiveClasses();
 
         request.setAttribute("classes", classes);
         request.getRequestDispatcher("/WEB-INF/views/public-classes.jsp")
