@@ -40,7 +40,7 @@ public class VerificationServlet extends HttpServlet {
                 request.setAttribute("error", "Failed to resend verification code!");
             }
 
-            request.getRequestDispatcher("/WEB-INF/views/verifyEmail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/verify-email.jsp").forward(request, response);
             return;
         }
 
@@ -57,7 +57,7 @@ public class VerificationServlet extends HttpServlet {
 
         try {
             EmailUtil.sendEmail(email, "Your verification code is: " + code);
-            request.getRequestDispatcher("/WEB-INF/views/verifyEmail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/verify-email.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Could not send verification email. Please try again.");
@@ -101,10 +101,10 @@ public class VerificationServlet extends HttpServlet {
                     session.removeAttribute("verifyCode");
                     session.removeAttribute("verifyEmail");
 
-                    request.getRequestDispatcher("/WEB-INF/views/verifySuccess.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/verify-success.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Failed to create account. Please try again.");
-                    request.getRequestDispatcher("/WEB-INF/views/verifyEmail.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/verify-email.jsp").forward(request, response);
                 }
             } else {
                 // Nếu không có thông tin đăng ký trong session
@@ -115,12 +115,12 @@ public class VerificationServlet extends HttpServlet {
                 session.removeAttribute("verifyCode");
                 session.removeAttribute("verifyEmail");
 
-                request.getRequestDispatcher("/WEB-INF/views/verifySuccess.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/verify-success.jsp").forward(request, response);
             }
 
         } else {
             request.setAttribute("error", "Incorrect verification code!");
-            request.getRequestDispatcher("/WEB-INF/views/verifyEmail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/verify-email.jsp").forward(request, response);
         }
     }
 }

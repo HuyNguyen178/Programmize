@@ -33,7 +33,7 @@ public class AddCourseServlet extends HttpServlet {
             request.setAttribute("allInstructors", allInstructors);    // List of [user_id, fullname]
 
             // Forward đến trang add
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/addCourse.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/add-course.jsp");
             dispatcher.forward(request, response);
 
         } catch (Exception e) {

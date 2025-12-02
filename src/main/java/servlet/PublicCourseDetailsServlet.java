@@ -58,7 +58,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             request.setAttribute("enrollmentCount", enrollmentCount);
 
             // Forward to JSP
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/publicCourseDetails.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/public-course-details.jsp");
             dispatcher.forward(request, response);
 
         } catch (NumberFormatException e) {

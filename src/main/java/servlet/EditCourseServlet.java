@@ -59,7 +59,7 @@ public class EditCourseServlet extends HttpServlet {
             request.setAttribute("courseCategories", courseCategories); // Current categories of this course
 
             // Forward đến trang edit
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/editCourse.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/edit-course.jsp");
             dispatcher.forward(request, response);
 
         } catch (NumberFormatException e) {

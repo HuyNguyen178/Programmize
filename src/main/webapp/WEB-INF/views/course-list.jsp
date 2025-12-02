@@ -114,8 +114,8 @@
     </style>
 </head>
 <body>
-<%@ include file="include/admin_sidebar.jsp" %>
-<%@ include file="include/admin_topbar.jsp" %>
+<%@ include file="include/admin-sidebar.jsp" %>
+<%@ include file="include/admin-topbar.jsp" %>
 <div class="container">
     <h1>📚 Course List</h1>
 

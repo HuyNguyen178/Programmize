@@ -19,13 +19,9 @@ public class PublicClassesServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        Connection conn = (Connection) getServletContext().getAttribute("DBConnection");
-
         List<Class> classes = null;
-        if (conn != null) {
-            PublicClassDAO dao = new PublicClassDAO(conn);
-            classes = dao.getActiveClasses();
-        }
+        PublicClassDAO dao = new PublicClassDAO();
+        classes = dao.getActiveClasses();
 
         request.setAttribute("classes", classes);
         request.getRequestDispatcher("/WEB-INF/views/public-classes.jsp")

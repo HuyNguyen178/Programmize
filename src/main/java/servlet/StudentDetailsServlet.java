@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/student-detail")
-public class StudentDetailServlet extends HttpServlet {
+public class StudentDetailsServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
 
@@ -43,7 +43,7 @@ public class StudentDetailServlet extends HttpServlet {
 
             if (student != null) {
                 request.setAttribute("student", student);
-                request.getRequestDispatcher("/WEB-INF/views/student-detail.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/student-details.jsp").forward(request, response);
             } else {
                 // Không tìm thấy sinh viên
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student not found.");

@@ -16,8 +16,8 @@
 <body>
 <div>
 
-    <%@ include file="include/admin_sidebar.jsp" %>
-    <%@ include file="include/admin_topbar.jsp" %>
+    <%@ include file="include/admin-sidebar.jsp" %>
+    <%@ include file="include/admin-topbar.jsp" %>
 
     <div class="content p-4" id="content">
     </div>
