@@ -69,6 +69,10 @@
             opacity: 0.9;
         }
 
+        .banner-content {
+            margin-left: 30px;
+        }
+
         .btn-banner {
             background-color: transparent;
             border: 2px solid white;
@@ -248,7 +252,7 @@
                             <div class="row w-100 align-items-center">
                                 <div class="col-lg-7 col-md-12">
                                     <div class="banner-content">
-                                        <h2>FullStack Online Class</h2>
+                                        <h2>Full-Stack Online Class</h2>
                                         <p></p>
                                         <a href="#" class="btn btn-banner">Free Trial</a>
                                     </div>
