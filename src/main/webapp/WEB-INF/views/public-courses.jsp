@@ -131,6 +131,9 @@
             font-size: 0.88rem;
             color: #555;
             margin-bottom: 0.75rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* PRICE */
@@ -241,7 +244,7 @@
             </select>
 
             <div class="search-group">
-                <input type="text" name="keyword" placeholder="Search for courses, topics..."
+                <input type="text" name="keyword" placeholder="Search for courses"
                        value="${searchKeyword}">
                 <button type="submit">
                     <i class="fa fa-search"></i> Search
@@ -281,9 +284,6 @@
                                 </c:choose>
                             </div>
                             <div class="card-content">
-                                <c:if test="${not empty course.courseCategory}">
-                                    <span class="card-category">${course.courseCategory}</span>
-                                </c:if>
                                 <h3>${course.courseName}</h3>
                                 <div class="card-meta">
                                     <c:if test="${not empty course.courseInstructor}">

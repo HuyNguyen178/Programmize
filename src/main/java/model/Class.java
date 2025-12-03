@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Class {
@@ -7,6 +8,9 @@ public class Class {
     private String name;
     private String thumbnailUrl;
     private int numberOfStudents;
+    private String category;
+    private BigDecimal listed_price;
+    private BigDecimal sale_price;
     private boolean status;
     private String description;
     private Date startDate;
@@ -43,6 +47,30 @@ public class Class {
 
     public void setNumberOfStudents(int numberOfStudents) {
         this.numberOfStudents = numberOfStudents;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public BigDecimal getListed_price() {
+        return listed_price;
+    }
+
+    public void setListed_price(BigDecimal listed_price) {
+        this.listed_price = listed_price;
+    }
+
+    public BigDecimal getSale_price() {
+        return sale_price;
+    }
+
+    public void setSale_price(BigDecimal sale_price) {
+        this.sale_price = sale_price;
     }
 
     public boolean isStatus() {

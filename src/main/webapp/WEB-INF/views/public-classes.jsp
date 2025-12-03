@@ -1,188 +1,451 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="model.Class" %>
-
-<%
-    List<Class> classes = (List<Class>) request.getAttribute("classes");
-%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Public Classes</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Classes - E-Learning Platform</title>
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
-
     <style>
+        /* --- Global Resets & Body --- */
+        /* GLOBAL */
         body {
-            background: #fff;
-            margin: 0;
-            padding-top: 80px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
         }
 
-
-        .page-title {
-            font-size: 32px;
+        /* Page title */
+        h1 {
+            font-size: 2rem;
             font-weight: 700;
-            color: #000;
-            margin-bottom: 16px;
+            margin-bottom: 1rem;
         }
 
-
-        .class-card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            overflow: hidden;
-            height: 100%;
+        /* FILTER BAR */
+        .filter-bar {
+            background: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
             display: flex;
-            flex-direction: column;
-            transition: transform 0.15s ease;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
+        .filter-select {
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #dcdcdc;
+            background: #fff;
+            color: #444;
+            min-width: 140px;
+            font-size: 0.95rem;
+        }
 
+        /* SEARCH */
+        .search-group input {
+            padding: 0.55rem 1rem;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px 0 0 6px;
+        }
+        .search-group button {
+            padding: 0.55rem 1.1rem;
+            border-radius: 0 6px 6px 0;
+            background: #2d6cdf;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+        }
+        .search-group button:hover {
+            background: #1e54b5;
+        }
+
+        /* GRID */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* COURSE CARD */
+        .class-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e4e4e4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.25s ease;
+        }
         .class-card:hover {
             transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
 
-
-        .class-header {
-            height: 180px;
-            background-size: cover;
-            background-position: center;
+        /* THUMBNAIL */
+        .card-image {
+            height: 160px;
+            background: #eee;
         }
-
-
-        .class-body {
-            padding: 16px 20px;
-            font-size: 14px;
-            flex: 1;
-        }
-
-
-        .class-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-
-        .meta-line {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #666;
-        }
-
-
-        .price-free {
-            color: #138c2e;
-            font-weight: 700;
-            margin-top: 8px;
-            font-size: 16px;
-        }
-
-
-        .card-footer-custom {
-            padding: 14px 20px;
-        }
-
-
-        .btn-view {
+        .card-image img {
             width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* CONTENT */
+        .card-content {
+            padding: 1rem 1rem 0.5rem;
+        }
+        .card-content h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
+            color: #222;
+        }
+
+        /* CATEGORY LABEL */
+        .card-category {
+            font-size: 0.75rem;
+            background: #f1f3f5;
+            padding: 3px 8px;
+            border-radius: 5px;
             font-weight: 600;
+            color: #444;
+        }
+
+        /* META */
+        .card-meta {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+        }
+
+        /* DESCRIPTION */
+        .class-card p {
+            font-size: 0.88rem;
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
+
+        /* PRICE */
+        .card-price {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+        .card-price .original-price {
+            color: #999;
+            text-decoration: line-through;
+            margin-right: 4px;
+        }
+
+        /* BUTTON */
+        .btn-details {
+            display: block;
+            margin: 0.8rem 1rem 1rem;
+            padding: 0.6rem 0;
+            background: #2d6cdf;
+            color: #fff;
             border-radius: 6px;
-            background: #0d6efd;
+            text-align: center;
+            font-weight: 600;
+            transition: 0.25s;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-details:hover {
+            background: #1e54b5;
         }
 
-
-        .btn-view:hover {
-            background: #0b58c9;
+        /* NO COURSE */
+        .no-courses {
+            padding: 2.5rem;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
+
+        /* PAGINATION */
+        .pagination a {
+            padding: 0.45rem 0.95rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+        }
+        .pagination a.active {
+            background: #2d6cdf;
+            color: #fff;
+            border-color: #2d6cdf;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+
     </style>
 </head>
 <body>
+<!-- Header -->
+<%--    <header class="header">--%>
+<%--        <div class="container">--%>
+<%--            <div class="logo">📚 E-Learning Platform</div>--%>
+<%--            <nav class="main-nav">--%>
+<%--                <ul>--%>
+<%--                    <li><a href="${pageContext.request.contextPath}/">Home</a></li>--%>
+<%--                    <li><a href="${pageContext.request.contextPath}/publicCourses">Courses</a></li>--%>
+<%--                    <li><a href="#">About</a></li>--%>
+<%--                    <li><a href="#">Contact</a></li>--%>
+<%--                </ul>--%>
+<%--            </nav>--%>
+<%--        </div>--%>
+<%--    </header>--%>
 
 <jsp:include page="include/header.jsp"/>
+<br>
+<br>
+<br>
+<main class="page-wrapper container">
+    <aside class="filters-sidebar">
+        <h1>Public Classes</h1>
 
-<div class="container mb-4">
+        <form action="${pageContext.request.contextPath}/public-classes" method="get" class="filter-bar">
 
-    <h2 class="page-title">Public Classes</h2>
+            <select name="category" class="filter-select" onchange=this.form.submit()>
+                <option value="all">Category (All)</option>
+                <c:forEach items="${allCategories}" var="cat">
+                    <c:set var="isSelected" value="false"/>
+                    <c:forEach items="${selectedCategories}" var="selected">
+                        <c:if test="${selected == cat}">
+                            <c:set var="isSelected" value="true"/>
+                        </c:if>
+                    </c:forEach>
+                    <option value="${cat}" ${isSelected ? 'selected' : ''}>${cat}</option>
+                </c:forEach>
+            </select>
 
-    <!-- Filter row (hiện tại chỉ là UI) -->
-    <div class="row g-2 mb-3">
-        <div class="col-md-2 col-6">
-            <select class="form-select">
-                <option>Category</option>
+            <select name="price" class="filter-select" onchange=this.form.submit()>
+                <option value="">Price</option>
+                <option value="low"  ${price == "low"  ? "selected" : ""}>Low to High</option>
+                <option value="high" ${price == "high" ? "selected" : ""}>High to Low</option>
             </select>
-        </div>
-        <div class="col-md-2 col-6">
-            <select class="form-select">
-                <option>Price</option>
-            </select>
-        </div>
-        <div class="col-md-2 col-6">
-            <select class="form-select">
-                <option>Sort by</option>
-            </select>
-        </div>
-        <div class="col-md-6 col-12">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for classes...">
-                <button class="btn btn-primary">🔍</button>
+
+            <div class="search-group">
+                <input type="text" name="keyword" placeholder="Search for classes"
+                       value="${searchKeyword}">
+                <button type="submit">
+                    <i class="fa fa-search"></i> Search
+                </button>
             </div>
+        </form>
+    </aside>
+
+    <section class="classes-content">
+
+        <div class="results-info">
+            <c:choose>
+                <c:when test="${totalClasses > 0}">
+                    Showing ${(currentPage - 1) * 16 + 1}-${(currentPage * 16) > totalClasses ? totalClasses : (currentPage * 16)}
+                    of ${totalClasses} classes
+                </c:when>
+                <c:otherwise>
+                    No classes found
+                </c:otherwise>
+            </c:choose>
         </div>
-    </div>
 
-    <div class="row g-4">
-        <% if (classes != null && !classes.isEmpty()) {
-            int idx = 0;
-            for (Class c : classes) {
-                idx++;
-                int colorIdx = (idx - 1) % 6 + 1;
-        %>
-        <div class="col-md-4">
-            <div class="class-card">
-                <div class="class-header header-<%= colorIdx %>">
-                    <%= c.getName() %>
-                </div>
-                <div class="class-body">
-                    <p><strong><%= c.getDescription() != null ? c.getDescription() : "" %></strong></p>
-                    <div class="meta-line">
-                        📅 Start Date:
-                        <span><%= c.getStartDate() != null ? c.getStartDate().toString() : "N/A" %></span>
-                    </div>
-                    <div class="meta-line">
-                        📅 End Date:
-                        <span><%= c.getEndDate() != null ? c.getEndDate().toString() : "N/A" %></span>
-                    </div>
-                    <div class="meta-line">
-                        👥 Students:
-                        <span><%= c.getNumberOfStudents() %></span>
-                    </div>
-                    <div class="price-free">
-                        Price: Free
-                    </div>
-                </div>
-                <div class="card-footer-custom">
-                    <a href="<%=request.getContextPath()%>/public-class-details?id=<%=c.getId()%>"
-                       class="btn btn-view btn-primary">
-                        View Details
-                    </a>
-                </div>
-            </div>
-        </div>
-        <%    }
-        } else { %>
-        <p>No classes found.</p>
-        <% } %>
-    </div>
+        <c:choose>
+            <c:when test="${not empty classes}">
+                <div class="classes-grid">
+                    <c:forEach items="${classes}" var="c">
+                        <article class="class-card">
 
-</div>
+                            <!-- IMAGE -->
+                            <div class="card-image">
+                                <c:choose>
+                                    <c:when test="${not empty c.thumbnailUrl}">
+                                        <img src="${c.thumbnailUrl}" alt="${c.name}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        Class Image (16:9 ratio)
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
 
+                            <!-- CONTENT -->
+                            <div class="card-content">
+
+                                <c:if test="${not empty c.category}">
+                                    <span class="card-category">${c.category}</span>
+                                </c:if>
+
+                                <h3>${c.name}</h3>
+
+                                <div class="card-meta">
+                                    <!-- Instructor -->
+                                    <c:if test="${not empty c.instructor}">
+                                        👤 ${c.instructor.fullname}
+                                    </c:if>
+
+                                    <!-- Duration -->
+                                    <c:if test="${c.duration > 0}">
+                                        | ⏱ ${c.duration} minutes
+                                    </c:if>
+                                </div>
+
+                                <c:if test="${not empty c.description}">
+                                    <p>${c.description}</p>
+                                </c:if>
+
+                                <!-- PRICE -->
+                                <div class="card-price">
+                                    <c:choose>
+                                        <c:when test="${c.sale_price != null}">
+                                            <c:if test="${c.listed_price > c.sale_price}">
+                            <span class="original-price">
+                                $<fmt:formatNumber value="${c.listed_price}" pattern="#,##0.00"/>
+                            </span>
+                                            </c:if>
+                                            $<fmt:formatNumber value="${c.sale_price}" pattern="#,##0.00"/>
+                                        </c:when>
+
+                                        <c:when test="${c.listed_price != null && c.listed_price > 0}">
+                                            $<fmt:formatNumber value="${c.listed_price}" pattern="#,##0.00"/>
+                                        </c:when>
+
+                                        <c:otherwise>FREE</c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </div>
+
+                            <!-- DETAILS BUTTON -->
+                            <a href="${pageContext.request.contextPath}/public-class-details?id=${c.id}"
+                               class="btn-details">
+                                VIEW DETAILS
+                            </a>
+                        </article>
+                    </c:forEach>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="no-courses">
+                    <h3>No classes available</h3>
+                    <p>Try adjusting your filters or search criteria</p>
+                </div>
+            </c:otherwise>
+        </c:choose>
+
+        <!-- Pagination -->
+        <c:if test="${totalPages > 1}">
+            <nav class="pagination">
+                <ul>
+                    <!-- Previous button -->
+                    <li>
+                        <a href="?page=${currentPage - 1}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
+                                    <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                           class="${currentPage == 1 ? 'disabled' : ''}">
+                            &lt; Previous
+                        </a>
+                    </li>
+
+                    <!-- Page numbers -->
+                    <c:choose>
+                        <c:when test="${totalPages <= 7}">
+                            <!-- Show all pages if 7 or less -->
+                            <c:forEach begin="1" end="${totalPages}" var="i">
+                                <li>
+                                    <a href="?page=${i}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
+                                                <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                                       class="${i == currentPage ? 'active' : ''}">
+                                            ${i}
+                                    </a>
+                                </li>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- Show limited pages with ellipsis -->
+                            <c:if test="${currentPage > 3}">
+                                <li><a href="?page=1${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
+                                          <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>">1</a></li>
+                                <li><span>...</span></li>
+                            </c:if>
+
+                            <c:forEach begin="${(currentPage - 2) < 1 ? 1 : (currentPage - 2)}"
+                                       end="${(currentPage + 2) > totalPages ? totalPages : (currentPage + 2)}" var="i">
+                                <li>
+                                    <a href="?page=${i}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
+                                                <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                                       class="${i == currentPage ? 'active' : ''}">
+                                            ${i}
+                                    </a>
+                                </li>
+                            </c:forEach>
+
+                            <c:if test="${currentPage < totalPages - 2}">
+                                <li><span>...</span></li>
+                                <li><a href="?page=${totalPages}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
+                                          <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>">${totalPages}</a></li>
+                            </c:if>
+                        </c:otherwise>
+                    </c:choose>
+
+                    <!-- Next button -->
+                    <li>
+                        <a href="?page=${currentPage + 1}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
+                                    <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                           class="${currentPage == totalPages ? 'disabled' : ''}">
+                            Next &gt;
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </c:if>
+    </section>
+</main>
+
+<script>
+    // Handle "All Categories" checkbox
+    document.addEventListener('DOMContentLoaded', function() {
+        const allCheckbox = document.querySelector('input[value="all"]');
+        const categoryCheckboxes = document.querySelectorAll('input[name="category"]:not([value="all"])');
+
+        // When "All Categories" is checked, uncheck others
+        if (allCheckbox) {
+            allCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    categoryCheckboxes.forEach(cb => cb.checked = false);
+                }
+            });
+        }
+
+        // When any category is checked, uncheck "All Categories"
+        categoryCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked && allCheckbox) {
+                    allCheckbox.checked = false;
+                }
+            });
+        });
+    });
+
+    // Clear all filters
+    function clearFilters() {
+        document.querySelector('input[name="keyword"]').value = '';
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelector('input[value="all"]').checked = true;
+        document.getElementById('filterForm').submit();
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
