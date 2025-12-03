@@ -2,286 +2,276 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course List</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            border-bottom: 2px solid #0D6EFD;
-            padding-bottom: 10px;
-        }
-        .debug-info {
-            background: #ffffcc;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #cccc00;
-            border-radius: 4px;
-        }
-        .filters {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-        .filters input, .filters select {
-            padding: 8px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .btnInPage {
-            padding: 8px 16px;
-            background: #0D6EFD;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btnInPage:hover {
-            background: #0A56C4;
-        }
-        .btnInPage-danger {
-            background: #f44336;
-        }
-        .btnInPage-danger:hover {
-            background: #da190b;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #0D6EFD;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        .thumbnail {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-        }
-        .status-active {
-            color: green;
-            font-weight: bold;
-        }
-        .status-inactive {
-            color: red;
-            font-weight: bold;
-        }
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .course-link {
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .course-link:hover {
-            text-decoration: none;
-            color: #1f48c4;
-        }
+        /* Content Shift Configuration (IDENTICAL to account-list.jsp) */
         #content {
-            margin-left: 260px; /* Default position when Sidebar is open */
-            transition: margin-left 0.25s ease;
+            margin-left: 260px; /* Default position when Sidebar is open [cite: 89] */
+            transition: margin-left 0.25s ease; /* [cite: 90] */
             min-height: 100vh;
             padding: 20px;
         }
         #content.expanded {
-            margin-left: 72px; /* Position when Sidebar is closed */
+            margin-left: 72px; /* Position when Sidebar is closed [cite: 91] */
+        }
+        /* Topbar Shift Configuration (Copied from account-list.jsp) */
+        #topbar {
+            margin-left: 260px; /* [cite: 4] */
+            transition: margin-left 0.25s ease; /* [cite: 4] */
+            width: calc(100% - 260px);
+        }
+        #topbar.expanded {
+            margin-left: 72px; /* [cite: 5] */
+            width: calc(100% - 72px); /* [cite: 5] */
+        }
+
+        /* Table alignment (Copied from account-list.jsp) */
+        .table th, .table td {
+            vertical-align: middle; /* [cite: 6] */
+            text-align: center; /* [cite: 6] */
+        }
+        /* Course Name (2nd column) left-aligned */
+        .table td:nth-child(2) {
+            text-align: left; /* Tương tự cột Full Name ở account-list.jsp [cite: 7] */
+        }
+
+        /* Thumbnail style (Giữ nguyên kích thước 50px như ban đầu để tránh làm thay đổi cấu trúc dữ liệu nếu có) */
+        .thumbnail {
+            width: 50px; /* [cite: 83] */
+            height: 50px; /* [cite: 83] */
+            object-fit: cover;
+        }
+
+        /* Loại bỏ các style cũ của course-list.jsp không cần thiết */
+
+        /* Đảm bảo các trạng thái status dùng lớp badge của Bootstrap */
+        .status-active {
+            font-weight: bold;
+        }
+        .status-inactive {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-<%@ include file="include/admin-sidebar.jsp" %>
-<%@ include file="include/admin-topbar.jsp" %>
-<div id="content" class="container">
-    <h1>📚 Course List</h1>
+<%-- SỬ DỤNG JAVASCRIPT INCLUDE GIỐNG account-list.jsp --%>
+<jsp:include page="include/admin-topbar.jsp"/>
+<jsp:include page="include/admin-sidebar.jsp"/>
 
-    <!-- Filters -->
-    <div class="filters">
-        <form action="${pageContext.request.contextPath}/courseList" method="get">
-            <input type="text" name="search" placeholder="Search courses..."
-                   value="${searchKeyword}" style="width: 300px;">
+<%-- Thay đổi từ div.container sang div#content.content-wrapper div.container-fluid --%>
+<div id="content" class="content-wrapper">
+    <div class="container-fluid">
+        <%-- Thay đổi h1 thành h2 với class giống account-list.jsp --%>
+        <h2 class="fw-bold mb-4 text-primary">📚 Course List</h2>
 
-            <!-- Category Filter - populated from setting table -->
-            <select name="category">
-                <option value="">All Categories</option>
-                <c:forEach items="${categories}" var="cat">
-                    <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
-                            ${cat[1]}
-                    </option>
-                </c:forEach>
-            </select>
+        <%-- Sử dụng card shadow-sm giống account-list.jsp --%>
+        <div class="card shadow-sm">
+            <div class="card-body">
 
-            <!-- Instructor Filter - populated from user table -->
-            <select name="instructor">
-                <option value="">All Instructors</option>
-                <c:forEach items="${instructors}" var="inst">
-                    <option value="${inst[0]}" ${selectedInstructor == inst[0] ? 'selected' : ''}>
-                            ${inst[1]}
-                    </option>
-                </c:forEach>
-            </select>
+                <%-- FILTER BAR - Chuyển sang cấu trúc row g-3 của Bootstrap --%>
+                <form class="row g-3 align-items-center mb-4" action="${pageContext.request.contextPath}/course-list" method="get">
 
-            <!-- Status Filter -->
-            <select name="status">
-                <option value="">All Statuses</option>
-                <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
-                <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Inactive</option>
-            </select>
+                    <%-- Thêm input hidden cho pageIndex giống account-list.jsp [cite: 15] --%>
+                    <input type="hidden" name="pageIndex" value="1">
 
-            <button type="submit" class="btnInPage">Search</button>
-            <a href="${pageContext.request.contextPath}/courseList" class="btnInPage" style="background: #666;">Clear</a>
-            <a href="${pageContext.request.contextPath}/addCourse" class="btnInPage" style="float: right;">+ Add New Course</a>
-        </form>
-    </div>
+                    <%-- 1. FILTER BY CATEGORY (col-md-3) --%>
+                    <div class="col-md-2">
+                        <select class="form-select" name="category">
+                            <option value="">All Categories</option>
+                            <c:forEach items="${categories}" var="cat">
+                                <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
+                                        ${cat[1]}
+                                </option>
+                            </c:forEach>
+                        </select>
+                    </div>
 
-    <!-- Course Table -->
-    <c:choose>
-        <c:when test="${empty courses}">
-            <div class="no-data">
-                <h2>No courses found</h2>
-                <p>The courses list is empty. This could mean:</p>
-                <ul style="text-align: left; display: inline-block;">
-                    <li>No data in database</li>
-                    <li>Database connection issue</li>
-                    <li>Query returned no results</li>
-                </ul>
+                    <%-- 2. FILTER BY INSTRUCTOR (col-md-3) --%>
+                    <div class="col-md-2">
+                        <select class="form-select" name="instructor">
+                            <option value="">All Instructors</option>
+                            <c:forEach items="${instructors}" var="inst">
+                                <option value="${inst[0]}" ${selectedInstructor == inst[0] ? 'selected' : ''}>
+                                        ${inst[1]}
+                                </option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <%-- 3. FILTER BY STATUS (col-md-2) --%>
+                    <div class="col-md-2">
+                        <select class="form-select" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
+                            <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
+
+                    <%-- 4. SEARCH KEYWORD & BUTTON (col-md-4) - SỬ DỤNG ms-auto ĐỂ CĂN PHẢI, nhưng cấu trúc 12 cột không cho phép 3 + 3 + 2 + 4. Giữ nguyên 3 + 3 + 2, và dùng col-md-4 còn lại cho search. --%>
+                    <div class="col-md-3 d-flex">
+                        <input type="text" name="search" class="form-control me-2"
+                               placeholder="Search courses..."
+                               value="${searchKeyword}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <%-- 5. ADD NEW BUTTON (col-md-3 d-flex ms-md-auto justify-content-end) --%>
+                    <div class="col-md-3 d-flex ms-md-auto justify-content-end">
+                        <div class="d-flex justify-content-end">
+                            <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
+                            <a href="${pageContext.request.contextPath}/add-course" class="btn btn-success">
+                                <i class="fas fa-plus-circle me-1"></i> Add New Course
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                <%-- Course Table --%>
+                <%-- Thay thế thẻ <p> Showing ${courses.size()} course(s)</p> bằng cấu trúc bảng --%>
+
+                <div class="table-responsive">
+                    <%-- Bảng sử dụng các class giống account-list.jsp [cite: 29] --%>
+                    <table class="table table-hover table-bordered mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th style="width: 5%;">ID</th>
+                            <%-- Thêm cột Thumbnail/Image để tương đồng với Avatar trong account-list --%>
+                            <th style="width: 8%;">Image</th>
+                            <th style="width: 20%;">Course Name</th>
+                            <th style="width: 15%;">Category</th>
+                            <th style="width: 15%;">Instructor</th>
+                            <th style="width: 10%;">Listed Price</th>
+                            <th style="width: 10%;">Sale Price</th>
+                            <th style="width: 7%;">Status</th>
+                            <th style="width: 10%;">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:choose>
+                            <c:when test="${empty courses}">
+                                <tr>
+                                        <%-- colspan = 9 (thêm cột Image) --%>
+                                    <td colspan="9" class="text-center text-muted">No courses found</td>
+                                </tr>
+                            </c:when>
+                            <c:otherwise>
+                                <c:forEach items="${courses}" var="course" varStatus="loop">
+                                    <tr>
+                                        <td>${course.courseId != null ? course.courseId : course.id}</td>
+
+                                            <%-- Cột Image/Thumbnail (mô phỏng cột Avatar) --%>
+                                        <td>
+                                            <img src="${course.thumbnailUrl != null ?
+                                                        course.thumbnailUrl : 'https://via.placeholder.com/50'}"
+                                                 alt="Thumbnail" class="thumbnail rounded">
+                                        </td>
+
+                                        <td style="text-align: left;">
+                                            <a href="${pageContext.request.contextPath}/courseDetail?id=${course.courseId}"
+                                               class="course-link">
+                                                <strong>${course.courseName}</strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${not empty course.courseCategory}">
+                                                    <span class="badge bg-secondary">${course.courseCategory}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <em>No category</em>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${not empty course.courseInstructor}">
+                                                    <span class="badge bg-info">${course.courseInstructor}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <em>No instructor</em>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <fmt:formatNumber value="${course.listedPrice}"
+                                                              type="currency"
+                                                              currencySymbol="$" />
+                                        </td>
+                                        <td>
+                                            <fmt:formatNumber value="${course.salePrice}"
+                                                              type="currency"
+                                                              currencySymbol="$" />
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${course.status == '1' || course.status == 'Active'}">
+                                                    <span class="badge bg-success status-active">Active</span> <%-- Sử dụng badge bg-success --%>
+                                                </c:when>
+                                                <c:when test="${course.status == '0' || course.status == 'Inactive'}">
+                                                    <span class="badge bg-danger status-inactive">Inactive</span> <%-- Sử dụng badge bg-danger --%>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge bg-warning">${course.status}</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                                <%-- Nút Actions (giống account-list.jsp) --%>
+                                            <div class="btn-group" role="group">
+                                                    <%-- Nút Edit --%>
+                                                <a href="${pageContext.request.contextPath}/editCourse?id=${course.courseId}"
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                    <%-- NÚT BẬT/TẮT TRẠNG THÁI (Giữ nguyên logic JSTL) --%>
+                                                <c:choose>
+                                                    <c:when test="${course.status == '1' || course.status == 'Active'}">
+                                                        <a href="${pageContext.request.contextPath}/course-list?action=toggleStatus&id=${course.courseId}&newStatus=0"
+                                                           class="btn btn-sm btn-outline-warning"
+                                                           title="Set Inactive"
+                                                           onclick="return confirm('Are you sure you want to deactivate course ${course.courseName}?');">
+                                                            <i class="fas fa-ban"></i>
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <a href="${pageContext.request.contextPath}/course-list?action=toggleStatus&id=${course.courseId}&newStatus=1"
+                                                           class="btn btn-sm btn-outline-success"
+                                                           title="Set Active"
+                                                           onclick="return confirm('Are you sure you want to activate course ${course.courseName}?');">
+                                                            <i class="fas fa-check-circle"></i>
+                                                        </a>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </c:otherwise>
+                        </c:choose>
+                        </tbody>
+                    </table>
+                </div>
+
+                <%-- PAGINATION - Phần này chỉ là placeholder vì không có biến pageIndex/totalPage được truyền qua JSTL trong file gốc --%>
+                <div class="mt-3 text-muted text-end">
+                </div>
+
             </div>
-        </c:when>
-        <c:otherwise>
-            <p>Showing ${courses.size()} course(s)</p>
-            <table>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Course Name</th>
-                        <%--                    <th>Description</th>--%>
-                    <th>Category</th>
-                    <th>Instructor</th>
-                    <th>Listed Price</th>
-                    <th>Sale Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach items="${courses}" var="course" varStatus="loop">
-                    <tr>
-                        <td>${course.courseId != null ? course.courseId : course.id}</td>
-                        <td>
-                            <a href="${pageContext.request.contextPath}/courseDetail?id=${course.courseId}"
-                               class="course-link">
-                                <strong>${course.courseName}</strong>
-                            </a>
-                        </td>
-                            <%--                        <td>--%>
-                            <%--                            <c:choose>--%>
-                            <%--                                <c:when test="${not empty course.description}">--%>
-                            <%--                                    ${course.description.length() > 50 ?--%>
-                            <%--                                              course.description.substring(0, 50).concat('...') :--%>
-                            <%--                                              course.description}--%>
-                            <%--                                </c:when>--%>
-                            <%--                                <c:otherwise>--%>
-                            <%--                                    <em>No description</em>--%>
-                            <%--                                </c:otherwise>--%>
-                            <%--                            </c:choose>--%>
-                            <%--                        </td>--%>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty course.courseCategory}">
-                                    <strong>${course.courseCategory}</strong>
-                                </c:when>
-                                <c:otherwise>
-                                    <em>No category</em>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty course.courseInstructor}">
-                                    <strong>${course.courseInstructor}</strong>
-                                </c:when>
-                                <c:otherwise>
-                                    <em>No instructor</em>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <fmt:formatNumber value="${course.listedPrice}"
-                                              type="currency"
-                                              currencySymbol="$" />
-                        </td>
-                        <td>
-                            <fmt:formatNumber value="${course.salePrice}"
-                                              type="currency"
-                                              currencySymbol="$" />
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${course.status == '1' || course.status == 'Active'}">
-                                    <span class="status-active">Active</span>
-                                </c:when>
-                                <c:when test="${course.status == '0' || course.status == 'Inactive'}">
-                                    <span class="status-inactive">Inactive</span>
-                                </c:when>
-                                <c:otherwise>
-                                    ${course.status}
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <a href="${pageContext.request.contextPath}/editCourse?id=${course.courseId}"
-                               class="btnInPage"
-                               style="padding: 4px 8px; font-size: 12px; background: #0D6EFD;">
-                                ✏️
-                            </a>
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-        </c:otherwise>
-    </c:choose>
+        </div>
+    </div>
 </div>
 
-<script>
-    console.log("Page loaded successfully");
-    console.log("Context Path: ${pageContext.request.contextPath}");
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../assets/js/admin_scripts.js"></script>
 </body>
