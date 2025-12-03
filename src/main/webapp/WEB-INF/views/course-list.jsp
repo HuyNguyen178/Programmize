@@ -6,9 +6,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Course List</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/admin.css" rel="stylesheet">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,7 +49,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        .btn {
+        .btnInPage {
             padding: 8px 16px;
             background: #0D6EFD;
             color: white;
@@ -57,13 +59,13 @@
             text-decoration: none;
             display: inline-block;
         }
-        .btn:hover {
+        .btnInPage:hover {
             background: #0A56C4;
         }
-        .btn-danger {
+        .btnInPage-danger {
             background: #f44336;
         }
-        .btn-danger:hover {
+        .btnInPage-danger:hover {
             background: #da190b;
         }
         table {
@@ -152,9 +154,9 @@
                 <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Inactive</option>
             </select>
 
-            <button type="submit" class="btn">Search</button>
-            <a href="${pageContext.request.contextPath}/courseList" class="btn" style="background: #666;">Clear</a>
-            <a href="${pageContext.request.contextPath}/addCourse" class="btn" style="float: right;">+ Add New Course</a>
+            <button type="submit" class="btnInPage">Search</button>
+            <a href="${pageContext.request.contextPath}/courseList" class="btnInPage" style="background: #666;">Clear</a>
+            <a href="${pageContext.request.contextPath}/addCourse" class="btnInPage" style="float: right;">+ Add New Course</a>
         </form>
     </div>
 
@@ -254,7 +256,7 @@
                         </td>
                         <td>
                             <a href="${pageContext.request.contextPath}/editCourse?id=${course.courseId}"
-                               class="btn"
+                               class="btnInPage"
                                style="padding: 4px 8px; font-size: 12px; background: #0D6EFD;">
                                 ✏️
                             </a>
