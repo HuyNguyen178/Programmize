@@ -9,8 +9,8 @@ public class Class {
     private String thumbnailUrl;
     private int numberOfStudents;
     private String category;
-    private BigDecimal listed_price;
-    private BigDecimal sale_price;
+    private BigDecimal listedPrice;
+    private BigDecimal salePrice;
     private boolean status;
     private String description;
     private Date startDate;
@@ -57,20 +57,20 @@ public class Class {
         this.category = category;
     }
 
-    public BigDecimal getListed_price() {
-        return listed_price;
+    public BigDecimal getListedPrice() {
+        return listedPrice;
     }
 
-    public void setListed_price(BigDecimal listed_price) {
-        this.listed_price = listed_price;
+    public void setListedPrice(BigDecimal listedPrice) {
+        this.listedPrice = listedPrice;
     }
 
-    public BigDecimal getSale_price() {
-        return sale_price;
+    public BigDecimal getSalePrice() {
+        return salePrice;
     }
 
-    public void setSale_price(BigDecimal sale_price) {
-        this.sale_price = sale_price;
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
     }
 
     public boolean isStatus() {

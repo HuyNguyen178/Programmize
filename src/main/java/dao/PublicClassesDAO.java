@@ -3,66 +3,121 @@ package dao;
 import model.Class;
 import model.User;
 import utils.DBUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PublicClassesDAO {
 
-    public List<Class> getActiveClasses() {
-        List<Class> list = new ArrayList<>();
+    private boolean isAllCategoriesSelected(String[] categories) {
+        if (categories == null) return false;
+        for (String cat : categories) {
+            if ("all".equals(cat) || cat == null || cat.isEmpty()) return true;
+        }
+        return false;
+    }
 
-        String sql =
-                "SELECT " +
-                        "  c.class_id, c.class_name, c.thumbnail_url, c.listed_price, c.sale_price, " +
-                        "  c.description, c.status, c.start_date, c.end_date, " +
-                        "  u.user_id AS instructor_id, u.fullname AS instructor_name, u.avatar_url AS instructor_avatar " +
+    public List<Class> getActiveClasses(String keyword, String[] selectedCategories, String priceSort) {
+        List<Class> classes = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT c.class_id, c.class_name, c.thumbnail_url, c.listed_price, c.sale_price, " +
+                        "c.description, c.status, c.start_date, c.end_date, " +
+                        "u.user_id AS instructor_id, u.fullname AS instructor_name, u.avatar_url AS instructor_avatar, " +
+                        "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS categories " +
                         "FROM class c " +
-                        "JOIN class_user cu ON cu.class_id = c.class_id " +
-                        "JOIN user u ON u.user_id = cu.user_id " +
-                        "JOIN user_role ur ON ur.user_id = u.user_id " +
-                        "JOIN setting s ON s.setting_id = ur.role_id " +
-                        "WHERE s.setting_name = 'Instructor'";
+                        "LEFT JOIN class_category cc ON cc.class_id = c.class_id " +
+                        "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
+                        "LEFT JOIN class_user cu ON cu.class_id = c.class_id " +
+                        "LEFT JOIN user u ON u.user_id = cu.user_id " +
+                        "LEFT JOIN user_role ur ON ur.user_id = u.user_id " +
+                        "LEFT JOIN setting r ON r.setting_id = ur.role_id AND r.setting_name = 'Instructor' " +
+                        "WHERE c.status = 1"
+        );
 
-        try (Connection connection = DBUtil.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet rs = statement.executeQuery()) {
+        // Keyword search
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (c.class_name LIKE ? OR c.description LIKE ? OR u.fullname LIKE ?)");
+        }
 
-            while (rs.next()) {
+        // Category filter
+        if (selectedCategories != null && selectedCategories.length > 0) {
+            sql.append(" AND s.setting_name IN (");
+            for (int i = 0; i < selectedCategories.length; i++) {
+                sql.append("?");
+                if (i < selectedCategories.length - 1) sql.append(",");
+            }
+            sql.append(")");
+        }
 
-                // Tạo instructor
-                User instructor = new User();
-                instructor.setId(rs.getInt("instructor_id"));
-                instructor.setFullname(rs.getString("instructor_name"));
-                instructor.setAvatarUrl(rs.getString("instructor_avatar"));
+        sql.append(" GROUP BY c.class_id, c.class_name, c.thumbnail_url, c.listed_price, c.sale_price, " +
+                "c.description, c.status, c.start_date, c.end_date, u.user_id, u.fullname, u.avatar_url");
 
-                // Tạo class
-                Class c = new Class();
-                c.setId(rs.getInt("class_id"));
-                c.setName(rs.getString("class_name"));
-                c.setThumbnailUrl(rs.getString("thumbnail_url"));
-                c.setListed_price(rs.getBigDecimal("listed_price"));
-                c.setSale_price(rs.getBigDecimal("sale_price"));
-                c.setDescription(rs.getString("description"));
-                c.setStatus(rs.getBoolean("status"));
-                c.setStartDate(rs.getDate("start_date"));
-                c.setEndDate(rs.getDate("end_date"));
+        // Price sort
+        if ("low".equalsIgnoreCase(priceSort)) {
+            sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
+        } else if ("high".equalsIgnoreCase(priceSort)) {
+            sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
+        } else {
+            sql.append(" ORDER BY c.class_id ASC");
+        }
 
-                // Gán instructor vào class
-                c.setInstructor(instructor);
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
 
-                list.add(c);
+            int idx = 1;
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String pattern = "%" + keyword.trim() + "%";
+                stmt.setString(idx++, pattern);
+                stmt.setString(idx++, pattern);
+                stmt.setString(idx++, pattern);
             }
 
-        } catch (Exception e) {
+            if (selectedCategories != null && selectedCategories.length > 0) {
+                for (String cat : selectedCategories) {
+                    stmt.setString(idx++, cat);
+                }
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Class cls = new Class();
+                cls.setId(rs.getInt("class_id"));
+                cls.setName(rs.getString("class_name"));
+                cls.setThumbnailUrl(rs.getString("thumbnail_url"));
+                cls.setListedPrice(rs.getBigDecimal("listed_price"));
+                cls.setSalePrice(rs.getBigDecimal("sale_price"));
+                cls.setDescription(rs.getString("description"));
+                cls.setStatus(rs.getBoolean("status"));
+                cls.setStartDate(rs.getDate("start_date"));
+                cls.setEndDate(rs.getDate("end_date"));
+                cls.setCategory(rs.getString("categories"));
+
+                int instructorId = rs.getInt("instructor_id");
+                if (!rs.wasNull()) {
+                    User instructor = new User();
+                    instructor.setId(instructorId);
+                    instructor.setFullname(rs.getString("instructor_name"));
+                    instructor.setAvatarUrl(rs.getString("instructor_avatar"));
+                    cls.setInstructor(instructor);
+                }
+
+                classes.add(cls);
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return list;
+        return classes;
     }
+
+
+
 
 
     public Class getClassById(int id) {
@@ -88,5 +143,25 @@ public class PublicClassesDAO {
         }
 
         return null;
+    }
+
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT DISTINCT s.setting_name " +
+                "FROM setting s " +
+                "INNER JOIN class_category cc ON s.setting_id = cc.category_id " +
+                "WHERE s.status = 1 " +
+                "ORDER BY s.setting_name";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                categories.add(rs.getString("setting_name"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting category names: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return categories;
     }
 }

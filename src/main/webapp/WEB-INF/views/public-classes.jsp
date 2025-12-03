@@ -267,79 +267,59 @@
         <c:choose>
             <c:when test="${not empty classes}">
                 <div class="classes-grid">
-                    <c:forEach items="${classes}" var="c">
+                    <c:forEach items="${classes}" var="clazz">
                         <article class="class-card">
-
-                            <!-- IMAGE -->
                             <div class="card-image">
                                 <c:choose>
-                                    <c:when test="${not empty c.thumbnailUrl}">
-                                        <img src="${c.thumbnailUrl}" alt="${c.name}">
+                                    <c:when test="${not empty clazz.thumbnailUrl}">
+                                        <img src="${clazz.thumbnailUrl}" alt="${clazz.name}">
                                     </c:when>
                                     <c:otherwise>
                                         Class Image (16:9 ratio)
                                     </c:otherwise>
                                 </c:choose>
                             </div>
-
-                            <!-- CONTENT -->
                             <div class="card-content">
-
-                                <c:if test="${not empty c.category}">
-                                    <span class="card-category">${c.category}</span>
-                                </c:if>
-
-                                <h3>${c.name}</h3>
-
+                                <h3>${clazz.name}</h3>
                                 <div class="card-meta">
-                                    <!-- Instructor -->
-                                    <c:if test="${not empty c.instructor}">
-                                        👤 ${c.instructor.fullname}
-                                    </c:if>
-
-                                    <!-- Duration -->
-                                    <c:if test="${c.duration > 0}">
-                                        | ⏱ ${c.duration} minutes
+                                    <c:if test="${not empty clazz.instructor.name}">
+                                        👤 ${clazz.instructor.name}
                                     </c:if>
                                 </div>
-
-                                <c:if test="${not empty c.description}">
-                                    <p>${c.description}</p>
+                                <c:if test="${not empty clazz.description}">
+                                    <p>${clazz.description}</p>
                                 </c:if>
-
-                                <!-- PRICE -->
                                 <div class="card-price">
                                     <c:choose>
-                                        <c:when test="${c.sale_price != null}">
-                                            <c:if test="${c.listed_price > c.sale_price}">
-                            <span class="original-price">
-                                $<fmt:formatNumber value="${c.listed_price}" pattern="#,##0.00"/>
-                            </span>
+                                        <c:when test="${clazz.salePrice != null}">
+                                            <c:if test="${clazz.listedPrice > clazz.salePrice}">
+                                                    <span class="original-price">
+                                                        $<fmt:formatNumber value="${clazz.listedPrice}"
+                                                                           pattern="#,##0.00"/>
+                                                    </span>
                                             </c:if>
-                                            $<fmt:formatNumber value="${c.sale_price}" pattern="#,##0.00"/>
+                                            $<fmt:formatNumber value="${clazz.salePrice}"
+                                                               pattern="#,##0.00"/>
                                         </c:when>
-
-                                        <c:when test="${c.listed_price != null && c.listed_price > 0}">
-                                            $<fmt:formatNumber value="${c.listed_price}" pattern="#,##0.00"/>
+                                        <c:when test="${clazz.listedPrice != null && clazz.listedPrice > 0}">
+                                            $<fmt:formatNumber value="${clazz.listedPrice}"
+                                                               pattern="#,##0.00"/>
                                         </c:when>
-
-                                        <c:otherwise>FREE</c:otherwise>
+                                        <c:otherwise>
+                                            FREE
+                                        </c:otherwise>
                                     </c:choose>
                                 </div>
                             </div>
-
-                            <!-- DETAILS BUTTON -->
-                            <a href="${pageContext.request.contextPath}/public-class-details?id=${c.id}"
-                               class="btn-details">
-                                VIEW DETAILS
-                            </a>
+                            <a href="${pageContext.request.contextPath}/public-course-details?id=${clazz.id}"
+                               class="btn-details">VIEW DETAILS</a>
                         </article>
                     </c:forEach>
                 </div>
             </c:when>
             <c:otherwise>
                 <div class="no-courses">
-                    <h3>No classes available</h3>
+                    <h3>No courses found</h3>
                     <p>Try adjusting your filters or search criteria</p>
                 </div>
             </c:otherwise>
