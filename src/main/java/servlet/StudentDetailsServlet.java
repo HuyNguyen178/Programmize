@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/student-details")
+@WebServlet("/student-detail")
 public class StudentDetailsServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
@@ -33,7 +33,6 @@ public class StudentDetailsServlet extends HttpServlet {
                 studentId = Integer.parseInt(idParam);
             }
         } catch (NumberFormatException e) {
-            // Xử lý lỗi ID không hợp lệ
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Student ID format.");
             return;
         }
@@ -45,11 +44,9 @@ public class StudentDetailsServlet extends HttpServlet {
                 request.setAttribute("student", student);
                 request.getRequestDispatcher("/WEB-INF/views/student-details.jsp").forward(request, response);
             } else {
-                // Không tìm thấy sinh viên
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student not found.");
             }
         } else {
-            // Không có ID được cung cấp
             response.sendRedirect(request.getContextPath() + "/student-list");
         }
     }
@@ -57,7 +54,6 @@ public class StudentDetailsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Có thể thêm logic xử lý update thông tin sinh viên tại đây
         doGet(request, response);
     }
 }

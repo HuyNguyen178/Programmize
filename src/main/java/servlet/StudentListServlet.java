@@ -16,6 +16,7 @@ import java.util.List;
 public class StudentListServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
+    private final int PAGE_SIZE = 10;
 
     @Override
     public void init() throws ServletException {
@@ -38,12 +39,13 @@ public class StudentListServlet extends HttpServlet {
                 int studentId = Integer.parseInt(idParam);
                 boolean newStatus = "1".equals(statusParam);
 
-                // Giả định phương thức updateStudentStatus tồn tại trong StudentDAO
                 boolean success = studentDAO.updateStudentStatus(studentId, newStatus);
 
-                String statusText = newStatus ? "Activated" : "Deactivated";
+                String statusText = newStatus ? "Active" : "Inactive";
+                String fullname = studentDAO.getFullnameById(studentId);
+
                 actionMessage = success
-                        ? "Status update successful: Student " + studentId + " changed to " + statusText + "."
+                        ? "Status update successful: Student " + (fullname != null ? fullname : studentId) + " changed to " + statusText + "."
                         : "Error: Unable to update status for student " + studentId + ".";
 
             } catch (NumberFormatException e) {
@@ -60,19 +62,43 @@ public class StudentListServlet extends HttpServlet {
         if (status != null && status.trim().isEmpty()) status = null;
         if (className != null && className.trim().isEmpty()) className = null;
 
+        // --- Xử lý Phân trang ---
+        String pageIndexParam = request.getParameter("pageIndex");
+        int pageIndex = 1;
+        try {
+            if (pageIndexParam != null) {
+                pageIndex = Integer.parseInt(pageIndexParam);
+            }
+        } catch (NumberFormatException e) {
+            pageIndex = 1;
+        }
+
+        int totalStudents = studentDAO.countStudents(keyword, status, className);
+        int totalPage = (int) Math.ceil((double) totalStudents / PAGE_SIZE);
+
+        if (totalStudents == 0) {
+            totalPage = 1;
+        }
+
+        if (pageIndex > totalPage) {
+            pageIndex = totalPage;
+        } else if (pageIndex < 1) {
+            pageIndex = 1;
+        }
+
+        List<Student> students = studentDAO.searchStudents(keyword, status, className, pageIndex, PAGE_SIZE);
 
         List<String> classNamesList = studentDAO.getAllClassNames();
         request.setAttribute("classNamesList", classNamesList);
-
-        // Lấy danh sách student
-        List<Student> students = studentDAO.searchStudents(keyword, status, className);
 
         request.setAttribute("students", students);
         request.setAttribute("search", keyword);
         request.setAttribute("status", status);
         request.setAttribute("className", className);
 
-        // --- Xử lý thông báo hành động ---
+        request.setAttribute("pageIndex", pageIndex);
+        request.setAttribute("totalPage", totalPage);
+
         if (actionMessage != null) {
             request.setAttribute("actionMessage", actionMessage);
         } else {

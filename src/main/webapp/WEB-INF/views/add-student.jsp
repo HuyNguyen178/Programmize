@@ -41,8 +41,8 @@
 </head>
 <body class="bg-light">
 
-<%@ include file="include/admin-sidebar.jsp" %>
-<%@ include file="include/admin-topbar.jsp" %>
+<%@ include file="include/instructor-sidebar.jsp" %>
+<%@ include file="include/instructor-topbar.jsp" %>
 
 <div id="content" class="content-wrapper">
     <div class="container-fluid">

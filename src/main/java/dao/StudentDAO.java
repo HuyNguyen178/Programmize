@@ -12,12 +12,10 @@ import java.util.List;
 
 public class StudentDAO {
 
-    public List<Student> searchStudents(String keyword, String status, String className) {
-        List<Student> list = new ArrayList<>();
 
+    private StringBuilder buildBaseSql(String keyword, String status, String className) {
         StringBuilder sql = new StringBuilder(
-                "SELECT u.user_id, u.fullname, u.email, u.status, c.class_name " +
-                        "FROM user u " +
+                " FROM user u " +
                         "JOIN user_role ur ON u.user_id = ur.user_id " +
                         "JOIN setting s ON ur.role_id = s.setting_id " +
                         "LEFT JOIN class_user cu ON u.user_id = cu.user_id " +
@@ -37,23 +35,86 @@ public class StudentDAO {
             sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?)");
         }
 
-        sql.append(" ORDER BY u.fullname ASC");
+        sql.append(" GROUP BY u.user_id, u.fullname, u.email, u.status, u.username, u.avatar_url ");
+
+        return sql;
+    }
+
+    private List<Object> getSearchParameters(String keyword, String status, String className) {
+        List<Object> params = new ArrayList<>();
+        if (status != null && !status.isEmpty()) {
+            // Status là String "0" hoặc "1" từ Servlet, nên chuyển thành Integer
+            params.add(Integer.parseInt(status));
+        }
+        if (className != null && !className.isEmpty()) {
+            params.add(className);
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            params.add("%" + keyword + "%");
+            params.add("%" + keyword + "%");
+        }
+        return params;
+    }
+
+    public int countStudents(String keyword, String status, String className) {
+        StringBuilder baseSql = buildBaseSql(keyword, status, className);
+        String countSql = "SELECT COUNT(*) FROM (SELECT u.user_id " + baseSql.toString() + ") AS subquery";
+        List<Object> params = getSearchParameters(keyword, status, className);
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+             PreparedStatement ps = conn.prepareStatement(countSql)) {
 
             int index = 1;
+            for (Object param : params) {
+                if (param instanceof String) {
+                    ps.setString(index++, (String) param);
+                } else if (param instanceof Integer) {
+                    ps.setInt(index++, (Integer) param);
+                }
+            }
 
-            if (status != null && !status.isEmpty()) {
-                ps.setInt(index++, Integer.parseInt(status));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
             }
-            if (className != null && !className.isEmpty()) {
-                ps.setString(index++, className);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+    public List<Student> searchStudents(String keyword, String status, String className, int pageIndex, int pageSize) {
+        List<Student> list = new ArrayList<>();
+        int offset = (pageIndex - 1) * pageSize;
+
+        StringBuilder selectSql = new StringBuilder(
+                "SELECT u.user_id, u.fullname, u.email, u.status, u.username, u.avatar_url, " +
+                        "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
+        );
+
+        StringBuilder baseSql = buildBaseSql(keyword, status, className);
+
+        selectSql.append(baseSql);
+        selectSql.append(" ORDER BY u.user_id ASC");
+        selectSql.append(" LIMIT ? OFFSET ?");
+
+        List<Object> params = getSearchParameters(keyword, status, className);
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(selectSql.toString())) {
+
+            int index = 1;
+            for (Object param : params) {
+                if (param instanceof String) {
+                    ps.setString(index++, (String) param);
+                } else if (param instanceof Integer) {
+                    ps.setInt(index++, (Integer) param);
+                }
             }
-            if (keyword != null && !keyword.isEmpty()) {
-                ps.setString(index++, "%" + keyword + "%");
-                ps.setString(index++, "%" + keyword + "%");
-            }
+
+            ps.setInt(index++, pageSize);
+            ps.setInt(index++, offset);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -63,17 +124,22 @@ public class StudentDAO {
                 st.setEmail(rs.getString("email"));
                 st.setStatus(rs.getBoolean("status"));
                 st.setClassName(rs.getString("class_name"));
+                st.setUsername(rs.getString("username"));
+                st.setAvatarUrl(rs.getString("avatar_url"));
                 list.add(st);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid status value: " + status);
-            e.printStackTrace();
         }
 
         return list;
+    }
+
+
+    public List<Student> searchStudents(String keyword, String status, String className) {
+        // Gọi lại phương thức mới với phân trang mặc định (ví dụ: trang 1, 1000 bản ghi)
+        return searchStudents(keyword, status, className, 1, 1000);
     }
 
     public boolean addStudentToClass(String identifier, boolean isEmail, String className) throws SQLException {
@@ -109,6 +175,7 @@ public class StudentDAO {
             // 2. Tìm class_id
             String findClassSql = "SELECT class_id FROM class WHERE class_name = ?";
             psFindClass = conn.prepareStatement(findClassSql);
+            // Cần lấy class name từ đâu đó, giả định class name được truyền vào
             psFindClass.setString(1, className);
             rsClass = psFindClass.executeQuery();
             if (rsClass.next()) {

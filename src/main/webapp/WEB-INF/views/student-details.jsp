@@ -49,15 +49,15 @@
 </head>
 <body class="bg-light">
 
-<%@ include file="include/admin-sidebar.jsp" %>
-<%@ include file="include/admin-topbar.jsp" %>
+<%@ include file="include/instructor-sidebar.jsp" %>
+<%@ include file="include/instructor-topbar.jsp" %>
 
 <%
     // Lấy đối tượng Student từ request
     Student student = (Student) request.getAttribute("student");
     String avatarUrl = (student.getAvatarUrl() != null && !student.getAvatarUrl().isEmpty())
             ? student.getAvatarUrl()
-            : "https://i.pinimg.com/736x/81/d7/4a/81d74aeca33e3afb8ddcd0d74d2856b2.jpg";
+            : "https://i.pinimg.com/736x/20/ef/6b/20ef6b554ea249790281e6677abc4160.jpg";
 %>
 
 <div id="content" class="content-wrapper">
