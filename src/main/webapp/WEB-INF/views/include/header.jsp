@@ -3,14 +3,17 @@
 <%
     User user = (User) session.getAttribute("user");
 
-    String username = user.getUsername();
-    if (username == null) {
-        username = "Guest";
-    }
+    String username = "Guest";
+    String fullName = "";
+    String avtUrl = "";
 
-    String fullName = user.getFullname();
-    String avtUrl = user.getAvatarUrl();
+    if (user != null) {
+        if (user.getUsername() != null) username = user.getUsername();
+        if (user.getFullname() != null) fullName = user.getFullname();
+        if (user.getAvatarUrl() != null) avtUrl = user.getAvatarUrl();
+    }
 %>
+
 <style>
     /* Navbar */
     .navbar {
