@@ -149,14 +149,50 @@ public class UserDAO {
                         "WHERE 1=1 "
         );
 
+        List<Object> params = new ArrayList<>();
+
+        // 1. FILTER BY KEYWORD (Search by fullname or email)
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?)");
+            params.add("%" + keyword + "%");
+            params.add("%" + keyword + "%");
+        }
+
+        // 2. FILTER BY STATUS
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND u.status = ?");
+            params.add(status.equals("1"));
+        }
+
+        // 3. FILTER BY ROLE (Lọc theo vai trò duy nhất)
+        if (roleName != null && !roleName.isEmpty()) {
+            sql.append(" AND u.user_id IN (");
+            sql.append("    SELECT ur.user_id FROM user_role ur ");
+            sql.append("    JOIN setting s ON ur.role_id = s.setting_id ");
+            sql.append("    WHERE s.setting_name = ?");
+            sql.append(" )");
+            params.add(roleName);
+        }
+
         sql.append(" GROUP BY u.user_id, u.fullname, u.username, u.email, u.status, u.avatar_url");
-        sql.append(" ORDER BY u.fullname ASC");
+        sql.append(" ORDER BY u.user_id ASC");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
-            ResultSet rs = ps.executeQuery();
+            // Thiết lập các tham số cho PreparedStatement
+            for (int i = 0; i < params.size(); i++) {
+                Object param = params.get(i);
+                if (param instanceof String) {
+                    ps.setString(i + 1, (String) param);
+                } else if (param instanceof Boolean) {
+                    ps.setBoolean(i + 1, (Boolean) param);
+                } else if (param instanceof Integer) {
+                    ps.setInt(i + 1, (Integer) param);
+                }
+            }
 
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 User u = new User();
                 u.setId(rs.getInt("user_id"));
@@ -166,7 +202,6 @@ public class UserDAO {
                 u.setStatus(rs.getBoolean("status"));
                 u.setAvatarUrl(rs.getString("avatar_url"));
                 u.setRoleName(rs.getString("role_name"));
-
                 list.add(u);
             }
 
@@ -175,5 +210,22 @@ public class UserDAO {
         }
 
         return list;
+    }
+
+    public boolean updateUserStatus(int userId, boolean newStatus) {
+        String sql = "UPDATE user SET status = ? WHERE user_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBoolean(1, newStatus);
+            stmt.setInt(2, userId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

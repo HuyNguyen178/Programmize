@@ -29,6 +29,28 @@
         protected void doGet(HttpServletRequest request, HttpServletResponse response)
                 throws ServletException, IOException {
 
+            String action = request.getParameter("action");
+
+            if ("toggleStatus".equals(action)) {
+                String idParam = request.getParameter("id");
+                String newStatusParam = request.getParameter("newStatus");
+
+                if (idParam != null && newStatusParam != null) {
+                    try {
+                        int userId = Integer.parseInt(idParam);
+                        // newStatusParam là chuỗi "1" hoặc "0"
+                        boolean newStatus = "1".equals(newStatusParam);
+
+                        userDAO.updateUserStatus(userId, newStatus);
+
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                response.sendRedirect(request.getContextPath() + "/account-list");
+                return;
+            }
+
             String keyword = request.getParameter("search");
             String status = request.getParameter("statusFilter");
             String roleName = request.getParameter("roleFilter");
