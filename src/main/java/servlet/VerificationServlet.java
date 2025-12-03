@@ -109,8 +109,6 @@ public class VerificationServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/views/verify-email.jsp").forward(request, response);
                 }
             } else {
-                // Nếu không có thông tin đăng ký trong session
-                // (Trường hợp user đã có account, chỉ verify email)
                 UserDAO dao = new UserDAO();
                 dao.updateStatusByEmail(email);
 

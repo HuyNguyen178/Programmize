@@ -13,8 +13,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="student-list" class="nav-link text-white">
-                <i class="fa fa-users me-2"></i> <span class="label">Student List</span>
+            <a href="account-list" class="nav-link text-white">
+                <i class="fa fa-users me-2"></i> <span class="label">Account List</span>
             </a>
         </li>
         <li class="nav-item">

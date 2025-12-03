@@ -61,63 +61,77 @@
     String currentKeyword = (String) request.getAttribute("currentKeyword");
     String currentStatus = (String) request.getAttribute("currentStatus");
     String currentRoleName = (String) request.getAttribute("currentRoleName");
-
     List<String> roleList = (List<String>) request.getAttribute("roleList");
+
+    List<User> userList = (List<User>) request.getAttribute("userList");
+    int pageIndex = (Integer) request.getAttribute("pageIndex");
+    int totalPage = (Integer) request.getAttribute("totalPage");
+
+    int numPagesToShow = 3;
+
+    String filterQuery = "";
+    if (currentKeyword != null && !currentKeyword.isEmpty()) {
+        filterQuery += "&search=" + java.net.URLEncoder.encode(currentKeyword, "UTF-8");
+    }
+    if (currentStatus != null && !currentStatus.isEmpty()) {
+        filterQuery += "&statusFilter=" + currentStatus;
+    }
+    if (currentRoleName != null && !currentRoleName.isEmpty()) {
+        filterQuery += "&roleFilter=" + java.net.URLEncoder.encode(currentRoleName, "UTF-8");
+    }
+
 %>
 
 <div id="content" class="content-wrapper">
     <div class="container-fluid">
         <h2 class="fw-bold mb-4 text-primary">👥 Account List</h2>
 
-        <%
-            List<User> userList = (List<User>) request.getAttribute("userList");
-        %>
-
         <div class="card shadow-sm">
             <div class="card-body">
 
                 <%-- FILTER BAR --%>
-                    <form class="row g-3 align-items-center mb-4" method="GET">
+                <form class="row g-3 align-items-center mb-4" method="GET">
+                    <input type="hidden" name="pageIndex" value="1">
 
-                        <%-- 1. FILTER BY ROLE --%>
-                        <div class="col-md-2">
-                            <select class="form-select" name="roleFilter">
-                                <option value="" <%= (currentRoleName == null || currentRoleName.isEmpty()) ? "selected" : "" %>>All Roles</option>
-                                <% if (roleList != null) {
-                                    for (String role : roleList) { %>
-                                <option value="<%= role %>"
-                                        <%= role.equals(currentRoleName) ? "selected" : "" %>>
-                                    <%= role %>
-                                </option>
-                                <%  }
-                                } %>
-                            </select>
-                        </div>
+                    <%-- 1. FILTER BY ROLE --%>
+                    <div class="col-md-2">
+                        <select class="form-select" name="roleFilter">
+                            <option value="" <%= (currentRoleName == null || currentRoleName.isEmpty()) ? "selected" : "" %>>All Roles</option>
+                            <% if (roleList != null) {
+                                for (String role : roleList) { %>
+                            <option value="<%= role %>"
+                                    <%= (currentRoleName != null && role.equals(currentRoleName)) ? "selected" : "" %>>
+                                <%= role %>
+                            </option>
+                            <%  }
+                            } %>
+                        </select>
+                    </div>
 
-                        <%-- 2. FILTER BY STATUS --%>
-                        <div class="col-md-2">
-                            <select class="form-select" name="statusFilter">
-                                <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Status</option>
-                                <option value="1" <%= "1".equals(currentStatus) ? "selected" : "" %>>Active</option>
-                                <option value="0" <%= "0".equals(currentStatus) ? "selected" : "" %>>Inactive</option>
-                            </select>
-                        </div>
+                    <%-- 2. FILTER BY STATUS --%>
+                    <div class="col-md-2">
+                        <select class="form-select" name="statusFilter">
+                            <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Status</option>
+                            <option value="1" <%= "1".equals(currentStatus) ? "selected" : "" %>>Active</option>
+                            <option value="0" <%= "0".equals(currentStatus) ? "selected" : "" %>>Inactive</option>
+                        </select>
+                    </div>
 
-                        <%-- 3. SEARCH KEYWORD & BUTTON --%>
-                        <div class="col-md-4 d-flex">
-                            <input type="text" name="search" class="form-control me-2"
-                                   placeholder="Search by name or email..."
-                                   value="<%= currentKeyword != null ? currentKeyword : "" %>">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
+                    <%-- 3. SEARCH KEYWORD & BUTTON --%>
+                    <div class="col-md-4 d-flex">
+                        <input type="text" name="search" class="form-control me-2"
+                               placeholder="Search by name or email..."
+                               value="<%= currentKeyword != null ? currentKeyword : "" %>">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
 
-                        <%-- 4. ADD NEW BUTTON  --%>
-                        <div class="col-md-3 d-flex ms-md-auto justify-content-end">
-                            <a href="account-list?action=create" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
-                        </div>
-                    </form>
+                    <%-- 4. ADD NEW BUTTON  --%>
+                    <div class="col-md-3 d-flex ms-md-auto justify-content-end">
+                        <a href="account-list?action=create" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
+                    </div>
+                </form>
 
                 <%-- DATA TABLE (8 COLUMNS) --%>
                 <div class="table-responsive">
@@ -149,7 +163,7 @@
                             <td><%= user.getUsername() %></td>
                             <td><%= user.getEmail() %></td>
                             <td>
-                                <span class="badge bg-info"><%= user.getRoleName() %></span> <%-- Role Name duy nhất --%>
+                                <span class="badge bg-info"><%= user.getRoleName() %></span>
                             </td>
                             <td>
                                 <% if (user.isStatus()) { %>
@@ -164,7 +178,7 @@
                                        class="btn btn-sm btn-outline-primary" title="Edit">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
-                                    <%-- NÚT DELETE ĐÃ BỊ LOẠI BỎ --%>
+                                    <%-- NÚT BẬT/TẮT TRẠNG THÁI --%>
                                     <%
                                         if (user.isStatus()) {
                                     %>
@@ -203,20 +217,45 @@
                     </table>
                 </div>
 
-                <%-- PAGINATION (IDENTICAL) --%>
+                <%-- PAGINATION --%>
+                <% if (totalPage > 1) {
+                    int startPage = Math.max(1, pageIndex - (numPagesToShow / 2));
+                    int endPage = Math.min(totalPage, startPage + numPagesToShow - 1);
+
+                    if (endPage - startPage + 1 < numPagesToShow) {
+                        startPage = Math.max(1, endPage - numPagesToShow + 1);
+                    }
+                %>
                 <nav>
                     <ul class="pagination justify-content-end mt-3">
-                        <li class="page-item disabled">
-                            <a class="page-link">Previous</a>
+
+                        <%-- Previous --%>
+                        <li class="page-item <%= (pageIndex == 1) ? "disabled" : "" %>">
+                            <a class="page-link"
+                               href="account-list?pageIndex=<%= pageIndex - 1 %><%= filterQuery %>">Previous</a>
                         </li>
-                        <li class="page-item active"><a class="page-link">1</a></li>
-                        <li class="page-item"><a class="page-link">2</a></li>
-                        <li class="page-item"><a class="page-link">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link">Next</a>
+
+                        <%-- pagination --%>
+                        <%
+                            for (int i = startPage; i <= endPage; i++) {
+                        %>
+                        <li class="page-item <%= (i == pageIndex) ? "active" : "" %>">
+                            <a class="page-link"
+                               href="account-list?pageIndex=<%= i %><%= filterQuery %>"><%= i %></a>
                         </li>
+                        <%
+                            }
+                        %>
+
+                        <%-- Next --%>
+                        <li class="page-item <%= (pageIndex == totalPage) ? "disabled" : "" %>">
+                            <a class="page-link"
+                               href="account-list?pageIndex=<%= pageIndex + 1 %><%= filterQuery %>">Next</a>
+                        </li>
+
                     </ul>
                 </nav>
+                <% } %>
             </div>
         </div>
     </div>
