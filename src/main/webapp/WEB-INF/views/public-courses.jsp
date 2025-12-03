@@ -221,7 +221,7 @@
 
         <form action="${pageContext.request.contextPath}/public-courses" method="get" class="filter-bar">
 
-            <select name="category" class="filter-select" onchange="this.form.submit()">
+            <select name="category" class="filter-select" onchange=this.form.submit()>
                 <option value="all">Category (All)</option>
                 <c:forEach items="${allCategories}" var="cat">
                     <c:set var="isSelected" value="false"/>
@@ -234,16 +234,10 @@
                 </c:forEach>
             </select>
 
-            <select name="price" class="filter-select">
+            <select name="price" class="filter-select" onchange=this.form.submit()>
                 <option value="">Price</option>
                 <option value="low"  ${price == "low"  ? "selected" : ""}>Low to High</option>
                 <option value="high" ${price == "high" ? "selected" : ""}>High to Low</option>
-            </select>
-
-            <select name="sort" class="filter-select">
-                <option value="">Sort by</option>
-                <option value="newest">Newest</option>
-                <option value="popular">Popular</option>
             </select>
 
             <div class="search-group">
@@ -269,23 +263,6 @@
                     No courses found
                 </c:otherwise>
             </c:choose>
-        </div>
-
-        <div class="course-list">
-            <c:forEach var="course" items="${publiccourses}">
-                <div class="course-card">
-                    <img src="${course.thumbnail}" alt="course thumbnail">
-
-                    <div class="course-info">
-                        <h3>${course.title}</h3>
-                        <p>${course.description}</p>
-                        <p><strong>Category:</strong> ${course.category}</p>
-                        <p><strong>Level:</strong> ${course.level}</p>
-                    </div>
-
-                    <a href="public-course-details?id=${course.id}" class="view-button">View Course</a>
-                </div>
-            </c:forEach>
         </div>
 
         <c:choose>
@@ -321,7 +298,7 @@
                                 </c:if>
                                 <div class="card-price">
                                     <c:choose>
-                                        <c:when test="${course.salePrice != null && course.salePrice > 0}">
+                                        <c:when test="${course.salePrice != null}">
                                             <c:if test="${course.listedPrice > course.salePrice}">
                                                     <span class="original-price">
                                                         $<fmt:formatNumber value="${course.listedPrice}"

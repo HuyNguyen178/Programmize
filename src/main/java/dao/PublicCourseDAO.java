@@ -703,9 +703,9 @@ public class PublicCourseDAO {
                 "c.thumbnail_url, c.instructor_id, c.duration, c.description, c.status, u.fullname");
 
         if ("low".equals(priceSort)) {
-            sql.append(" ORDER BY c.sale_price ASC");
+            sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
         } else if ("high".equals(priceSort)) {
-            sql.append(" ORDER BY c.sale_price DESC");
+            sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
         } else {
             sql.append(" ORDER BY c.course_id ASC");
         }
