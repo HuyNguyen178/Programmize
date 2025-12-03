@@ -178,7 +178,7 @@
                                         </td>
 
                                         <td style="text-align: left;">
-                                            <a href="${pageContext.request.contextPath}/courseDetail?id=${course.courseId}"
+                                            <a href="${pageContext.request.contextPath}/public-course-details?id=${course.courseId}"
                                                class="course-link">
                                                 <strong>${course.courseName}</strong>
                                             </a>
