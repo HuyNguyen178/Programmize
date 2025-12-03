@@ -113,12 +113,21 @@
             text-decoration: none;
             color: #1f48c4;
         }
+        #content {
+            margin-left: 260px; /* Default position when Sidebar is open */
+            transition: margin-left 0.25s ease;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        #content.expanded {
+            margin-left: 72px; /* Position when Sidebar is closed */
+        }
     </style>
 </head>
 <body>
 <%@ include file="include/admin-sidebar.jsp" %>
 <%@ include file="include/admin-topbar.jsp" %>
-<div class="container">
+<div id="content" class="container">
     <h1>📚 Course List</h1>
 
     <!-- Filters -->
