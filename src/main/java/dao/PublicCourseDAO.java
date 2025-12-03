@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseDAO {
+public class PublicCourseDAO {
 
     // ==================== GET ALL COURSES WITH FILTERS ====================
     // Used by: CourseListServlet
@@ -653,7 +653,7 @@ public class CourseDAO {
 
     // Get public courses (active status) with filters
     // categoryIds can be setting_id values or category names
-    public List<Course> getPublicCourses(String searchKeyword, String[] categoryIds) {
+    public List<Course> getPublicCourses(String searchKeyword, String[] categoryIds, String priceSort) {
         List<Course> courses = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT DISTINCT c.course_id, c.course_name, c.listed_price, c.sale_price, " +
@@ -701,7 +701,14 @@ public class CourseDAO {
 
         sql.append(" GROUP BY c.course_id, c.course_name, c.listed_price, c.sale_price, " +
                 "c.thumbnail_url, c.instructor_id, c.duration, c.description, c.status, u.fullname");
-        sql.append(" ORDER BY c.course_id DESC");
+
+        if ("low".equals(priceSort)) {
+            sql.append(" ORDER BY c.sale_price ASC");
+        } else if ("high".equals(priceSort)) {
+            sql.append(" ORDER BY c.sale_price DESC");
+        } else {
+            sql.append(" ORDER BY c.course_id ASC");
+        }
 
         System.out.println("Public courses SQL: " + sql.toString());
 

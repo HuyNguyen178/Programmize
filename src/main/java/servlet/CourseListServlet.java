@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.CourseDAO;
+import dao.PublicCourseDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -10,11 +10,11 @@ import java.util.List;
 
 @WebServlet("/course-list")
 public class CourseListServlet extends HttpServlet {
-    private CourseDAO courseDAO;
+    private PublicCourseDAO publicCourseDAO;
 
     @Override
     public void init() throws ServletException {
-        courseDAO = new CourseDAO();
+        publicCourseDAO = new PublicCourseDAO();
     }
 
     @Override
@@ -30,13 +30,13 @@ public class CourseListServlet extends HttpServlet {
         String sortOrder = request.getParameter("sortOrder");
 
         // Get courses based on filters
-        List<Course> courses = courseDAO.getAllCourses(category, instructor,
+        List<Course> courses = publicCourseDAO.getAllCourses(category, instructor,
                 status, searchKeyword,
                 sortColumn, sortOrder);
 
         // Get filter options - now returns List<String[]> with [id, name]
-        List<String[]> categories = courseDAO.getAllCategoriesFromSettings(); // Get all categories from settings
-        List<String[]> instructors = courseDAO.getAllInstructors();
+        List<String[]> categories = publicCourseDAO.getAllCategoriesFromSettings(); // Get all categories from settings
+        List<String[]> instructors = publicCourseDAO.getAllInstructors();
 
         // Set attributes for JSP
         request.setAttribute("courses", courses);

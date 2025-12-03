@@ -236,8 +236,8 @@
 
             <select name="price" class="filter-select">
                 <option value="">Price</option>
-                <option value="low">Low to High</option>
-                <option value="high">High to Low</option>
+                <option value="low"  ${price == "low"  ? "selected" : ""}>Low to High</option>
+                <option value="high" ${price == "high" ? "selected" : ""}>High to Low</option>
             </select>
 
             <select name="sort" class="filter-select">

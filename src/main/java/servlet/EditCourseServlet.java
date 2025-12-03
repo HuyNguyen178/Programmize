@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.CourseDAO;
+import dao.PublicCourseDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -11,11 +11,11 @@ import java.util.List;
 
 @WebServlet("/edit-course")
 public class EditCourseServlet extends HttpServlet {
-    private CourseDAO courseDAO;
+    private PublicCourseDAO publicCourseDAO;
 
     @Override
     public void init() throws ServletException {
-        courseDAO = new CourseDAO();
+        publicCourseDAO = new PublicCourseDAO();
     }
 
     // GET: Hiển thị form edit với dữ liệu course hiện tại
@@ -36,7 +36,7 @@ public class EditCourseServlet extends HttpServlet {
             int courseId = Integer.parseInt(idParam);
 
             // Lấy thông tin course từ database
-            Course course = courseDAO.getCourseById(courseId);
+            Course course = publicCourseDAO.getCourseById(courseId);
 
             if (course == null) {
                 // Nếu không tìm thấy course, redirect về course list với error message
@@ -46,11 +46,11 @@ public class EditCourseServlet extends HttpServlet {
             }
 
             // Lấy danh sách categories và instructors cho dropdown
-            List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();
-            List<String[]> allInstructors = courseDAO.getAllUsersAsInstructors();
+            List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
+            List<String[]> allInstructors = publicCourseDAO.getAllUsersAsInstructors();
 
             // Lấy categories hiện tại của course
-            List<String[]> courseCategories = courseDAO.getCategoriesForCourse(courseId);
+            List<String[]> courseCategories = publicCourseDAO.getCategoriesForCourse(courseId);
 
             // Set attributes cho JSP
             request.setAttribute("course", course);
@@ -119,7 +119,7 @@ public class EditCourseServlet extends HttpServlet {
             course.setInstructorId(instructorId);
 
             // Gọi DAO để update database (bao gồm cả categories)
-            boolean success = courseDAO.updateCourseWithCategories(course, categoryIds);
+            boolean success = publicCourseDAO.updateCourseWithCategories(course, categoryIds);
 
             if (success) {
                 // Nếu update thành công, set success message

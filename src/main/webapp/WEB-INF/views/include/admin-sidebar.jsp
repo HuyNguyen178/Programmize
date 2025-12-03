@@ -8,7 +8,7 @@
 
     <ul class="nav flex-column px-0">
         <li class="nav-item">
-            <a href="#" class="nav-link text-white">
+            <a href=<%=request.getContextPath()%>"/dashboard" class="nav-link text-white">
                 <i class="fa fa-chart-line me-2"></i> <span class="label">Dashboard</span>
             </a>
         </li>

@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.CourseDAO;
+import dao.PublicCourseDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 
 @WebServlet("/public-courses")
 public class PublicCoursesServlet extends HttpServlet {
-    private CourseDAO courseDAO;
+    private PublicCourseDAO publicCourseDAO;
     private static final int COURSES_PER_PAGE = 16;
 
     @Override
     public void init() throws ServletException {
-        courseDAO = new CourseDAO();
+        publicCourseDAO = new PublicCourseDAO();
     }
 
     @Override
@@ -27,6 +27,8 @@ public class PublicCoursesServlet extends HttpServlet {
         String searchKeyword = request.getParameter("keyword");
         String[] categories = request.getParameterValues("category");
         String pageStr = request.getParameter("page");
+        String priceSort = request.getParameter("price");
+
 
         // Parse page number
         int currentPage = 1;
@@ -41,7 +43,7 @@ public class PublicCoursesServlet extends HttpServlet {
 
         // Get all active courses (status = "1") with filters
         // Note: categories can be either category IDs or category names
-        List<Course> allCourses = courseDAO.getPublicCourses(searchKeyword, categories);
+        List<Course> allCourses = publicCourseDAO.getPublicCourses(searchKeyword, categories, priceSort);
 
         // Calculate pagination
         int totalCourses = allCourses.size();
@@ -63,7 +65,7 @@ public class PublicCoursesServlet extends HttpServlet {
 
         // Get all categories for filter dropdown
         // Using getAllCategoryNames() which returns List<String> for backward compatibility
-        List<String> allCategories = courseDAO.getAllCategoryNames();
+        List<String> allCategories = publicCourseDAO.getAllCategoryNames();
 
         // Set attributes for JSP
         request.setAttribute("courses", coursesForPage);
@@ -73,6 +75,8 @@ public class PublicCoursesServlet extends HttpServlet {
         request.setAttribute("totalCourses", totalCourses);
         request.setAttribute("selectedCategories", categories);
         request.setAttribute("searchKeyword", searchKeyword);
+        request.setAttribute("price", priceSort);
+
 
         // Forward to JSP
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/public-courses.jsp");

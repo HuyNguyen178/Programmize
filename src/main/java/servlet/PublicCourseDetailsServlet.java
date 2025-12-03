@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.CourseDAO;
+import dao.PublicCourseDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -9,11 +9,11 @@ import java.io.IOException;
 
 @WebServlet("/public-course-details")
 public class PublicCourseDetailsServlet extends HttpServlet {
-    private CourseDAO courseDAO;
+    private PublicCourseDAO publicCourseDAO;
 
     @Override
     public void init() throws ServletException {
-        courseDAO = new CourseDAO();
+        publicCourseDAO = new PublicCourseDAO();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
 
             // Get course details from database
             // getCourseById now returns course with category names and instructor name from related tables
-            Course course = courseDAO.getCourseById(courseId);
+            Course course = publicCourseDAO.getCourseById(courseId);
 
             // Check if course exists and is active (status = "1" for public)
             if (course == null || !"1".equals(course.getStatus())) {
@@ -49,7 +49,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             String durationDisplay = getDurationDisplay(course.getDuration());
 
             // Get enrollment count
-            int enrollmentCount = courseDAO.getCourseEnrollmentCount(courseId);
+            int enrollmentCount = publicCourseDAO.getCourseEnrollmentCount(courseId);
 
             // Set attributes for JSP
             request.setAttribute("course", course);

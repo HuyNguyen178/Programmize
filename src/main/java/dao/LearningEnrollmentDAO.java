@@ -12,12 +12,11 @@ import java.util.List;
 
 public class LearningEnrollmentDAO {
 
-    // Lấy danh sách tất cả các khóa học đang active
     public List<Course> getAllCourses() {
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT c.*, u.fullname FROM course c " +
                 "JOIN user u ON c.instructor_id = u.user_id " +
-                "WHERE c.status = 1"; // Chỉ lấy khóa học đang hoạt động (status = true)
+                "WHERE c.status = 1";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -33,9 +32,7 @@ public class LearningEnrollmentDAO {
                 course.setInstructorId(rs.getInt("instructor_id"));
                 course.setDuration(rs.getInt("duration"));
                 course.setDescription(rs.getString("description"));
-                // Chuyển đổi boolean status trong DB sang String theo model Course
                 course.setStatus(rs.getBoolean("status") ? "Active" : "Inactive");
-                // Gán tên giảng viên vào field courseInstructor
                 course.setCourseInstructor(rs.getString("fullname"));
 
                 courses.add(course);

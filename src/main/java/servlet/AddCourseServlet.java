@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.CourseDAO;
+import dao.PublicCourseDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -11,11 +11,11 @@ import java.util.List;
 
 @WebServlet("/add-course")
 public class AddCourseServlet extends HttpServlet {
-    private CourseDAO courseDAO;
+    private PublicCourseDAO publicCourseDAO;
 
     @Override
     public void init() throws ServletException {
-        courseDAO = new CourseDAO();
+        publicCourseDAO = new PublicCourseDAO();
     }
 
     // GET: Hiển thị form add course
@@ -25,8 +25,8 @@ public class AddCourseServlet extends HttpServlet {
 
         try {
             // Lấy danh sách categories và instructors cho dropdown
-            List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();
-            List<String[]> allInstructors = courseDAO.getAllUsersAsInstructors();
+            List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
+            List<String[]> allInstructors = publicCourseDAO.getAllUsersAsInstructors();
 
             // Set attributes cho JSP
             request.setAttribute("allCategories", allCategories);      // List of [setting_id, setting_name]
@@ -101,7 +101,7 @@ public class AddCourseServlet extends HttpServlet {
             course.setInstructorId(instructorId);
 
             // Gọi DAO để thêm vào database (bao gồm cả categories)
-            int newCourseId = courseDAO.addCourseWithCategories(course, categoryIds);
+            int newCourseId = publicCourseDAO.addCourseWithCategories(course, categoryIds);
 
             if (newCourseId > 0) {
                 // Nếu thêm thành công, set success message
