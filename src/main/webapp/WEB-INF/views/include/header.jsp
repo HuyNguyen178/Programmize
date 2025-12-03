@@ -1,7 +1,15 @@
+<%@ page import="model.User" %>
 <%@ page session="true" %>
 <%
-    String username = (String) session.getAttribute("username");
-    if(username == null) username = "Guest";
+    User user = (User) session.getAttribute("user");
+
+    String username = user.getUsername();
+    if (username == null) {
+        username = "Guest";
+    }
+
+    String fullName = user.getFullname();
+    String avtUrl = user.getAvatarUrl();
 %>
 <style>
     /* Navbar */
@@ -50,8 +58,8 @@
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <img src="<%=request.getContextPath()%>/assets/img/admin-avatar.png" class="rounded-circle me-2" width="35" height="35" alt="Avatar">
-                        <%= username %>
+                        <img src="<%= avtUrl %>" class="rounded-circle me-2" width="35" height="35" alt="Avatar">
+                        <%= fullName %>
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

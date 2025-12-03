@@ -33,6 +33,7 @@ public class UserDAO {
                         u.setEmail(rs.getString("email"));
                         u.setFullname(rs.getString("fullname"));
                         u.setStatus(rs.getBoolean("status"));
+                        u.setAvatarUrl(rs.getString("avatar_url"));
                         return u;
                     }
                 }

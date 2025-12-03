@@ -48,7 +48,7 @@
                 <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item text-danger" href="#"><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
+                <li><a class="dropdown-item text-danger" href=<%=request.getContextPath()%>"/logout"><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
                 </li>
             </ul>
         </div>
