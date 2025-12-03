@@ -81,6 +81,7 @@ public class VerificationServlet extends HttpServlet {
             String fullname = (String) session.getAttribute("registerFullname");
             String username = (String) session.getAttribute("registerUsername");
             String password = (String) session.getAttribute("registerPassword");
+            String avatarUrl = "assets/img/admin-avatar.png";
 
             // ===== TẠO TÀI KHOẢN SAU KHI VERIFY THÀNH CÔNG =====
             if (fullname != null && username != null && password != null) {
@@ -90,6 +91,7 @@ public class VerificationServlet extends HttpServlet {
                 user.setEmail(email);
                 user.setPassword(password);
                 user.setStatus(true); // Email đã được xác thực
+                user.setAvatarUrl(avatarUrl);
 
                 UserDAO dao = new UserDAO();
                 if (dao.addUser(user)) {

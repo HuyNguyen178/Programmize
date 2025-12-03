@@ -59,12 +59,22 @@ public class UserDAO {
     }
 
     public boolean addUser(User user) {
-        String sql = "INSERT INTO user (fullname, username, email, password, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO user (fullname, username, email, password, status, avatar_url) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        String sqlUserRole = "INSERT INTO user_role (user_id, role_id) VALUES (?, ?)";
 
-            // Mã hóa password
+        Connection conn ;
+        PreparedStatement stmt ;
+        PreparedStatement statement;
+
+        try {
+            conn = getConnection();
+            // 1. Tắt Auto-commit để bắt đầu Transaction
+            conn.setAutoCommit(false);
+
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement = conn.prepareStatement(sqlUserRole);
+
             String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 
             stmt.setString(1, user.getFullname());
@@ -72,17 +82,30 @@ public class UserDAO {
             stmt.setString(3, user.getEmail());
             stmt.setString(4, hashed);
             stmt.setBoolean(5, user.isStatus());
+            stmt.setString(6, user.getAvatarUrl());
 
+            // 2. Thực thi INSERT user
             if (stmt.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         user.setId(generatedKeys.getInt(1));
                     }
                 }
-                return true;
+
+                statement.setInt(1, user.getId());
+                statement.setInt(2, 3);
+
+                // 3. Thực thi INSERT user_role
+                if(statement.executeUpdate() > 0){
+                    conn.commit();
+                    return true;
+                }
             }
+            
+            conn.rollback();
+
         } catch (SQLIntegrityConstraintViolationException e) {
-            return false; // trùng email/username
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
         }
