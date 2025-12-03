@@ -18,7 +18,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="courseList" class="nav-link text-white">
+            <a href=<%=request.getContextPath()%>"/course-list" class="nav-link text-white">
                 <i class="fa fa-book me-2"></i> <span class="label">Courses</span>
             </a>
         </li>
