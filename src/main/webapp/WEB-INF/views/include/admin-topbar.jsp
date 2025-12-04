@@ -1,3 +1,16 @@
+<%@ page import="model.User" %>
+<%@ page session="true" %>
+<%
+    User user = (User) session.getAttribute("user");
+    System.out.println(user);
+    if (user != null) {
+        if(user.getRoleName().equals("Student")) response.sendRedirect("home");
+        if(user.getRoleName().equals("Instructor")) response.sendRedirect("student-list");
+    }else {
+        response.sendRedirect("login");
+        return;
+    }
+%>
 <nav class="navbar navbar-light bg-white shadow-sm px-4 topbar" id="topbar">
 
     <form class="d-none d-md-flex me-auto">
@@ -38,8 +51,8 @@
 
         <div class="dropdown">
             <button class="btn btn-white d-flex align-items-center" data-bs-toggle="dropdown">
-                <img src="/assets/img/admin-avatar.png" class="rounded-circle me-2" width="35" height="35" alt="Admin Avatar">
-                <span>Admin</span>
+                <img src="<%=user.getAvatarUrl()%>" class="rounded-circle me-2" width="35" height="35" alt="Admin Avatar">
+                <span><%=user.getFullname()%></span>
                 <i class="fa fa-caret-down ms-2"></i>
             </button>
 
