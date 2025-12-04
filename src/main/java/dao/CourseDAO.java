@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PublicCourseDAO {
+public class CourseDAO {
 
     // ==================== GET ALL COURSES WITH FILTERS ====================
     // Used by: CourseListServlet
@@ -863,5 +863,101 @@ public class PublicCourseDAO {
         }
 
         return count;
+    }
+
+    /**
+     * Returns all courses a user has enrolled/bought.
+     */
+    public List<Course> getEnrolledCoursesByUser(int userId) {
+        List<Course> list = new ArrayList<>();
+
+        String sql = "SELECT c.course_id, c.course_name, c.listed_price, c.sale_price, " +
+                "c.thumbnail_url, c.instructor_id, c.duration, c.description, c.status, " +
+                "u.fullname AS instructor_name, " +
+                "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
+                "FROM enrollment e " +
+                "INNER JOIN course c ON e.course_id = c.course_id " +
+                "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
+                "WHERE e.user_id = ? " +
+                "GROUP BY c.course_id, c.course_name, c.listed_price, c.sale_price, " +
+                "c.thumbnail_url, c.instructor_id, c.duration, c.description, c.status, u.fullname";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Course c = new Course();
+                c.setCourseId(rs.getInt("course_id"));
+                c.setCourseName(rs.getString("course_name"));
+                c.setListedPrice(rs.getBigDecimal("listed_price"));
+                c.setSalePrice(rs.getBigDecimal("sale_price"));
+                c.setThumbnailUrl(rs.getString("thumbnail_url"));
+                c.setInstructorId(rs.getInt("instructor_id"));
+                c.setDuration(rs.getInt("duration"));
+                c.setDescription(rs.getString("description"));
+                c.setStatus(rs.getString("status"));
+                c.setCourseInstructor(rs.getString("instructor_name"));
+                c.setCourseCategory(rs.getString("category_names"));
+
+                list.add(c);
+            }
+
+            System.out.println("Found " + list.size() + " enrolled courses for user ID: " + userId);
+
+        } catch (SQLException e) {
+            System.err.println("Error getting enrolled courses: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    // Check if user is enrolled in a course
+    public boolean isUserEnrolled(int userId, int courseId) {
+        String sql = "SELECT COUNT(*) FROM enrollment WHERE user_id = ? AND course_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error checking enrollment: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // Enroll user in a course
+    public boolean enrollUser(int userId, int courseId) {
+        String sql = "INSERT INTO enrollment (user_id, course_id, enrolled_at) VALUES (?, ?, NOW())";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            int rowsAffected = stmt.executeUpdate();
+
+            System.out.println("Enrolled user " + userId + " in course " + courseId + ": " + rowsAffected + " rows affected");
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error enrolling user: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

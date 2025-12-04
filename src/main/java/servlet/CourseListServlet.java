@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.PublicCourseDAO;
+import dao.CourseDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -10,11 +10,11 @@ import java.util.List;
 
 @WebServlet("/course-list")
 public class CourseListServlet extends HttpServlet {
-    private PublicCourseDAO publicCourseDAO;
+    private CourseDAO publicCourseDAO;
 
     @Override
     public void init() throws ServletException {
-        publicCourseDAO = new PublicCourseDAO();
+        publicCourseDAO = new CourseDAO();
     }
 
     @Override
