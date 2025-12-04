@@ -311,7 +311,7 @@
                                     </c:choose>
                                 </div>
                             </div>
-                            <a href="${pageContext.request.contextPath}/public-course-details?id=${clazz.id}"
+                            <a href="${pageContext.request.contextPath}/public-class-details?id=${clazz.id}"
                                class="btn-details">VIEW DETAILS</a>
                         </article>
                     </c:forEach>
