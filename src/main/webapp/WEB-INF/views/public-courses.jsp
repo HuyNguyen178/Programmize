@@ -199,20 +199,6 @@
     </style>
 </head>
 <body>
-<!-- Header -->
-<%--    <header class="header">--%>
-<%--        <div class="container">--%>
-<%--            <div class="logo">📚 E-Learning Platform</div>--%>
-<%--            <nav class="main-nav">--%>
-<%--                <ul>--%>
-<%--                    <li><a href="${pageContext.request.contextPath}/">Home</a></li>--%>
-<%--                    <li><a href="${pageContext.request.contextPath}/publicCourses">Courses</a></li>--%>
-<%--                    <li><a href="#">About</a></li>--%>
-<%--                    <li><a href="#">Contact</a></li>--%>
-<%--                </ul>--%>
-<%--            </nav>--%>
-<%--        </div>--%>
-<%--    </header>--%>
 
 <jsp:include page="include/header.jsp"/>
 <br>
