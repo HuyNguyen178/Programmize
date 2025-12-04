@@ -37,5 +37,7 @@ public class PublicClassesServlet extends HttpServlet {
         request.setAttribute("price", priceSort != null ? priceSort : "");
 
         request.getRequestDispatcher("/WEB-INF/views/public-classes.jsp").forward(request, response);
+
+        System.out.println(classes);
     }
 }

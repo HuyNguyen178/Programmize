@@ -1,6 +1,7 @@
 package model;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Class {
@@ -8,7 +9,7 @@ public class Class {
     private String name;
     private String thumbnailUrl;
     private int numberOfStudents;
-    private String category;
+    private String[] categories;
     private BigDecimal listedPrice;
     private BigDecimal salePrice;
     private boolean status;
@@ -49,12 +50,12 @@ public class Class {
         this.numberOfStudents = numberOfStudents;
     }
 
-    public String getCategory() {
-        return category;
+    public String[] getCategories() {
+        return categories;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategories(String[] categories) {
+        this.categories = categories;
     }
 
     public BigDecimal getListedPrice() {
@@ -111,5 +112,23 @@ public class Class {
 
     public void setInstructor(User instructor) {
         this.instructor = instructor;
+    }
+
+    @Override
+    public String toString() {
+        return "Class{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", thumbnailUrl='" + thumbnailUrl + '\'' +
+                ", numberOfStudents=" + numberOfStudents +
+                ", categories=" + Arrays.toString(categories) +
+                ", listedPrice=" + listedPrice +
+                ", salePrice=" + salePrice +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", instructor=" + instructor.getFullname() +
+                '}';
     }
 }

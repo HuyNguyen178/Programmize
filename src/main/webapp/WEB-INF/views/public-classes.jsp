@@ -282,8 +282,8 @@
                             <div class="card-content">
                                 <h3>${clazz.name}</h3>
                                 <div class="card-meta">
-                                    <c:if test="${not empty clazz.instructor.name}">
-                                        👤 ${clazz.instructor.name}
+                                    <c:if test="${not empty clazz.instructor.fullname}">
+                                        👤 ${clazz.instructor.fullname}
                                     </c:if>
                                 </div>
                                 <c:if test="${not empty clazz.description}">
@@ -329,7 +329,6 @@
         <c:if test="${totalPages > 1}">
             <nav class="pagination">
                 <ul>
-                    <!-- Previous button -->
                     <li>
                         <a href="?page=${currentPage - 1}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
                                     <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"

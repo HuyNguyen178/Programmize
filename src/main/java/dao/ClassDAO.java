@@ -91,65 +91,58 @@ public class ClassDAO {
     public List<Class> getActiveClasses(String keyword, String[] selectedCategories, String priceSort) {
         List<Class> classes = new ArrayList<>();
 
-        StringBuilder sql = new StringBuilder(
-                "SELECT c.class_id, c.class_name, c.thumbnail_url, c.listed_price, c.sale_price, " +
-                        "c.description, c.status, c.start_date, c.end_date, " +
-                        "u.user_id AS instructor_id, u.fullname AS instructor_name, u.avatar_url AS instructor_avatar, " +
-                        "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS categories " +
-                        "FROM class c " +
-                        "LEFT JOIN class_category cc ON cc.class_id = c.class_id " +
-                        "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
-                        "LEFT JOIN class_user cu ON cu.class_id = c.class_id " +
-                        "LEFT JOIN user u ON u.user_id = cu.user_id " +
-                        "LEFT JOIN user_role ur ON ur.user_id = u.user_id " +
-                        "LEFT JOIN setting r ON r.setting_id = ur.role_id AND r.setting_name = 'Instructor' " +
-                        "WHERE c.status = 1"
-        );
+        try (Connection conn = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder("SELECT" +
+                    "    c.class_id," +
+                    "    c.class_name," +
+                    "    c.thumbnail_url," +
+                    "    c.listed_price," +
+                    "    c.sale_price," +
+                    "    c.status," +
+                    "    c.description," +
+                    "    c.start_date," +
+                    "    c.end_date," +
+                    "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
+                    "    u.user_id AS instructor_id," +
+                    "    u.fullname AS instructor_name" +
+                    " FROM class c" +
+                    " LEFT JOIN class_category cc ON c.class_id = cc.class_id" +
+                    " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
+                    " LEFT JOIN class_user cu ON c.class_id = cu.class_id" +
+                    " LEFT JOIN user_role ur ON cu.user_id = ur.user_id" +
+                    " LEFT JOIN setting s ON ur.role_id = s.setting_id" +
+                    " LEFT JOIN user u ON cu.user_id = u.user_id" +
+                    " WHERE s.setting_name = 'Instructor' AND c.status = 1");
 
-        // Keyword search
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append(" AND (c.class_name LIKE ? OR c.description LIKE ? OR u.fullname LIKE ?)");
-        }
-
-        // Category filter
-        if (selectedCategories != null && selectedCategories.length > 0) {
-            sql.append(" AND s.setting_name IN (");
-            for (int i = 0; i < selectedCategories.length; i++) {
-                sql.append("?");
-                if (i < selectedCategories.length - 1) sql.append(",");
-            }
-            sql.append(")");
-        }
-
-        sql.append(" GROUP BY c.class_id, c.class_name, c.thumbnail_url, c.listed_price, c.sale_price, " +
-                "c.description, c.status, c.start_date, c.end_date, u.user_id, u.fullname, u.avatar_url");
-
-        // Price sort
-        if ("low".equalsIgnoreCase(priceSort)) {
-            sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
-        } else if ("high".equalsIgnoreCase(priceSort)) {
-            sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
-        } else {
-            sql.append(" ORDER BY c.class_id ASC");
-        }
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-
-            int idx = 1;
 
             if (keyword != null && !keyword.trim().isEmpty()) {
-                String pattern = "%" + keyword.trim() + "%";
-                stmt.setString(idx++, pattern);
-                stmt.setString(idx++, pattern);
-                stmt.setString(idx++, pattern);
+                sql.append(" AND (c.class_name LIKE ? OR c.description LIKE ? OR u.fullname LIKE ?) ");
             }
 
+
             if (selectedCategories != null && selectedCategories.length > 0) {
-                for (String cat : selectedCategories) {
-                    stmt.setString(idx++, cat);
+                sql.append(" AND s.setting_name IN (");
+                for (int i = 0; i < selectedCategories.length; i++) {
+                    sql.append("?");
+                    if (i < selectedCategories.length - 1) sql.append(",");
                 }
+                sql.append(")");
             }
+
+            sql.append(" GROUP BY " +
+                    "    c.class_id, c.class_name, c.thumbnail_url, c.listed_price, " +
+                    "    c.sale_price, c.status, c.description, c.start_date," +
+                    "    c.end_date, u.user_id, u.fullname");
+
+            if ("low".equalsIgnoreCase(priceSort)) {
+                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
+            } else if ("high".equalsIgnoreCase(priceSort)) {
+                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
+            } else {
+                sql.append(" ORDER BY c.class_id ASC");
+            }
+
+            PreparedStatement stmt = conn.prepareStatement(sql.toString());
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -163,29 +156,19 @@ public class ClassDAO {
                 cls.setStatus(rs.getBoolean("status"));
                 cls.setStartDate(rs.getDate("start_date"));
                 cls.setEndDate(rs.getDate("end_date"));
-                cls.setCategory(rs.getString("categories"));
 
-                int instructorId = rs.getInt("instructor_id");
-                if (!rs.wasNull()) {
-                    User instructor = new User();
-                    instructor.setId(instructorId);
-                    instructor.setFullname(rs.getString("instructor_name"));
-                    instructor.setAvatarUrl(rs.getString("instructor_avatar"));
-                    cls.setInstructor(instructor);
-                }
+                User instructor = new User();
+                instructor.setId(rs.getInt("instructor_id"));
+                instructor.setFullname(rs.getString("instructor_name"));
+                cls.setInstructor(instructor);
 
                 classes.add(cls);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return classes;
     }
-
-
-
 
 
     public Class getClassById(int id) {
