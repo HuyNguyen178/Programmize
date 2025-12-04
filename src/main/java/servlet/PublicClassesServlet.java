@@ -1,6 +1,6 @@
 package servlet;
 
-import dao.PublicClassesDAO;
+import dao.ClassDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -11,11 +11,11 @@ import java.util.List;
 @WebServlet("/public-classes")
 public class PublicClassesServlet extends HttpServlet {
 
-    private PublicClassesDAO classDAO;
+    private ClassDAO classDAO;
 
     @Override
     public void init() throws ServletException {
-        classDAO = new PublicClassesDAO();
+        classDAO = new ClassDAO();
     }
 
     @Override

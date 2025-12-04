@@ -1,7 +1,6 @@
 package servlet;
 
-import dao.PublicClassesDAO;
-
+import dao.ClassDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,7 +22,7 @@ public class PublicClassDetailsServlet extends HttpServlet {
         Class clazz = null;
 
         int classId = Integer.parseInt(idParam);
-        PublicClassesDAO dao = new PublicClassesDAO();
+        ClassDAO dao = new ClassDAO();
         clazz = dao.getClassById(classId);
 
         if (clazz == null) {
