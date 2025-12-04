@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Course;
+import model.User;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,7 +23,8 @@ public class MyCoursesServlet extends HttpServlet {
 
         try {
             // 1. Lấy userId từ session (bắt buộc phải login trước)
-            Integer userId = (Integer) request.getSession().getAttribute("userId");
+            User user = (User) request.getSession().getAttribute("user");
+            Integer userId = user.getId();
 
             if (userId == null) {
                 response.sendRedirect("login");

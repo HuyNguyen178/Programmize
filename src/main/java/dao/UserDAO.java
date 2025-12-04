@@ -10,7 +10,14 @@ import static utils.DBUtil.getConnection;
 
 public class UserDAO {
     public User checkLogin(String userOrEmail, String password) {
-        String sql = "SELECT * FROM user WHERE username = ? OR email = ?";
+        String sql = "SELECT u.user_id, u.fullname, u.username, u.email, u.status, u.avatar_url, u.password," +
+                "s.setting_name AS role_name " +
+                "FROM user u " +
+                "LEFT JOIN user_role ur ON u.user_id = ur.user_id " +
+                "LEFT JOIN setting s ON ur.role_id = s.setting_id " +
+                "WHERE u.username = ? OR u.email = ? " +
+                "LIMIT 1;";
+
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -32,6 +39,7 @@ public class UserDAO {
                         u.setFullname(rs.getString("fullname"));
                         u.setStatus(rs.getBoolean("status"));
                         u.setAvatarUrl(rs.getString("avatar_url"));
+                        u.setRoleName(rs.getString("role_name"));
                         return u;
                     }
                 }

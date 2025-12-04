@@ -89,7 +89,7 @@ public class SettingDAO {
     public List<Setting> findFiltered(String type, String status, String search, int page, String sortField, String sortOrder) {
         List<Setting> list = new ArrayList<>();
         try (Connection connection = jdbcUtil.getConnection()) {
-            int pageSize = 5;
+            int pageSize = 10;
             int offset = (page - 1) * pageSize;
 
             StringBuilder sql = new StringBuilder("SELECT s.*, t.setting_name AS type_name FROM setting s LEFT JOIN setting t ON s.type_id = t.setting_id WHERE 1=1");
@@ -195,7 +195,7 @@ public class SettingDAO {
             e.printStackTrace();
         }
 
-        return (int) Math.ceil((double) total / 5);
+        return (int) Math.ceil((double) total / 10);
     }
 
     public List<Setting> findAllTypes() {

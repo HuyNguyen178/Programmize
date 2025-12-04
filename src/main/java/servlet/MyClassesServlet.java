@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
+import model.User;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -23,9 +25,12 @@ public class MyClassesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Integer userId = (Integer) request.getSession().getAttribute("userId");
+
+        User user = (User) request.getSession().getAttribute("user");
+        Integer userId = user.getId();
+        
         if (userId == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login");
             return;
         }
 
