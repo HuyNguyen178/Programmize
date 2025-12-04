@@ -317,4 +317,34 @@ public class UserDAO {
             }
         }
     }
+
+    public User getUserById(int id) {
+        User user = null;
+        String sql = "SELECT u.*, s.setting_name AS role_name " +
+                "FROM user u " +
+                "LEFT JOIN user_role ur ON u.user_id = ur.user_id " +
+                "LEFT JOIN setting s ON ur.role_id = s.setting_id " +
+                "WHERE u.user_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    user = new User();
+                    user.setId(rs.getInt("user_id"));
+                    user.setFullname(rs.getString("fullname"));
+                    user.setUsername(rs.getString("username"));
+                    user.setEmail(rs.getString("email"));
+                    user.setStatus(rs.getBoolean("status"));
+                    user.setAvatarUrl(rs.getString("avatar_url"));
+                    user.setRoleName(rs.getString("role_name"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
 }

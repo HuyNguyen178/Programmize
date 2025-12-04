@@ -174,7 +174,7 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="account-list?action=edit&id=<%= user.getId() %>"
+                                    <a href="account-detail?id=<%= user.getId() %>"
                                        class="btn btn-sm btn-outline-primary" title="Edit">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>

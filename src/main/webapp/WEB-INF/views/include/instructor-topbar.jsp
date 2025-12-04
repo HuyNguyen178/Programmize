@@ -1,10 +1,10 @@
 <%@ page import="model.User" %>
 <%@ page session="true" %>
 <%
-    User user = (User) session.getAttribute("user");
-    System.out.println(user);
-    if (user != null) {
-        if(user.getRoleName().equals("Student")) response.sendRedirect("home");
+    User loginUser = (User) session.getAttribute("loginUser");
+    System.out.println(loginUser);
+    if (loginUser != null) {
+        if(loginUser.getRoleName().equals("Student")) response.sendRedirect("home");
     }else {
         response.sendRedirect("login");
         return;
@@ -50,8 +50,8 @@
 
         <div class="dropdown">
             <button class="btn btn-white d-flex align-items-center" data-bs-toggle="dropdown">
-                <img src="<%=user.getAvatarUrl()%>" class="rounded-circle me-2" width="35" height="35" alt="Instructor Avatar">
-                <span><%=user.getFullname()%></span>
+                <img src="<%=loginUser.getAvatarUrl()%>" class="rounded-circle me-2" width="35" height="35" alt="Instructor Avatar">
+                <span><%=loginUser.getFullname()%></span>
                 <i class="fa fa-caret-down ms-2"></i>
             </button>
 
