@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.StudentDAO;
+import jakarta.servlet.http.HttpSession;
 import model.Student;
 
 import jakarta.servlet.ServletException;
@@ -8,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +28,8 @@ public class StudentListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
         // --- Xử lý hành động Cập nhật Trạng thái (Toggle Status) ---
         String action = request.getParameter("action");
         String idParam = request.getParameter("id");
@@ -73,7 +76,7 @@ public class StudentListServlet extends HttpServlet {
             pageIndex = 1;
         }
 
-        int totalStudents = studentDAO.countStudents(keyword, status, className);
+        int totalStudents = studentDAO.countStudents(keyword, status, className, loginUser.getId());
         int totalPage = (int) Math.ceil((double) totalStudents / PAGE_SIZE);
 
         if (totalStudents == 0) {
@@ -86,9 +89,9 @@ public class StudentListServlet extends HttpServlet {
             pageIndex = 1;
         }
 
-        List<Student> students = studentDAO.searchStudents(keyword, status, className, pageIndex, PAGE_SIZE);
+        List<Student> students = studentDAO.searchStudents(keyword, status, className, pageIndex, PAGE_SIZE, loginUser.getId());
 
-        List<String> classNamesList = studentDAO.getAllClassNames();
+        List<String> classNamesList = studentDAO.getAllClassNames(loginUser.getId());
         request.setAttribute("classNamesList", classNamesList);
 
         request.setAttribute("students", students);

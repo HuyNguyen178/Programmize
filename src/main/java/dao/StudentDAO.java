@@ -3,118 +3,115 @@ package dao;
 import model.Student;
 import utils.DBUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDAO {
 
-
     private StringBuilder buildBaseSql(String keyword, String status, String className) {
         StringBuilder sql = new StringBuilder(
-                " FROM user u " +
-                        "JOIN user_role ur ON u.user_id = ur.user_id " +
-                        "JOIN setting s ON ur.role_id = s.setting_id " +
+                "FROM user u " +
+                        "JOIN setting s ON u.role_id = s.setting_id " +
                         "LEFT JOIN class_user cu ON u.user_id = cu.user_id " +
-                        "LEFT JOIN `class` c ON cu.class_id = c.class_id " +
-                        "WHERE s.setting_name = 'Student' "
+                        "LEFT JOIN class c ON cu.class_id = c.class_id " +
+                        "WHERE s.setting_name = 'Student' " +
+                        "AND c.instructor_id = ? "
         );
 
         if (status != null && !status.isEmpty()) {
-            sql.append(" AND u.status = ?");
+            sql.append(" AND u.status = ? ");
         }
 
         if (className != null && !className.isEmpty()) {
-            sql.append(" AND c.class_name = ?");
+            sql.append(" AND c.class_name = ? ");
         }
 
         if (keyword != null && !keyword.isEmpty()) {
-            sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?)");
+            sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
         }
-
-        sql.append(" GROUP BY u.user_id, u.fullname, u.email, u.status, u.username, u.avatar_url ");
 
         return sql;
     }
 
-    private List<Object> getSearchParameters(String keyword, String status, String className) {
+    private List<Object> getSearchParams(String keyword, String status, String className) {
         List<Object> params = new ArrayList<>();
+
         if (status != null && !status.isEmpty()) {
-            // Status là String "0" hoặc "1" từ Servlet, nên chuyển thành Integer
-            params.add(Integer.parseInt(status));
+            params.add(Integer.parseInt(status));  // 0/1
         }
+
         if (className != null && !className.isEmpty()) {
             params.add(className);
         }
+
         if (keyword != null && !keyword.isEmpty()) {
             params.add("%" + keyword + "%");
             params.add("%" + keyword + "%");
         }
+
         return params;
     }
 
-    public int countStudents(String keyword, String status, String className) {
+    public int countStudents(String keyword, String status, String className, int instructorId) {
         StringBuilder baseSql = buildBaseSql(keyword, status, className);
-        String countSql = "SELECT COUNT(*) FROM (SELECT u.user_id " + baseSql.toString() + ") AS subquery";
-        List<Object> params = getSearchParameters(keyword, status, className);
+
+        String sql = "SELECT COUNT(DISTINCT u.user_id) " + baseSql;
+
+        List<Object> params = getSearchParams(keyword, status, className);
+        params.add(instructorId); // thêm instructorId vào cuối
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(countSql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            int index = 1;
-            for (Object param : params) {
-                if (param instanceof String) {
-                    ps.setString(index++, (String) param);
-                } else if (param instanceof Integer) {
-                    ps.setInt(index++, (Integer) param);
-                }
+            int idx = 1;
+            for (Object p : params) {
+                if (p instanceof String) ps.setString(idx++, (String) p);
+                else if (p instanceof Integer) ps.setInt(idx++, (Integer) p);
             }
 
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
+            if (rs.next()) return rs.getInt(1);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return 0;
     }
 
 
-    public List<Student> searchStudents(String keyword, String status, String className, int pageIndex, int pageSize) {
+    public List<Student> searchStudents(String keyword, String status, String className,
+                                        int pageIndex, int pageSize, int instructorId) {
+
         List<Student> list = new ArrayList<>();
         int offset = (pageIndex - 1) * pageSize;
 
-        StringBuilder selectSql = new StringBuilder(
-                "SELECT u.user_id, u.fullname, u.email, u.status, u.username, u.avatar_url, " +
-                        "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
-        );
-
         StringBuilder baseSql = buildBaseSql(keyword, status, className);
+        
 
-        selectSql.append(baseSql);
-        selectSql.append(" ORDER BY u.user_id ASC");
-        selectSql.append(" LIMIT ? OFFSET ?");
+        String sql =
+                "SELECT u.user_id, u.fullname, u.email, u.status, u.username, u.avatar_url, " +
+                        "IFNULL(GROUP_CONCAT(DISTINCT c.class_name SEPARATOR ', '), '') AS class_names " +
+                        baseSql +
+                        " GROUP BY u.user_id " +
+                        " ORDER BY u.user_id ASC " +
+                        " LIMIT ? OFFSET ?";
 
-        List<Object> params = getSearchParameters(keyword, status, className);
+        List<Object> params = getSearchParams(keyword, status, className);
+        params.add(instructorId);
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(selectSql.toString())) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            int index = 1;
-            for (Object param : params) {
-                if (param instanceof String) {
-                    ps.setString(index++, (String) param);
-                } else if (param instanceof Integer) {
-                    ps.setInt(index++, (Integer) param);
-                }
+            int idx = 1;
+            for (Object p : params) {
+                if (p instanceof String) ps.setString(idx++, (String) p);
+                else if (p instanceof Integer) ps.setInt(idx++, (Integer) p);
             }
 
-            ps.setInt(index++, pageSize);
-            ps.setInt(index++, offset);
+            ps.setInt(idx++, pageSize);
+            ps.setInt(idx, offset);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -123,9 +120,9 @@ public class StudentDAO {
                 st.setFullname(rs.getString("fullname"));
                 st.setEmail(rs.getString("email"));
                 st.setStatus(rs.getBoolean("status"));
-                st.setClassName(rs.getString("class_name"));
                 st.setUsername(rs.getString("username"));
                 st.setAvatarUrl(rs.getString("avatar_url"));
+                st.setClassName(rs.getString("class_names"));
                 list.add(st);
             }
 
@@ -137,138 +134,126 @@ public class StudentDAO {
     }
 
 
-    public List<Student> searchStudents(String keyword, String status, String className) {
-        // Gọi lại phương thức mới với phân trang mặc định (ví dụ: trang 1, 1000 bản ghi)
-        return searchStudents(keyword, status, className, 1, 1000);
-    }
 
     public boolean addStudentToClass(String identifier, boolean isEmail, String className) throws SQLException {
-        Connection conn = null;
-        PreparedStatement psFindUser = null;
-        PreparedStatement psFindClass = null;
-        PreparedStatement psInsertClassUser = null;
-        PreparedStatement psInsertUserRole = null;
-        PreparedStatement psFindStudentRole = null;
-        ResultSet rsUser = null;
-        ResultSet rsClass = null;
-        ResultSet rsRole = null;
 
-        int userId = -1;
-        int classId = -1;
-        int studentRoleId = -1;
+        String findUserSql = isEmail
+                ? "SELECT user_id, role_id FROM user WHERE email = ?"
+                : "SELECT user_id, role_id FROM user WHERE username = ?";
+
+        String sqlFindClass = "SELECT class_id FROM class WHERE class_name = ?";
+        String sqlFindStudentRole = "SELECT setting_id FROM setting WHERE setting_name = 'Student'";
+        String sqlInsertClassUser = "INSERT IGNORE INTO class_user (user_id, class_id) VALUES (?, ?)";
+        String sqlUpdateRole = "UPDATE user SET role_id = ? WHERE user_id = ?";
+
+        Connection conn = null;
 
         try {
             conn = DBUtil.getConnection();
-            conn.setAutoCommit(false); // Bắt đầu Transaction
+            conn.setAutoCommit(false);
 
-            // 1. Tìm user_id
-            String findUserSql = isEmail ? "SELECT user_id FROM user WHERE email = ?" : "SELECT user_id FROM user WHERE username = ?";
-            psFindUser = conn.prepareStatement(findUserSql);
-            psFindUser.setString(1, identifier);
-            rsUser = psFindUser.executeQuery();
-            if (rsUser.next()) {
-                userId = rsUser.getInt("user_id");
-            } else {
-                return false; // Không tìm thấy người dùng
+            int userId, currentRoleId;
+
+            // 1. Lấy user
+            try (PreparedStatement ps = conn.prepareStatement(findUserSql)) {
+                ps.setString(1, identifier);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        conn.rollback();
+                        return false;
+                    }
+                    userId = rs.getInt("user_id");
+                    currentRoleId = rs.getInt("role_id");
+                }
             }
 
-            // 2. Tìm class_id
-            String findClassSql = "SELECT class_id FROM class WHERE class_name = ?";
-            psFindClass = conn.prepareStatement(findClassSql);
-            // Cần lấy class name từ đâu đó, giả định class name được truyền vào
-            psFindClass.setString(1, className);
-            rsClass = psFindClass.executeQuery();
-            if (rsClass.next()) {
-                classId = rsClass.getInt("class_id");
-            } else {
-                return false; // Không tìm thấy lớp
+            // 2. Lấy class_id
+            int classId;
+            try (PreparedStatement ps = conn.prepareStatement(sqlFindClass)) {
+                ps.setString(1, className);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        conn.rollback();
+                        return false;
+                    }
+                    classId = rs.getInt(1);
+                }
             }
 
-            // 3. Thêm vào class_user (Sử dụng INSERT IGNORE để bỏ qua nếu đã tồn tại)
-            String insertClassUserSql = "INSERT IGNORE INTO class_user (user_id, class_id) VALUES (?, ?)";
-            psInsertClassUser = conn.prepareStatement(insertClassUserSql);
-            psInsertClassUser.setInt(1, userId);
-            psInsertClassUser.setInt(2, classId);
-            psInsertClassUser.executeUpdate();
-
-            // 4. Đảm bảo người dùng có role là 'Student'
-            // a. Tìm role_id của 'Student'
-            String findRoleSql = "SELECT setting_id FROM setting WHERE setting_name = 'Student'";
-            psFindStudentRole = conn.prepareStatement(findRoleSql);
-            rsRole = psFindStudentRole.executeQuery();
-            if (rsRole.next()) {
-                studentRoleId = rsRole.getInt("setting_id");
-
-                // b. Thêm role 'Student' vào user_role (Sử dụng INSERT IGNORE)
-                String insertUserRoleSql = "INSERT IGNORE INTO user_role (user_id, role_id) VALUES (?, ?)";
-                psInsertUserRole = conn.prepareStatement(insertUserRoleSql);
-                psInsertUserRole.setInt(1, userId);
-                psInsertUserRole.setInt(2, studentRoleId);
-                psInsertUserRole.executeUpdate();
+            // 3. Thêm class_user
+            try (PreparedStatement ps = conn.prepareStatement(sqlInsertClassUser)) {
+                ps.setInt(1, userId);
+                ps.setInt(2, classId);
+                ps.executeUpdate();
             }
 
-            conn.commit(); // Hoàn tất Transaction
+            // 4. Role Student
+            int studentRoleId;
+            try (PreparedStatement ps = conn.prepareStatement(sqlFindStudentRole);
+                 ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.next()) {
+                    conn.rollback();
+                    return false;
+                }
+                studentRoleId = rs.getInt(1);
+            }
+
+            // 5. Nếu role chưa phải Student → update
+            if (currentRoleId != studentRoleId) {
+                try (PreparedStatement ps = conn.prepareStatement(sqlUpdateRole)) {
+                    ps.setInt(1, studentRoleId);
+                    ps.setInt(2, userId);
+                    ps.executeUpdate();
+                }
+            }
+
+            conn.commit();
             return true;
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback(); // Rollback nếu có lỗi
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            throw e; // Ném lỗi để servlet xử lý
+            if (conn != null) conn.rollback();
+            throw e;
+
         } finally {
-            // Đóng tất cả tài nguyên (rs, ps, conn)
-            if (rsUser != null) rsUser.close();
-            if (rsClass != null) rsClass.close();
-            if (rsRole != null) rsRole.close();
-            if (psFindUser != null) psFindUser.close();
-            if (psFindClass != null) psFindClass.close();
-            if (psInsertClassUser != null) psInsertClassUser.close();
-            if (psInsertUserRole != null) psInsertUserRole.close();
-            if (psFindStudentRole != null) psFindStudentRole.close();
             if (conn != null) conn.close();
         }
     }
 
     public Student getStudentById(int id) {
-        Student student = null;
-        String sql = "SELECT u.user_id, u.fullname, u.username, u.email, u.status, u.avatar_url, " +
-                "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_names " +
-                "FROM user u " +
-                "JOIN user_role ur ON u.user_id = ur.user_id " +
-                "JOIN setting s ON ur.role_id = s.setting_id " +
-                "LEFT JOIN class_user cu ON u.user_id = cu.user_id " +
-                "LEFT JOIN `class` c ON cu.class_id = c.class_id " +
-                "WHERE u.user_id = ? AND s.setting_name = 'Student' " +
-                "GROUP BY u.user_id";
+        Student st = null;
+
+        String sql =
+                "SELECT u.user_id, u.fullname, u.username, u.email, u.status, u.avatar_url, " +
+                        "IFNULL(GROUP_CONCAT(DISTINCT c.class_name SEPARATOR ', '), '') AS class_names " +
+                        "FROM user u " +
+                        "JOIN setting s ON u.role_id = s.setting_id " +
+                        "LEFT JOIN class_user cu ON u.user_id = cu.user_id " +
+                        "LEFT JOIN class c ON cu.class_id = c.class_id " +
+                        "WHERE u.user_id = ? AND s.setting_name = 'Student' " +
+                        "GROUP BY u.user_id";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                student = new Student();
-                student.setId(rs.getInt("user_id"));
-                student.setFullname(rs.getString("fullname"));
-                student.setEmail(rs.getString("email"));
-                student.setStatus(rs.getBoolean("status"));
-                student.setClassName(rs.getString("class_names")); // Chứa danh sách lớp, hoặc NULL
-
-                // Bổ sung các thông tin chi tiết khác từ bảng user
-                student.setUsername(rs.getString("username"));
-                student.setAvatarUrl(rs.getString("avatar_url"));
+                st = new Student();
+                st.setId(rs.getInt("user_id"));
+                st.setFullname(rs.getString("fullname"));
+                st.setEmail(rs.getString("email"));
+                st.setStatus(rs.getBoolean("status"));
+                st.setUsername(rs.getString("username"));
+                st.setAvatarUrl(rs.getString("avatar_url"));
+                st.setClassName(rs.getString("class_names"));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return student;
+        return st;
     }
 
     public boolean updateStudentStatus(int userId, boolean newStatus) {
@@ -280,8 +265,7 @@ public class StudentDAO {
             ps.setBoolean(1, newStatus);
             ps.setInt(2, userId);
 
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -290,40 +274,42 @@ public class StudentDAO {
     }
 
     public String getFullnameById(int userId) {
-        String fullname = null;
         String sql = "SELECT fullname FROM user WHERE user_id = ?";
-
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                fullname = rs.getString("fullname");
-            }
+            return rs.next() ? rs.getString(1) : null;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return fullname;
+        return null;
     }
 
-    public List<String> getAllClassNames() {
-        List<String> classNames = new ArrayList<>();
-        String sql = "SELECT class_name FROM class WHERE status = 1 ORDER BY class_name ASC";
+    public List<String> getAllClassNames(int instructorId) {
+        List<String> list = new ArrayList<>();
+
+        String sql = "SELECT class_name " +
+                "FROM class " +
+                "WHERE status = 1 AND instructor_id = ? " +
+                "ORDER BY class_name ASC";
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, instructorId);
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                classNames.add(rs.getString("class_name"));
+                list.add(rs.getString("class_name"));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return classNames;
+
+        return list;
     }
 }

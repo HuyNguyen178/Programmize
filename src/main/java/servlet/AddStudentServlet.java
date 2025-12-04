@@ -6,6 +6,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.User;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,7 +26,9 @@ public class AddStudentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<String> classNames = studentDAO.getAllClassNames();
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
+        List<String> classNames = studentDAO.getAllClassNames(loginUser.getId());
         request.setAttribute("classNames", classNames);
         // Hiển thị form thêm sinh viên (cần tạo file JSP mới: add-student.jsp)
         request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
