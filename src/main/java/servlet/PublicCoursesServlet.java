@@ -29,7 +29,6 @@ public class PublicCoursesServlet extends HttpServlet {
         String pageStr = request.getParameter("page");
         String priceSort = request.getParameter("price");
 
-
         // Parse page number
         int currentPage = 1;
         if (pageStr != null && !pageStr.isEmpty()) {
