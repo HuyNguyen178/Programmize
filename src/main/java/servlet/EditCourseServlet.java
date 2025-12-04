@@ -29,7 +29,7 @@ public class EditCourseServlet extends HttpServlet {
 
             if (idParam == null || idParam.trim().isEmpty()) {
                 // Nếu không có ID, redirect về course list
-                response.sendRedirect(request.getContextPath() + "/courseList");
+                response.sendRedirect(request.getContextPath() + "/course-list");
                 return;
             }
 
@@ -41,7 +41,7 @@ public class EditCourseServlet extends HttpServlet {
             if (course == null) {
                 // Nếu không tìm thấy course, redirect về course list với error message
                 request.getSession().setAttribute("errorMessage", "Course not found!");
-                response.sendRedirect(request.getContextPath() + "/courseList");
+                response.sendRedirect(request.getContextPath() + "/course-list");
                 return;
             }
 
@@ -65,7 +65,7 @@ public class EditCourseServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             // Nếu ID không hợp lệ
             request.getSession().setAttribute("errorMessage", "Invalid course ID!");
-            response.sendRedirect(request.getContextPath() + "/courseList");
+            response.sendRedirect(request.getContextPath() + "/course-list");
         }
     }
 
@@ -132,19 +132,19 @@ public class EditCourseServlet extends HttpServlet {
             }
 
             // Redirect về course list
-            response.sendRedirect(request.getContextPath() + "/courseList");
+            response.sendRedirect(request.getContextPath() + "/course-list");
 
         } catch (NumberFormatException e) {
             // Nếu có lỗi parse number
             request.getSession().setAttribute("errorMessage",
                     "Invalid input format. Please check your data.");
-            response.sendRedirect(request.getContextPath() + "/courseList");
+            response.sendRedirect(request.getContextPath() + "/course-list");
         } catch (Exception e) {
             // Nếu có lỗi khác
             e.printStackTrace();
             request.getSession().setAttribute("errorMessage",
                     "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/courseList");
+            response.sendRedirect(request.getContextPath() + "/course-list");
         }
     }
 }

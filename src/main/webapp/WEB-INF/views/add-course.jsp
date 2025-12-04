@@ -169,7 +169,7 @@
         <c:remove var="errorMessage" scope="session"/>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/addCourse" method="post">
+    <form action="${pageContext.request.contextPath}/add-course" method="post">
 
         <div class="form-group">
             <label for="courseName">Course Name *</label>

@@ -230,7 +230,7 @@
                                                 <%-- Nút Actions (giống account-list.jsp) --%>
                                             <div class="btn-group" role="group">
                                                     <%-- Nút Edit --%>
-                                                <a href="${pageContext.request.contextPath}/editCourse?id=${course.courseId}"
+                                                <a href="${pageContext.request.contextPath}/edit-course?id=${course.courseId}"
                                                    class="btn btn-sm btn-outline-primary" title="Edit">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </a>

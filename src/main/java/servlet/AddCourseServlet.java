@@ -39,7 +39,7 @@ public class AddCourseServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.getSession().setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/courseList");
+            response.sendRedirect(request.getContextPath() + "/course-list");
         }
     }
 
@@ -114,19 +114,19 @@ public class AddCourseServlet extends HttpServlet {
             }
 
             // Redirect về course list
-            response.sendRedirect(request.getContextPath() + "/courseList");
+            response.sendRedirect(request.getContextPath() + "/course-list");
 
         } catch (NumberFormatException e) {
             // Nếu có lỗi parse number
             request.getSession().setAttribute("errorMessage",
                     "Invalid input format. Please check your data.");
-            response.sendRedirect(request.getContextPath() + "/addCourse");
+            response.sendRedirect(request.getContextPath() + "/add-course");
         } catch (Exception e) {
             // Nếu có lỗi khác
             e.printStackTrace();
             request.getSession().setAttribute("errorMessage",
                     "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/addCourse");
+            response.sendRedirect(request.getContextPath() + "/add-course");
         }
     }
 }

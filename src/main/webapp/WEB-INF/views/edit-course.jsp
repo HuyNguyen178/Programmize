@@ -168,7 +168,7 @@
         <c:remove var="errorMessage" scope="session"/>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/editCourse" method="post">
+    <form action="${pageContext.request.contextPath}/edit-course" method="post">
         <!-- Hidden field for course ID -->
         <input type="hidden" name="courseId" value="${course.courseId}">
 
@@ -249,7 +249,7 @@
 
         <div class="form-group" style="margin-top: 20px;">
             <button type="submit" class="btn-submit">💾 Save Changes</button>
-            <a href="${pageContext.request.contextPath}/courseList" class="btn-cancel">Cancel</a>
+            <a href="${pageContext.request.contextPath}/course-list" class="btn-cancel">Cancel</a>
         </div>
     </form>
 

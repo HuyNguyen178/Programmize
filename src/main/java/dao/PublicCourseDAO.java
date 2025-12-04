@@ -24,7 +24,7 @@ public class PublicCourseDAO {
                         "FROM course c " +
                         "LEFT JOIN user u ON c.instructor_id = u.user_id " +
                         "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
-                        "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
+                        "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
                         "WHERE 1=1"
         );
 
@@ -159,12 +159,13 @@ public class PublicCourseDAO {
 
     // Get all categories that are linked to at least one course
     // Returns List<String[]> where each String[] = {setting_id, setting_name}
+    // Only returns settings where type_id = 5 (Category type)
     public List<String[]> getAllCategories() {
         List<String[]> categories = new ArrayList<>();
         String sql = "SELECT DISTINCT s.setting_id, s.setting_name " +
                 "FROM setting s " +
                 "INNER JOIN course_category cc ON s.setting_id = cc.category_id " +
-                "WHERE s.status = 1 " +
+                "WHERE s.status = 1 AND s.type_id = 5 " +
                 "ORDER BY s.setting_name";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -187,7 +188,7 @@ public class PublicCourseDAO {
     // Returns List<String[]> where each String[] = {setting_id, setting_name}
     public List<String[]> getAllCategoriesFromSettings() {
         List<String[]> categories = new ArrayList<>();
-        String sql = "SELECT setting_id, setting_name FROM setting WHERE status = 1 ORDER BY setting_name";
+        String sql = "SELECT setting_id, setting_name FROM setting WHERE status = 1 AND type_id = 5 ORDER BY setting_name";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -212,7 +213,7 @@ public class PublicCourseDAO {
         String sql = "SELECT DISTINCT s.setting_name " +
                 "FROM setting s " +
                 "INNER JOIN course_category cc ON s.setting_id = cc.category_id " +
-                "WHERE s.status = 1 " +
+                "WHERE s.status = 1 AND s.type_id = 5 " +
                 "ORDER BY s.setting_name";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -233,7 +234,7 @@ public class PublicCourseDAO {
         String sql = "SELECT s.setting_id, s.setting_name " +
                 "FROM setting s " +
                 "INNER JOIN course_category cc ON s.setting_id = cc.category_id " +
-                "WHERE cc.course_id = ?";
+                "WHERE cc.course_id = ? AND s.type_id = 5";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, courseId);
@@ -357,7 +358,7 @@ public class PublicCourseDAO {
                 "FROM course c " +
                 "LEFT JOIN user u ON c.instructor_id = u.user_id " +
                 "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
-                "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
                 "WHERE c.course_id = ? " +
                 "GROUP BY c.course_id";
         Course course = null;
@@ -663,7 +664,7 @@ public class PublicCourseDAO {
                         "FROM course c " +
                         "LEFT JOIN user u ON c.instructor_id = u.user_id " +
                         "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
-                        "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
+                        "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
                         "WHERE c.status = 1"
         );
 
@@ -689,7 +690,7 @@ public class PublicCourseDAO {
             } else {
                 // Filter by category name
                 sql.append(" AND EXISTS (SELECT 1 FROM course_category cc2 " +
-                        "INNER JOIN setting s2 ON cc2.category_id = s2.setting_id " +
+                        "INNER JOIN setting s2 ON cc2.category_id = s2.setting_id AND s2.type_id = 5 " +
                         "WHERE cc2.course_id = c.course_id AND s2.setting_name IN (");
             }
             for (int i = 0; i < categoryIds.length; i++) {
@@ -799,7 +800,7 @@ public class PublicCourseDAO {
                 "FROM course c " +
                 "LEFT JOIN user u ON c.instructor_id = u.user_id " +
                 "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
-                "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
                 "WHERE c.course_id = ? AND c.status = 1 " +
                 "GROUP BY c.course_id";
         Course course = null;
