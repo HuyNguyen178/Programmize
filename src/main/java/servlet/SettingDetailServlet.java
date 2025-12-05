@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import dao.SettingDAO;
 import java.io.IOException;
 
-@WebServlet("/setting-details")
-public class SettingDetailsServlet extends HttpServlet {
+@WebServlet("/setting-detail")
+public class SettingDetailServlet extends HttpServlet {
     private SettingDAO settingRepository;
 
     @Override

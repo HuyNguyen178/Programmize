@@ -21,6 +21,31 @@ public class CourseListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String action = request.getParameter("action");
+        String idParam = request.getParameter("id");
+        String statusParam = request.getParameter("newStatus");
+
+        String actionMessage = null;
+
+        if ("toggleStatus".equals(action) && idParam != null && statusParam != null) {
+            try {
+                int courseId = Integer.parseInt(idParam);
+                boolean newStatus = "1".equals(statusParam);
+                CourseDAO courseDAO = new CourseDAO();
+
+                boolean success = courseDAO.updateCourseStatus(courseId, newStatus);
+
+                String statusText = newStatus ? "Active" : "Inactive";
+
+                actionMessage = success
+                        ? "Status update successful: + " + "changed to " + statusText + "."
+                        : "Error: Unable to update status for course " + courseId + ".";
+
+            } catch (NumberFormatException e) {
+                actionMessage = "Error: Invalid ID or state.";
+            }
+        }
+
         // Get filter parameters
         String category = request.getParameter("category");       // category_id from setting table
         String instructor = request.getParameter("instructor");   // user_id from user table

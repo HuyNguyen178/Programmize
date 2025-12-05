@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static utils.DBUtil.getConnection;
+
 public class CourseDAO {
 
     // ==================== GET ALL COURSES WITH FILTERS ====================
@@ -157,33 +159,6 @@ public class CourseDAO {
 
     // ==================== CATEGORY METHODS ====================
 
-    // Get all categories that are linked to at least one course
-    // Returns List<String[]> where each String[] = {setting_id, setting_name}
-    // Only returns settings where type_id = 5 (Category type)
-    public List<String[]> getAllCategories() {
-        List<String[]> categories = new ArrayList<>();
-        String sql = "SELECT DISTINCT s.setting_id, s.setting_name " +
-                "FROM setting s " +
-                "INNER JOIN course_category cc ON s.setting_id = cc.category_id " +
-                "WHERE s.status = 1 AND s.type_id = 5 " +
-                "ORDER BY s.setting_name";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                String[] category = new String[2];
-                category[0] = String.valueOf(rs.getInt("setting_id"));
-                category[1] = rs.getString("setting_name");
-                categories.add(category);
-            }
-            System.out.println("Retrieved " + categories.size() + " categories");
-        } catch (SQLException e) {
-            System.err.println("Error getting categories: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return categories;
-    }
-
     // Get all categories from setting table (all active categories)
     // Returns List<String[]> where each String[] = {setting_id, setting_name}
     public List<String[]> getAllCategoriesFromSettings() {
@@ -280,6 +255,23 @@ public class CourseDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean updateCourseStatus(int courseId, boolean newStatus) {
+        String sql = "UPDATE course SET status = ? WHERE course_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setBoolean(1, newStatus);
+            stmt.setInt(2, courseId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // ==================== INSTRUCTOR METHODS ====================
