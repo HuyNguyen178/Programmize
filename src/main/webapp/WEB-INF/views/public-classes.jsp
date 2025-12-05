@@ -319,7 +319,7 @@
             </c:when>
             <c:otherwise>
                 <div class="no-courses">
-                    <h3>No courses found</h3>
+                    <h3>No classes found</h3>
                     <p>Try adjusting your filters or search criteria</p>
                 </div>
             </c:otherwise>
