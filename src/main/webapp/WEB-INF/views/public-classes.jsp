@@ -222,16 +222,11 @@
         <form action="${pageContext.request.contextPath}/public-classes" method="get" class="filter-bar">
 
             <select name="category" class="filter-select" onchange=this.form.submit()>
-                <option value="all">Category (All)</option>
+                <option value="">Category</option>
                 <c:forEach items="${allCategories}" var="cat">
-                    <c:set var="isSelected" value="false"/>
-                    <c:forEach items="${selectedCategories}" var="selected">
-                        <c:if test="${selected == cat}">
-                            <c:set var="isSelected" value="true"/>
-                        </c:if>
-                    </c:forEach>
-                    <option value="${cat}" ${isSelected ? 'selected' : ''}>${cat}</option>
+                    <option value="${cat}" ${category == cat ? 'selected' : ''}>${cat}</option>
                 </c:forEach>
+
             </select>
 
             <select name="price" class="filter-select" onchange=this.form.submit()>

@@ -5,8 +5,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Class;
-import model.Course;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,7 @@ public class PublicClassesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String[] selectedCategories = request.getParameterValues("category");
+        String category = request.getParameter("category");
         String keyword = request.getParameter("keyword");
         String priceSort = request.getParameter("price");
         String pageStr = request.getParameter("page");
@@ -41,7 +39,7 @@ public class PublicClassesServlet extends HttpServlet {
             }
         }
 
-        List<Class> classes = classDAO.getActiveClasses(keyword, selectedCategories, priceSort);
+        List<Class> classes = classDAO.getActiveClasses(keyword, category, priceSort);
 
         int totalClasses = classes.size();
         int totalPages = (int) Math.ceil((double) totalClasses / CLASSES_PER_PAGE);
@@ -63,7 +61,7 @@ public class PublicClassesServlet extends HttpServlet {
 
         request.setAttribute("classes", classesForPage);
         request.setAttribute("allCategories", allCategories);
-        request.setAttribute("selectedCategories", selectedCategories != null ? List.of(selectedCategories) : List.of());
+        request.setAttribute("category", category != null ? category : "");
         request.setAttribute("searchKeyword", keyword != null ? keyword : "");
         request.setAttribute("price", priceSort != null ? priceSort : "");
         request.setAttribute("currentPage", currentPage);

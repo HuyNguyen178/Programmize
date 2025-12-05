@@ -80,15 +80,7 @@ public class ClassDAO {
         return classes;
     }
 
-    private boolean isAllCategoriesSelected(String[] categories) {
-        if (categories == null) return false;
-        for (String cat : categories) {
-            if ("all".equals(cat) || cat == null || cat.isEmpty()) return true;
-        }
-        return false;
-    }
-
-    public List<Class> getActiveClasses(String keyword, String[] selectedCategories, String priceSort) {
+    public List<Class> getActiveClasses(String keyword, String category, String priceSort) {
         List<Class> classes = new ArrayList<>();
 
         try (Connection conn = DBUtil.getConnection()) {
@@ -118,13 +110,8 @@ public class ClassDAO {
             }
 
 
-            if (selectedCategories != null && selectedCategories.length > 0) {
-                sql.append(" AND s.setting_name IN (");
-                for (int i = 0; i < selectedCategories.length; i++) {
-                    sql.append("?");
-                    if (i < selectedCategories.length - 1) sql.append(",");
-                }
-                sql.append(")");
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ?");
             }
 
             sql.append(" GROUP BY " +
@@ -141,6 +128,18 @@ public class ClassDAO {
             }
 
             PreparedStatement stmt = conn.prepareStatement(sql.toString());
+
+            int paramIndex = 1;
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                stmt.setString(paramIndex++, "%" + keyword + "%");
+                stmt.setString(paramIndex++, "%" + keyword + "%");
+                stmt.setString(paramIndex++, "%" + keyword + "%");
+            }
+
+            if (category != null && !category.trim().isEmpty()) {
+                stmt.setString(paramIndex++, category);
+            }
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
