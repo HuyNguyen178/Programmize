@@ -37,9 +37,17 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("loginUser", user);
-            if(user.getRoleName().equals("Student")) response.sendRedirect( "home");
-            else if (user.getRoleName().equals("Admin")) response.sendRedirect("dashboard");
-            else if(user.getRoleName().equals("Instructor")) response.sendRedirect("student-list");
+            switch (user.getRoleName()) {
+                case "Admin":
+                    response.sendRedirect("dashboard");
+                    break;
+                case "Instructor":
+                    response.sendRedirect("student-list");
+                    break;
+                default:
+                    response.sendRedirect("home");
+                    break;
+            }
 
         } else {
             request.setAttribute("passError", "Wrong password!");

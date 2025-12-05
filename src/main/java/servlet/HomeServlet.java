@@ -26,8 +26,6 @@ public class HomeServlet extends HttpServlet {
         request.setAttribute("highlightedCourses", highlightedCourses);
 
         // 3. Forward về trang home.jsp
-        // Lưu ý: Đường dẫn này phụ thuộc vào cấu trúc thư mục của bạn.
-        // Dựa vào code JSP cũ, tôi giả định home.jsp nằm trong thư mục views
         request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
     }
 }

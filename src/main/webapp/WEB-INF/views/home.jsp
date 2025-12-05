@@ -232,7 +232,7 @@
 <body>
 
 <%-- Header Include --%>
-<jsp:include page="../views/include/header.jsp" />
+<jsp:include page="include/header.jsp" />
 
 <%@ page session="true" %>
 <main>

@@ -1,14 +1,12 @@
 <%@ page import="model.User" %>
 <%@ page session="true" %>
 <%
-    User user = (User) session.getAttribute("user");
+    User user = (User) session.getAttribute("loginUser");
 
-    String username = "Guest";
     String fullName = "";
     String avtUrl = "";
 
     if (user != null) {
-        if (user.getUsername() != null) username = user.getUsername();
         if (user.getFullname() != null) fullName = user.getFullname();
         if (user.getAvatarUrl() != null) avtUrl = user.getAvatarUrl();
     }
@@ -52,7 +50,7 @@
                 <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
             </ul>
 
-            <% if("Guest".equals(username)) { %>
+            <% if(user == null) { %>
             <div class="auth-buttons">
                 <a href="<%=request.getContextPath()%>/login" class="btn btn-outline-primary">Sign in</a>
                 <a href="<%=request.getContextPath()%>/register" class="btn btn-primary">Register</a>
