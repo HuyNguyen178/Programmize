@@ -311,4 +311,49 @@ public class UserDAO {
 
         return user;
     }
+
+    public void saveRememberToken(int userId, String token) {
+        String sql = "UPDATE user SET remember_token = ? WHERE user_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, token);
+            stmt.setInt(2, userId);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public User loginWithToken(String token) {
+        String sql =
+                "SELECT u.user_id, u.fullname, u.username, u.email, u.status, " +
+                        "       u.avatar_url, s.setting_name AS role_name " +
+                        "FROM user u " +
+                        "LEFT JOIN setting s ON u.role_id = s.setting_id " +
+                        "WHERE u.remember_token = ? " +
+                        "LIMIT 1";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, token);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("user_id"));
+                    u.setUsername(rs.getString("username"));
+                    u.setEmail(rs.getString("email"));
+                    u.setFullname(rs.getString("fullname"));
+                    u.setAvatarUrl(rs.getString("avatar_url"));
+                    u.setRoleName(rs.getString("role_name")); // <<< QUAN TRỌNG
+                    return u;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

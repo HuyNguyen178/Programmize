@@ -74,7 +74,7 @@
         <%--Chưa làm--%>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <input type="checkbox" id="remember">
+                <input type="checkbox" id="remember" name="rememberMe">
                 <label for="remember">Remember me</label>
             </div>
             <a href="forgot-password" class="text-decoration-none">Forgot password?</a>

@@ -2,10 +2,8 @@ package servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
+
 import java.io.IOException;
 
 @WebServlet("/logout")
@@ -19,6 +17,11 @@ public class LogoutServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
+
+        Cookie c = new Cookie("rememberToken", "");
+        c.setMaxAge(0);
+        c.setPath("/");
+        response.addCookie(c);
 
         response.sendRedirect(request.getContextPath() + "/home");
     }

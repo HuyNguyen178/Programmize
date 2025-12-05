@@ -21,8 +21,10 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+
         String userOrEmail = request.getParameter("userOrEmail");
         String password = request.getParameter("password");
+        String remember = request.getParameter("rememberMe");
 
         UserDAO dao = new UserDAO();
 
@@ -37,6 +39,18 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("loginUser", user);
+
+            if (remember != null) {
+                String token = user.getId() + "-" + System.currentTimeMillis();
+
+                Cookie c = new Cookie("rememberToken", token);
+                c.setMaxAge(10 * 365 * 24 * 60 * 60);
+                c.setPath("/");
+                response.addCookie(c);
+
+                dao.saveRememberToken(user.getId(), token);
+            }
+
             switch (user.getRoleName()) {
                 case "Admin":
                     response.sendRedirect("dashboard");
