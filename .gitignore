@@ -1,6 +1,7 @@
 # ignore ALL .log files
 *.log
 *.class
+misc.xml
 
 # ignore ALL files in below directory
 /target/
