@@ -37,17 +37,23 @@ public class StudentDAO {
     private List<Object> getSearchParams(String keyword, String status, String className) {
         List<Object> params = new ArrayList<>();
 
+        // ... (logic cho status và className)
+
         if (status != null && !status.isEmpty()) {
-            params.add(Integer.parseInt(status));  // 0/1
+            params.add(Integer.parseInt(status));
         }
 
         if (className != null && !className.isEmpty()) {
             params.add(className);
         }
 
+        // >> LỖI TÌM KIẾM: PHẢI THÊM KÝ TỰ ĐẠI DIỆN (%) VÀO KEYWORD <<
         if (keyword != null && !keyword.isEmpty()) {
-            params.add("%" + keyword + "%");
-            params.add("%" + keyword + "%");
+            String keywordWithWildcards = "%" + keyword + "%";
+
+            // Vì SQL dùng 'OR u.fullname LIKE ? OR u.email LIKE ?', nên cần thêm 2 lần
+            params.add(keywordWithWildcards); // Tham số 1 cho fullname
+            params.add(keywordWithWildcards); // Tham số 2 cho email
         }
 
         return params;
@@ -83,54 +89,59 @@ public class StudentDAO {
 
     public List<Student> searchStudents(String keyword, String status, String className,
                                         int pageIndex, int pageSize, int instructorId) {
+        List<Student> students = new ArrayList<>();
 
-        List<Student> list = new ArrayList<>();
+        // 1. Xây dựng mệnh đề FROM...WHERE
+        StringBuilder baseSql = buildBaseSql(keyword, status, className);
+
+        // 2. Xây dựng câu SELECT hoàn chỉnh và phân trang (LIMIT/OFFSET)
+        String finalSql = "SELECT u.user_id, u.fullname, u.email, u.status, u.avatar_url, "
+                + "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
+                + baseSql.toString()
+                + "GROUP BY u.user_id, u.fullname, u.email, u.status, u.avatar_url "
+                + "ORDER BY u.user_id DESC " // Sắp xếp theo ID mới nhất
+                + "LIMIT ? OFFSET ?"; // Tham số cuối cùng: limit và offset
+
+        // 3. Lấy danh sách tham số (trừ instructorId)
+        List<Object> params = getSearchParams(keyword, status, className);
+
         int offset = (pageIndex - 1) * pageSize;
 
-        StringBuilder baseSql = buildBaseSql(keyword, status, className);
-        
-
-        String sql =
-                "SELECT u.user_id, u.fullname, u.email, u.status, u.username, u.avatar_url, " +
-                        "IFNULL(GROUP_CONCAT(DISTINCT c.class_name SEPARATOR ', '), '') AS class_names " +
-                        baseSql +
-                        " GROUP BY u.user_id " +
-                        " ORDER BY u.user_id ASC " +
-                        " LIMIT ? OFFSET ?";
-
-        List<Object> params = getSearchParams(keyword, status, className);
-        params.add(instructorId);
-
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(finalSql)) {
 
-            int idx = 1;
-            for (Object p : params) {
-                if (p instanceof String) ps.setString(idx++, (String) p);
-                else if (p instanceof Integer) ps.setInt(idx++, (Integer) p);
+            int index = 1;
+            
+            ps.setInt(index++, instructorId);
+
+            for (Object param : params) {
+                if (param instanceof Integer) {
+                    ps.setInt(index++, (Integer) param);
+                } else if (param instanceof String) {
+                    ps.setString(index++, (String) param);
+                }
             }
 
-            ps.setInt(idx++, pageSize);
-            ps.setInt(idx, offset);
+            ps.setInt(index++, pageSize); // LIMIT
+            ps.setInt(index++, offset);  // OFFSET
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Student st = new Student();
-                st.setId(rs.getInt("user_id"));
-                st.setFullname(rs.getString("fullname"));
-                st.setEmail(rs.getString("email"));
-                st.setStatus(rs.getBoolean("status"));
-                st.setUsername(rs.getString("username"));
-                st.setAvatarUrl(rs.getString("avatar_url"));
-                st.setClassName(rs.getString("class_names"));
-                list.add(st);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Student student = new Student();
+                    student.setId(rs.getInt("user_id"));
+                    student.setFullname(rs.getString("fullname"));
+                    student.setEmail(rs.getString("email"));
+                    student.setStatus(rs.getBoolean("status"));
+                    student.setAvatarUrl(rs.getString("avatar_url"));
+                    student.setClassName(rs.getString("class_name"));
+                    students.add(student);
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return list;
+        return students;
     }
 
 
