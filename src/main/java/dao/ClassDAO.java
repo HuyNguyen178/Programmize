@@ -80,15 +80,7 @@ public class ClassDAO {
         return classes;
     }
 
-    private boolean isAllCategoriesSelected(String[] categories) {
-        if (categories == null) return false;
-        for (String cat : categories) {
-            if ("all".equals(cat) || cat == null || cat.isEmpty()) return true;
-        }
-        return false;
-    }
-
-    public List<Class> getActiveClasses(String keyword, String[] selectedCategories, String priceSort) {
+    public List<Class> getActiveClasses(String keyword, String category, String priceSort) {
         List<Class> classes = new ArrayList<>();
 
         try (Connection conn = DBUtil.getConnection()) {
@@ -103,16 +95,14 @@ public class ClassDAO {
                     "    c.start_date," +
                     "    c.end_date," +
                     "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
-                    "    u.user_id AS instructor_id," +
+                    "    u.user_id as instructor_id," +
                     "    u.fullname AS instructor_name" +
                     " FROM class c" +
                     " LEFT JOIN class_category cc ON c.class_id = cc.class_id" +
                     " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
-                    " LEFT JOIN class_user cu ON c.class_id = cu.class_id" +
-                    " LEFT JOIN user_role ur ON cu.user_id = ur.user_id" +
-                    " LEFT JOIN setting s ON ur.role_id = s.setting_id" +
-                    " LEFT JOIN user u ON cu.user_id = u.user_id" +
-                    " WHERE s.setting_name = 'Instructor' AND c.status = 1");
+                    " LEFT JOIN user u ON c.instructor_id = u.user_id" +
+                    " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
+                    " WHERE c.status = 1");
 
 
             if (keyword != null && !keyword.trim().isEmpty()) {
@@ -120,13 +110,8 @@ public class ClassDAO {
             }
 
 
-            if (selectedCategories != null && selectedCategories.length > 0) {
-                sql.append(" AND s.setting_name IN (");
-                for (int i = 0; i < selectedCategories.length; i++) {
-                    sql.append("?");
-                    if (i < selectedCategories.length - 1) sql.append(",");
-                }
-                sql.append(")");
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ?");
             }
 
             sql.append(" GROUP BY " +
@@ -143,6 +128,18 @@ public class ClassDAO {
             }
 
             PreparedStatement stmt = conn.prepareStatement(sql.toString());
+
+            int paramIndex = 1;
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                stmt.setString(paramIndex++, "%" + keyword + "%");
+                stmt.setString(paramIndex++, "%" + keyword + "%");
+                stmt.setString(paramIndex++, "%" + keyword + "%");
+            }
+
+            if (category != null && !category.trim().isEmpty()) {
+                stmt.setString(paramIndex++, category);
+            }
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
