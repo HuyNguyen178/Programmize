@@ -279,8 +279,6 @@ public class UserDAO {
     }
 
     public User getUserById(int id) {
-        User user = null;
-
         String sql =
                 "SELECT u.*, s.setting_name AS role_name " +
                         "FROM user u " +
@@ -294,7 +292,7 @@ public class UserDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    user = new User();
+                    User user = new User();
                     user.setId(rs.getInt("user_id"));
                     user.setFullname(rs.getString("fullname"));
                     user.setUsername(rs.getString("username"));
@@ -302,6 +300,7 @@ public class UserDAO {
                     user.setStatus(rs.getBoolean("status"));
                     user.setAvatarUrl(rs.getString("avatar_url"));
                     user.setRoleName(rs.getString("role_name"));
+                    return user;
                 }
             }
 
@@ -309,7 +308,7 @@ public class UserDAO {
             e.printStackTrace();
         }
 
-        return user;
+        return null;
     }
 
     public void saveRememberToken(int userId, String token) {

@@ -64,7 +64,7 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile?id=${sessionScope.loginUser.id}">Profile</a></li>
                         <li><a class="dropdown-item" href="my-courses">My Courses</a></li>
                         <li><a class="dropdown-item" href="my-classes">My Classes</a></li>
                         <li><hr class="dropdown-divider"></li>
