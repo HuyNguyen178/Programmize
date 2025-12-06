@@ -233,7 +233,6 @@
 
 <%-- Header Include --%>
 <jsp:include page="include/header.jsp" />
-
 <%@ page session="true" %>
 <main>
 

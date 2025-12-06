@@ -207,35 +207,6 @@
 
 <body>
 <jsp:include page="include/header.jsp"/>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/publicCourses">Programmize</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto ms-4">
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/publicCourses">Courses</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Classes</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
-            </ul>
-            <div class="d-flex">
-                <c:choose>
-                    <c:when test="${not empty sessionScope.user}">
-                        <span class="navbar-text me-3">Welcome, ${sessionScope.user.name}</span>
-                        <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-danger">Logout</a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-primary me-2">Login</a>
-                        <a href="${pageContext.request.contextPath}/register" class="btn btn-primary">Register</a>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-    </div>
-</nav>
 
 <!-- Header Section -->
 <section class="header-section">
@@ -451,11 +422,11 @@
 
                     <!-- Enrollment Buttons -->
                     <c:choose>
-                        <c:when test="${empty sessionScope.user}">
+                        <c:when test="${empty sessionScope.loginUser}">
                             <!-- User not logged in -->
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this course</p>
-                                <a href="${pageContext.request.contextPath}/login?redirect=publicCourseDetails%3Fid%3D${course.courseId}">
+                                <a href="${pageContext.request.contextPath}/login?redirect=public-course-details%3Fid%3D${course.courseId}">
                                     Login to Continue
                                 </a>
                             </div>

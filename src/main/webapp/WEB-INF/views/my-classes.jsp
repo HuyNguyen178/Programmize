@@ -223,7 +223,7 @@
             </select>
 
             <div class="search-group">
-                <input type="text" name="keyword" placeholder="Search for classes"
+                <input type="text" name="search" placeholder="Search for classes"
                        value="${keyword}">
                 <button type="submit">
                     <i class="fa fa-search"></i> Search
@@ -258,7 +258,7 @@
                                     </c:if>
                                 </div>
                             </div>
-                            <a href="${pageContext.request.contextPath}/public-class-details?id=${clazz.id}"
+                            <a href="${pageContext.request.contextPath}/my-class-details?id=${clazz.id}"
                                class="btn-details">VIEW DETAILS</a>
                         </article>
                     </c:forEach>
@@ -276,9 +276,12 @@
         <c:if test="${totalPages > 1}">
             <nav class="pagination">
                 <ul>
+
+                    <!-- Previous -->
                     <li>
-                        <a href="?page=${currentPage - 1}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                    <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                        <a href="?page=${currentPage - 1}
+                        ${not empty keyword ? '&search=' : ''}${keyword}
+                        ${not empty category ? '&category=' : ''}${category}"
                            class="${currentPage == 1 ? 'disabled' : ''}">
                             &lt; Previous
                         </a>
@@ -287,55 +290,69 @@
                     <!-- Page numbers -->
                     <c:choose>
                         <c:when test="${totalPages <= 7}">
-                            <!-- Show all pages if 7 or less -->
                             <c:forEach begin="1" end="${totalPages}" var="i">
                                 <li>
-                                    <a href="?page=${i}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                                <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                                    <a href="?page=${i}
+                                    ${not empty keyword ? '&search=' : ''}${keyword}
+                                    ${not empty category ? '&category=' : ''}${category}"
                                        class="${i == currentPage ? 'active' : ''}">
                                             ${i}
                                     </a>
                                 </li>
                             </c:forEach>
                         </c:when>
+
                         <c:otherwise>
-                            <!-- Show limited pages with ellipsis -->
                             <c:if test="${currentPage > 3}">
-                                <li><a href="?page=1${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                          <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>">1</a></li>
+                                <li>
+                                    <a href="?page=1
+                                    ${not empty keyword ? '&search=' : ''}${keyword}
+                                    ${not empty category ? '&category=' : ''}${category}">
+                                        1
+                                    </a>
+                                </li>
                                 <li><span>...</span></li>
                             </c:if>
-
-                            <c:forEach begin="${(currentPage - 2) < 1 ? 1 : (currentPage - 2)}"
-                                       end="${(currentPage + 2) > totalPages ? totalPages : (currentPage + 2)}" var="i">
+                            <c:forEach begin="${currentPage - 2 > 1 ? currentPage - 2 : 1}"
+                                       end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}" var="i">
                                 <li>
-                                    <a href="?page=${i}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                                <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
+                                    <a href="?page=${i}
+                                    ${not empty keyword ? '&search=' : ''}${keyword}
+                                    ${not empty category ? '&category=' : ''}${category}"
                                        class="${i == currentPage ? 'active' : ''}">
                                             ${i}
                                     </a>
                                 </li>
                             </c:forEach>
-
                             <c:if test="${currentPage < totalPages - 2}">
                                 <li><span>...</span></li>
-                                <li><a href="?page=${totalPages}${not empty keyword ? '&keyword=' : ''}${keyword}
-                                          <c:forEach items='${category}' var='cat'>&category=${cat}</c:forEach>">${totalPages}</a></li>
+                                <li>
+                                    <a href="?page=${totalPages}
+                                    ${not empty keyword ? '&search=' : ''}${keyword}
+                                    ${not empty category ? '&category=' : ''}${category}">
+                                            ${totalPages}
+                                    </a>
+                                </li>
                             </c:if>
+
                         </c:otherwise>
+
                     </c:choose>
 
-                    <!-- Next button -->
+                    <!-- Next -->
                     <li>
-                        <a href="?page=${currentPage + 1}${not empty keyword ? '&keyword=' : ''}${keyword}
-                                    <c:forEach items='${category}' var='cat'>&category=${cat}</c:forEach>"
+                        <a href="?page=${currentPage + 1}
+                        ${not empty keyword ? '&keyword=' : ''}${keyword}
+                        ${not empty category ? '&category=' : ''}${category}"
                            class="${currentPage == totalPages ? 'disabled' : ''}">
                             Next &gt;
                         </a>
                     </li>
+
                 </ul>
             </nav>
         </c:if>
+
     </section>
 </main>
 

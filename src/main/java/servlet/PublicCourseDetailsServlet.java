@@ -25,7 +25,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
 
         // Validate course ID
         if (courseIdStr == null || courseIdStr.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/publicCourses");
+            response.sendRedirect(request.getContextPath() + "/public-courses");
             return;
         }
 
@@ -40,7 +40,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             if (course == null || !"1".equals(course.getStatus())) {
                 // Course not found or not public, redirect to public courses page
                 request.setAttribute("errorMessage", "Course not found or not available");
-                response.sendRedirect(request.getContextPath() + "/publicCourses");
+                response.sendRedirect(request.getContextPath() + "/public-courses");
                 return;
             }
 
@@ -63,7 +63,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             // Invalid course ID format
-            response.sendRedirect(request.getContextPath() + "/publicCourses");
+            response.sendRedirect(request.getContextPath() + "/public-courses");
         }
     }
 
