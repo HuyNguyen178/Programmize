@@ -17,39 +17,57 @@ public class ClassDAO {
         userDAO = new UserDAO();
     }
 
-    public List<Class> getClassesByUserId(int userId, Integer status, String search, int offset, int limit) {
+    public List<Class> getClassesByUserId(int userId, String category, String keyword, int offset, int limit) {
         List<Class> classes = new ArrayList<>();
 
         try (Connection connection = DBUtil.getConnection()) {
-            StringBuilder sql = new StringBuilder(
-                    "SELECT DISTINCT c.*, u.user_id AS instructor_id, u.fullname AS instructor_name, u.avatar_url AS instructor_avatar " +
-                            "FROM class c " +
-                            "JOIN class_user cu ON c.class_id = cu.class_id " +
-                            "JOIN class_user cu2 ON cu2.class_id = c.class_id " +
-                            "JOIN user u ON u.user_id = cu2.user_id " +
-                            "JOIN user_role ur ON ur.user_id = u.user_id " +
-                            "JOIN setting s ON s.setting_id = ur.role_id " +
-                            "WHERE cu.user_id = ? AND s.setting_name = 'Instructor' "
-            );
+            StringBuilder sql = new StringBuilder("SELECT" +
+                    "    c.class_id," +
+                    "    c.class_name," +
+                    "    c.thumbnail_url," +
+                    "    c.listed_price," +
+                    "    c.sale_price," +
+                    "    c.status," +
+                    "    c.description," +
+                    "    c.start_date," +
+                    "    c.end_date," +
+                    "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
+                    "    u.user_id as instructor_id," +
+                    "    u.fullname AS instructor_name" +
+                    " FROM class c" +
+                    " LEFT JOIN class_user cu ON cu.class_id = c.class_id" +
+                    " LEFT JOIN class_category cc ON c.class_id = cc.class_id" +
+                    " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
+                    " LEFT JOIN user u ON c.instructor_id = u.user_id" +
+                    " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
+                    " WHERE c.status = 1 AND cu.user_id = ?");
 
-            if (status != null && status != 0) {
-                if (status == 1) sql.append("AND c.status = 1 ");
-                else if (status == 2) sql.append("AND c.status = 2 ");
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
             }
 
-            if (search != null && !search.trim().isEmpty()) {
-                sql.append("AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ?");
             }
 
-            sql.append("LIMIT ? OFFSET ?");
+            sql.append(" GROUP BY " +
+                    "    c.class_id, c.class_name, c.thumbnail_url, c.listed_price, " +
+                    "    c.sale_price, c.status, c.description, c.start_date," +
+                    "    c.end_date, u.user_id, u.fullname");
+
+            sql.append(" LIMIT ? OFFSET ?");
 
             PreparedStatement statement = connection.prepareStatement(sql.toString());
             int index = 1;
             statement.setInt(index++, userId);
 
-            if (search != null && !search.trim().isEmpty()) {
-                statement.setString(index++, "%" + search + "%");
-                statement.setString(index++, "%" + search + "%");
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                statement.setString(index++, "%" + keyword + "%");
+                statement.setString(index++, "%" + keyword + "%");
+            }
+
+            if (category != null && !category.trim().isEmpty()) {
+                statement.setString(index++, category);
             }
 
             statement.setInt(index++, limit);
@@ -62,13 +80,15 @@ public class ClassDAO {
                 c.setId(resultSet.getInt("class_id"));
                 c.setName(resultSet.getString("class_name"));
                 c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
-                c.setNumberOfStudents(resultSet.getInt("number_of_students"));
                 c.setStatus(resultSet.getBoolean("status"));
                 c.setDescription(resultSet.getString("description"));
                 c.setStartDate(resultSet.getDate("start_date"));
                 c.setEndDate(resultSet.getDate("end_date"));
 
-                User instructor = userDAO.getInstructorByClassId(c.getId());
+                User instructor = new User();
+                instructor.setId(resultSet.getInt("instructor_id"));
+                instructor.setFullname(resultSet.getString("instructor_name"));
+
                 c.setInstructor(instructor);
                 classes.add(c);
             }
@@ -211,5 +231,42 @@ public class ClassDAO {
             e.printStackTrace();
         }
         return categories;
+    }
+
+    public int countClassesByUserId(int userId, String category, String keyword) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT COUNT(*) FROM class c "
+                    + "LEFT JOIN class_user cu ON c.class_id = cu.class_id "
+                    + "WHERE cu.user_id = ? ";
+
+            if (category != null && !category.isEmpty()) {
+                sql += " AND c.category = ? ";
+            }
+
+            if (keyword != null && !keyword.isEmpty()) {
+                sql += " AND c.class_name LIKE ? ";
+            }
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            int idx = 1;
+            ps.setInt(idx++, userId);
+
+            if (category != null && !category.isEmpty()) {
+                ps.setString(idx++, category);
+            }
+
+            if (keyword != null && !keyword.isEmpty()) {
+                ps.setString(idx++, "%" + keyword + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

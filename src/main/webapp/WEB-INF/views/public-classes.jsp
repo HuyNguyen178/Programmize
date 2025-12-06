@@ -109,16 +109,6 @@
             color: #222;
         }
 
-        /* CATEGORY LABEL */
-        .card-category {
-            font-size: 0.75rem;
-            background: #f1f3f5;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-weight: 600;
-            color: #444;
-        }
-
         /* META */
         .card-meta {
             color: #666;
@@ -163,8 +153,7 @@
             background: #1e54b5;
         }
 
-        /* NO COURSE */
-        .no-courses {
+        .no-classes {
             padding: 2.5rem;
             background: white;
             border-radius: 12px;
@@ -313,7 +302,7 @@
                 </div>
             </c:when>
             <c:otherwise>
-                <div class="no-courses">
+                <div class="no-classes">
                     <h3>No classes found</h3>
                     <p>Try adjusting your filters or search criteria</p>
                 </div>

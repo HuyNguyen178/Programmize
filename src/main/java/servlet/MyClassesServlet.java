@@ -15,6 +15,7 @@ import java.util.List;
 
 @WebServlet("/my-classes")
 public class MyClassesServlet extends HttpServlet {
+
     private ClassDAO classDAO;
     private static final int PAGE_SIZE = 6;
 
@@ -24,39 +25,50 @@ public class MyClassesServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        User user = (User) request.getSession().getAttribute("user");
-        Integer userId = user.getId();
-        
-        if (userId == null) {
+        User user = (User) request.getSession().getAttribute("loginUser");
+        if (user == null) {
             response.sendRedirect("login");
             return;
         }
 
-        String search = request.getParameter("search");
-        String statusParam = request.getParameter("status");
+        int userId = user.getId();
+
+        // Lấy parameter
+        String keyword = request.getParameter("search");
+        String category = request.getParameter("category");
         String pageParam = request.getParameter("page");
 
-        Integer status = null;
-        if (statusParam != null && !statusParam.isEmpty()) {
-            status = Integer.parseInt(statusParam);
-        }
+        if (keyword == null) keyword = "";
+        if (category == null) category = "";
 
+        // Page handling
         int page = 1;
         if (pageParam != null && !pageParam.isEmpty()) {
-            page = Integer.parseInt(pageParam);
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (Exception ignored) { }
         }
+
         int offset = (page - 1) * PAGE_SIZE;
 
-        List<Class> classes = classDAO.getClassesByUserId(userId, status, search, offset, PAGE_SIZE);
+        List<Class> classes = classDAO.getClassesByUserId(userId, category, keyword, offset, PAGE_SIZE);
 
+        int totalRecords = classDAO.countClassesByUserId(userId, category, keyword);
+        int totalPages = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
+
+        List<String> allCategories = classDAO.getAllCategories();
+
+        request.setAttribute("allCategories", allCategories);
         request.setAttribute("classes", classes);
-        request.setAttribute("search", search);
-        request.setAttribute("status", status);
+        request.setAttribute("category", category);
+        request.setAttribute("keyword", keyword);
         request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
 
-        request.getRequestDispatcher("/WEB-INF/views/my-classes.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/my-classes.jsp")
+                .forward(request, response);
     }
 }
-
