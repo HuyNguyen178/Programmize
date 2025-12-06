@@ -323,23 +323,6 @@ public class CourseDAO {
         return instructors;
     }
 
-    // Get instructor name by ID
-    public String getInstructorNameById(int instructorId) {
-        String sql = "SELECT fullname FROM user WHERE user_id = ?";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, instructorId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString("fullname");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error getting instructor name: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     // ==================== COURSE CRUD OPERATIONS ====================
 
     // Get course by ID (with category and instructor from related tables)
@@ -435,37 +418,6 @@ public class CourseDAO {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    // Update course (for EditCourseServlet)
-    // Note: This updates the course table. Categories are updated separately.
-    public boolean updateCourse(Course course) {
-        String sql = "UPDATE course SET course_name = ?, listed_price = ?, sale_price = ?, " +
-                "thumbnail_url = ?, description = ?, status = ?, duration = ?, instructor_id = ? " +
-                "WHERE course_id = ?";
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, course.getCourseName());
-            stmt.setBigDecimal(2, course.getListedPrice());
-            stmt.setBigDecimal(3, course.getSalePrice());
-            stmt.setString(4, course.getThumbnailUrl());
-            stmt.setString(5, course.getDescription());
-            stmt.setString(6, course.getStatus());
-            stmt.setInt(7, course.getDuration() != null ? course.getDuration() : 0);
-            stmt.setInt(8, course.getInstructorId() != null ? course.getInstructorId() : 0);
-            stmt.setInt(9, course.getCourseId());
-
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Update course ID " + course.getCourseId() + ": " + rowsAffected + " rows affected");
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error updating course: " + e.getMessage());
-            e.printStackTrace();
-            return false;
         }
     }
 
@@ -783,53 +735,6 @@ public class CourseDAO {
             if ("all".equals(cat) || cat == null || cat.isEmpty()) return true;
         }
         return false;
-    }
-
-    // Get public course details by ID (only returns active courses with status = 1)
-    public Course getPublicCourseById(int courseId) {
-        String sql = "SELECT c.*, u.fullname AS instructor_name, " +
-                "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
-                "FROM course c " +
-                "LEFT JOIN user u ON c.instructor_id = u.user_id " +
-                "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
-                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
-                "WHERE c.course_id = ? AND c.status = 1 " +
-                "GROUP BY c.course_id";
-        Course course = null;
-
-        System.out.println("Getting public course by ID: " + courseId);
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, courseId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                course = new Course();
-                course.setCourseId(rs.getInt("course_id"));
-                course.setThumbnailUrl(rs.getString("thumbnail_url"));
-                course.setCourseName(rs.getString("course_name"));
-                course.setCourseCategory(rs.getString("category_names"));
-                course.setCourseInstructor(rs.getString("instructor_name"));
-                course.setListedPrice(rs.getBigDecimal("listed_price"));
-                course.setSalePrice(rs.getBigDecimal("sale_price"));
-                course.setDescription(rs.getString("description"));
-                course.setStatus(rs.getString("status"));
-                course.setDuration(rs.getInt("duration"));
-                course.setInstructorId(rs.getInt("instructor_id"));
-
-                System.out.println("Found public course: " + course.getCourseName());
-            } else {
-                System.out.println("No public course found with ID: " + courseId);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error getting public course: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return course;
     }
 
     // ==================== ENROLLMENT METHODS ====================
