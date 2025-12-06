@@ -8,7 +8,7 @@ public class Chapter {
     private String chapterName;
     private String description;
     private Integer orderIndex;
-    private String status;
+    private Boolean status;
     private Date createdAt;
     private Date updatedAt;
 
@@ -18,7 +18,7 @@ public class Chapter {
 
     // Parameterized Constructor
     public Chapter(Integer chapterId, Integer courseId, String chapterName, String description,
-                   Integer orderIndex, String status, Date createdAt, Date updatedAt) {
+                   Integer orderIndex, Boolean status, Date createdAt, Date updatedAt) {
         this.chapterId = chapterId;
         this.courseId = courseId;
         this.chapterName = chapterName;
@@ -31,7 +31,7 @@ public class Chapter {
 
     // Constructor without ID (for creating new chapter)
     public Chapter(Integer courseId, String chapterName, String description,
-                   Integer orderIndex, String status, Date createdAt, Date updatedAt) {
+                   Integer orderIndex, Boolean status, Date createdAt, Date updatedAt) {
         this.courseId = courseId;
         this.chapterName = chapterName;
         this.description = description;
@@ -77,10 +77,10 @@ public class Chapter {
         this.orderIndex = orderIndex;
     }
 
-    public String getStatus() {
+    public Boolean getStatus() {
         return status;
     }
-    public void setStatus(String status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 
