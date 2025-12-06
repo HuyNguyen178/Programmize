@@ -355,4 +355,52 @@ public class UserDAO {
         }
         return null;
     }
+
+    public int getRoleIdByRoleName(String roleName) {
+        String sql = "SELECT setting_id FROM setting WHERE setting_name = ? AND setting_type = 'Role'";
+
+        int roleId = -1;
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, roleName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                if (rs.next()) {
+                    roleId = rs.getInt("setting_id");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return roleId;
+    }
+
+    public boolean updateUser(User user) {
+        String sql = "UPDATE user SET fullname = ?, email = ?, status = ?, avatar_url = ?, password = ?, role_id = ? " +
+                "WHERE user_id = ?";
+        int roleId = getRoleIdByRoleName(user.getRoleName());
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+
+            stmt.setString(1, user.getFullname());
+            stmt.setString(2, user.getEmail());
+            stmt.setBoolean(3, user.isStatus());
+            stmt.setString(4, user.getAvatarUrl());
+            stmt.setString(5, hashed);
+            stmt.setInt(5, roleId);
+            stmt.setInt(6, user.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

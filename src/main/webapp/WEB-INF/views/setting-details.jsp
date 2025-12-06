@@ -11,7 +11,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Edit Setting</title>
+    <title>Setting Detail</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -24,18 +24,40 @@
             background-color: #f8f9fa;
         }
 
-        /* Cấu hình Content Shift (Dùng ID #content để khớp với JS) */
+        /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
         #content {
             margin-left: 260px;
             transition: margin-left 0.25s ease;
             min-height: 100vh;
-            padding: 20px; /* Thêm padding cho nội dung */
+            padding: 20px;
+
+            /* CSS CĂN GIỮA MỚI */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - 260px);
+            box-sizing: border-box;
         }
         #content.expanded {
             margin-left: 72px;
+            width: calc(100% - 72px);
         }
 
-        /* Cấu hình Topbar Shift (Dùng ID #topbar để khớp với JS) */
+        /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
+        .container-fluid-custom {
+            max-width: 850px; /* Chiều rộng tối đa thống nhất */
+            width: 100%;
+        }
+
+        /* Cải thiện Header tối giản */
+        .page-header {
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+            width: 100%;
+        }
+
+        /* Giữ nguyên Topbar CSS */
         #topbar {
             margin-left: 260px;
             transition: margin-left 0.25s ease;
@@ -47,37 +69,40 @@
             margin-left: 72px;
         }
 
-        .btn-link {
-            text-decoration: none;
-            color: #0d6efd; /* Màu mặc định của Bootstrap primary */
-            font-weight: bold;
-        }
     </style>
 </head>
 
 <body class="bg-light">
 
 <%@ include file="include/admin-sidebar.jsp" %>
-
 <%@ include file="include/admin-topbar.jsp" %>
 
 <div id="content" class="p-4">
-    <div class="container bg-white p-4 rounded shadow-sm">
+    <div class="container-fluid-custom p-0">
 
-        <a href="setting-list" class="btn btn-link mb-3">&larr; Back to List</a>
-        <h3 class="mb-4 text-primary">Edit Setting</h3>
+        <%-- HEADER SECTION (TỐI GIẢN) --%>
+        <div class="d-flex justify-content-start align-items-center page-header">
+            <h2 class="text-primary fw-bold">⚙️ Edit Setting</h2>
+        </div>
 
+        <%-- Error Message Display --%>
         <% String errorMsg = (String) request.getAttribute("errorMsg"); %>
         <% if (errorMsg != null) { %>
         <div class="alert alert-danger"><%= errorMsg %></div>
         <% } %>
 
-        <form action="setting-detail" method="post" class="p-4">
+        <%-- FORM CHÍNH --%>
+        <form action="setting-detail" method="post" class="p-4 bg-white rounded shadow-lg">
 
             <input type="hidden" name="settingId" value="<%= setting.getId() %>">
 
             <div class="row g-4">
-                <div class="col-md-6">
+
+                <%-- COLUMN 1: Type and Status --%>
+                <div class="col-md-6 border-end pe-4">
+                    <h5 class="text-secondary mb-3"><i class="fas fa-sitemap"></i> Type & Status</h5>
+
+                    <%-- TYPE SELECTION --%>
                     <div class="mb-3">
                         <label for="typeSelection" class="form-label">Type<span class="text-danger">*</span></label>
                         <select id="typeSelection" name="typeId" class="form-select" required>
@@ -88,11 +113,9 @@
                                 if (types != null) {
                                     for (model.Setting t : types) {
                                         boolean selected = false;
-                                        // Ưu tiên giá trị nhập lại (typeValue)
                                         if (selectedType != null) {
                                             selected = selectedType.equals(String.valueOf(t.getId()));
                                         }
-                                        // Hoặc lấy giá trị hiện tại từ database
                                         else if (setting != null && setting.getTypeId() != null) {
                                             selected = setting.getTypeId().equals(t.getId());
                                         }
@@ -105,17 +128,16 @@
                         </select>
                     </div>
 
+                    <%-- STATUS RADIO BUTTONS --%>
                     <div class="mb-3">
                         <label class="form-label">Status<span class="text-danger">*</span></label><br>
                         <%
                             String statusValue = (String) request.getAttribute("statusValue");
                             boolean isActive = false;
 
-                            // Ưu tiên giá trị nhập lại (statusValue)
                             if (statusValue != null) {
                                 isActive = "1".equals(statusValue);
                             }
-                            // Hoặc lấy giá trị hiện tại từ database
                             else {
                                 isActive = setting.isStatus();
                             }
@@ -133,34 +155,58 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <%-- COLUMN 2: Name, Value, Priority --%>
+                <div class="col-md-6 ps-4">
+                    <h5 class="text-secondary mb-3"><i class="fas fa-tag"></i> Name & Value</h5>
+
+                    <%-- NAME --%>
                     <div class="mb-3">
                         <label for="nameString" class="form-label">Name<span class="text-danger">*</span></label>
                         <input id="nameString" type="text" name="settingName" class="form-control" required
                                value="<%= request.getAttribute("nameValue")!=null ? request.getAttribute("nameValue") : setting.getName() %>">
                     </div>
 
+                    <%-- VALUE --%>
                     <div class="mb-3">
                         <label for="valueString" class="form-label">Value</label>
                         <input id="valueString" type="text" name="value" class="form-control"
                                value="<%= request.getAttribute("valueValue") != null ? request.getAttribute("valueValue") : setting.getValue() %>">
                     </div>
+
+                    <%-- PRIORITY --%>
+                    <div class="mb-3">
+                        <label for="priorityNumber" class="form-label">Priority</label>
+                        <input id="priorityNumber" type="number" name="priority" class="form-control"
+                               value="<%= request.getAttribute("priorityValue") != null ? request.getAttribute("priorityValue") : setting.getPriority() %>">
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3 col-md-6">
-                <label for="priorityNumber" class="form-label">Priority</label>
-                <input id="priorityNumber" type="number" name="priority" class="form-control"
-                       value="<%= request.getAttribute("priorityValue") != null ? request.getAttribute("priorityValue") : setting.getPriority() %>">
-            </div>
+                <%-- DESCRIPTION (FULL WIDTH) --%>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="descriptionText" class="form-label">Description</label>
+                        <textarea id="descriptionText" name="description" class="form-control" rows="3"><%=request.getAttribute("descriptionValue") != null ? request.getAttribute("descriptionValue") : setting.getDescription()%></textarea>
+                    </div>
+                </div>
 
-            <div class="mb-3">
-                <label for="descriptionText" class="form-label">Description</label>
-                <textarea id="descriptionText" name="description" class="form-control" rows="3"><%=request.getAttribute("descriptionValue") != null ? request.getAttribute("descriptionValue") : setting.getDescription()%></textarea>
-            </div>
+                <%-- FOOTER HÀNH ĐỘNG (FULL WIDTH) --%>
+                <div class="col-12 pt-3 border-top">
+                    <div class="d-flex justify-content-between">
+                        <%-- NÚT BACK TO LIST --%>
+                        <a href="setting-list" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
 
-            <button type="submit" class="btn btn-primary mt-3">Update</button>
+                        <%-- NÚT UPDATE --%>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </form>
+
     </div>
 </div>
 
