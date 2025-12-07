@@ -54,7 +54,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 text-primary">Chapter Information</h5>
                 <div class="btn-group">
-                    <a href="${pageContext.request.contextPath}/chapter-edit?id=${chapter.chapterId}"
+                    <a href="${pageContext.request.contextPath}/edit-chapter?id=${chapter.chapterId}"
                        class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-pencil me-1"></i> Edit Chapter
                     </a>
@@ -69,7 +69,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p class="mb-2">
-                        <strong>Title:</strong> Chapter ${chapter.orderIndex}: ${chapter.chapterName}
+                        <strong>Chapter ${chapter.orderIndex}:</strong> ${chapter.chapterName}
                     </p>
                     <p class="mb-2">
                         <strong>Description:</strong>
@@ -204,14 +204,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <!-- Back Button -->
-    <div class="mt-4">
-        <a href="${pageContext.request.contextPath}/course-detail?id=${chapter.courseId}"
-           class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i> Back to Course
-        </a>
     </div>
 </div>
 

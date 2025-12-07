@@ -198,9 +198,7 @@ public class ChapterDAO extends DBUtil {
         return false;
     }
 
-    /**
-     * Map a ResultSet row to a Chapter object
-     */
+    //Map a ResultSet row to a Chapter object
     private Chapter mapResultSetToChapter(ResultSet rs) throws SQLException {
         Chapter chapter = new Chapter();
         chapter.setChapterId(rs.getInt("chapter_id"));
@@ -212,6 +210,52 @@ public class ChapterDAO extends DBUtil {
         chapter.setCreatedAt(rs.getDate("created_at"));
         chapter.setUpdatedAt(rs.getDate("updated_at"));
         return chapter;
+    }
+
+    // returns List of String[] where each String[] = {course_id, course_name}
+    public List<String[]> getAllCoursesForDropdown() {
+        List<String[]> courses = new ArrayList<>();
+        String sql = "SELECT course_id, course_name FROM course ORDER BY course_name ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                String[] course = new String[2];
+                course[0] = String.valueOf(rs.getInt("course_id"));
+                course[1] = rs.getString("course_name");
+                courses.add(course);
+            }
+            System.out.println("Retrieved " + courses.size() + " courses for dropdown");
+        } catch (SQLException e) {
+            System.err.println("Error getting courses for dropdown: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return courses;
+    }
+
+    /**
+     * Get next order index for a course -> for adding new chapter
+     * returns next available order index
+     */
+    public int getNextOrderIndex(int courseId) {
+        String sql = "SELECT COALESCE(MAX(order_index), 0) + 1 AS next_index FROM chapter WHERE course_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, courseId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("next_index");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting next order index: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 1;
     }
 
     // Main method for testing

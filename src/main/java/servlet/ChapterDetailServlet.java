@@ -28,7 +28,7 @@ public class ChapterDetailServlet extends HttpServlet {
 
         if (idParam == null || idParam.trim().isEmpty()) {
             System.err.println("ChapterDetailServlet: Chapter ID is required.");
-            response.sendRedirect(request.getContextPath() + "/chapters");
+            response.sendRedirect(request.getContextPath() + "/");         //temp: delete /chapters
             return;
         }
 
@@ -39,7 +39,7 @@ public class ChapterDetailServlet extends HttpServlet {
 
             if (chapter == null) {
                 System.err.println("ChapterDetailServlet: Chapter not found with ID: " + chapterId);
-                response.sendRedirect(request.getContextPath() + "/chapters");
+                response.sendRedirect(request.getContextPath() + "/");
                 return;
             }
 
@@ -54,7 +54,7 @@ public class ChapterDetailServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             System.err.println("ChapterDetailServlet: Invalid chapter ID format - " + idParam);
-            response.sendRedirect(request.getContextPath() + "/chapters");
+            response.sendRedirect(request.getContextPath() + "/");
         }
     }
 
@@ -67,7 +67,7 @@ public class ChapterDetailServlet extends HttpServlet {
 
         if (idParam == null || idParam.trim().isEmpty()) {
             System.err.println("ChapterDetailServlet POST: Chapter ID is required.");
-            response.sendRedirect(request.getContextPath() + "/chapters");
+            response.sendRedirect(request.getContextPath() + "/");
             return;
         }
 
@@ -95,7 +95,7 @@ public class ChapterDetailServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             System.err.println("ChapterDetailServlet POST: Invalid chapter ID format - " + idParam);
-            response.sendRedirect(request.getContextPath() + "/chapters");
+            response.sendRedirect(request.getContextPath() + "/");
         }
     }
 }
