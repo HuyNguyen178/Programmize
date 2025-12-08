@@ -7,9 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Chapter;
-import utils.DBUtil;
 
-public class ChapterDAO extends DBUtil {
+import static utils.DBUtil.getConnection;
+
+
+public class ChapterDAO {
 
     /**
      * Get a chapter by its ID
