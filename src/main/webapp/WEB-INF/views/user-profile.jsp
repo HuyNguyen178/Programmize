@@ -84,7 +84,7 @@
             <p><span class="label">Email:</span> ${user.email}</p>
         </div>
 
-        <a href="${pageContext.request.contextPath}/edit-profile?id=${user.id}" class="edit-btn">
+        <a href="${pageContext.request.contextPath}/profile/edit?id=${user.id}" class="edit-btn">
             Edit Profile
         </a>
     </div>
