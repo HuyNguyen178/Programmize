@@ -7,9 +7,10 @@ import utils.DBUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import static utils.DBUtil.getConnection;
 
 public class UserDAO {
+    private DBUtil dbUtil = new DBUtil();
+
     public User checkLogin(String userOrEmail, String password) {
         String sql =
                 "SELECT u.user_id, u.fullname, u.username, u.email, u.status, " +
@@ -19,7 +20,7 @@ public class UserDAO {
                         "WHERE u.username = ? OR u.email = ? " +
                         "LIMIT 1";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, userOrEmail);
@@ -51,7 +52,7 @@ public class UserDAO {
 
     public boolean checkUserOrEmailExists(String userOrEmail) {
         String sql = "SELECT 1 FROM user WHERE username = ? OR email = ?";
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userOrEmail);
             stmt.setString(2, userOrEmail);
@@ -69,7 +70,7 @@ public class UserDAO {
                 "INSERT INTO user (fullname, username, email, password, status, avatar_url, role_id) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
@@ -103,7 +104,7 @@ public class UserDAO {
     public void updateStatusByEmail(String email) {
         String sql = "UPDATE user SET status = TRUE WHERE email = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.executeUpdate();
@@ -115,7 +116,7 @@ public class UserDAO {
     public boolean updatePasswordByEmail(String email, String newPassword) {
         String sql = "UPDATE user SET password = ? WHERE email = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
@@ -137,7 +138,7 @@ public class UserDAO {
                         "JOIN setting s ON s.setting_id = u.role_id " +
                         "WHERE cu.class_id = ? AND s.setting_name = 'Instructor'";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, classId);
@@ -173,7 +174,7 @@ public class UserDAO {
                         " ORDER BY u.user_id ASC " +
                         " LIMIT ? OFFSET ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             setFilterParameters(ps, params, 1);
@@ -204,7 +205,7 @@ public class UserDAO {
     public boolean updateUserStatus(int userId, boolean newStatus) {
         String sql = "UPDATE user SET status = ? WHERE user_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setBoolean(1, newStatus);
@@ -230,7 +231,7 @@ public class UserDAO {
                         "LEFT JOIN setting s ON u.role_id = s.setting_id " +
                         filterClause;
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             setFilterParameters(ps, params, 1);
@@ -285,7 +286,7 @@ public class UserDAO {
                         "LEFT JOIN setting s ON u.role_id = s.setting_id " +
                         "WHERE u.user_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
@@ -314,7 +315,7 @@ public class UserDAO {
     public void saveRememberToken(int userId, String token) {
         String sql = "UPDATE user SET remember_token = ? WHERE user_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, token);
             stmt.setInt(2, userId);
@@ -333,7 +334,7 @@ public class UserDAO {
                         "WHERE u.remember_token = ? " +
                         "LIMIT 1";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, token);
@@ -361,7 +362,7 @@ public class UserDAO {
 
         int roleId = -1;
 
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, roleName);
@@ -383,7 +384,7 @@ public class UserDAO {
         String sql = "UPDATE user SET fullname = ?, email = ?, status = ?, avatar_url = ?, password = ?, role_id = ? " +
                 "WHERE user_id = ?";
         int roleId = getRoleIdByRoleName(user.getRoleName());
-        try (Connection conn = getConnection();
+        try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
