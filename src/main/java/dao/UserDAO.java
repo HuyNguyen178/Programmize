@@ -362,7 +362,7 @@ public class UserDAO {
     }
 
     public int getRoleIdByRoleName(String roleName) {
-        String sql = "SELECT setting_id FROM setting WHERE setting_name = ? AND setting_type = 'Role'";
+        String sql = "SELECT setting_id FROM setting WHERE setting_name = ? AND type_id = 1 ";
 
         int roleId = -1;
 

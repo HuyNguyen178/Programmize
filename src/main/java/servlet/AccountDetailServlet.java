@@ -59,12 +59,11 @@ public class AccountDetailServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // ... (Phần lấy dữ liệu từ form giữ nguyên) ...
         int userId = Integer.parseInt(request.getParameter("userId"));
         String fullname = request.getParameter("fullname");
         String email = request.getParameter("email");
         String newRoleName = request.getParameter("roleName");
-        String password = request.getParameter("password"); // Khôi phục Password
+        String password = request.getParameter("password");
         boolean status = "1".equals(request.getParameter("status"));
         String avatarUrl = request.getParameter("avatarUrl");
 
