@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    private DBUtil dbUtil = new DBUtil();
+    private final DBUtil dbUtil;
+
+    public UserDAO() {
+        dbUtil = new DBUtil();
+    }
 
     public User checkLogin(String userOrEmail, String password) {
         String sql =
@@ -81,7 +85,7 @@ public class UserDAO {
             stmt.setString(4, hashed);
             stmt.setBoolean(5, user.isStatus());
             stmt.setString(6, user.getAvatarUrl());
-            stmt.setInt(7, 3);
+            stmt.setInt(7, getRoleIdByRoleName(user.getRoleName()));
 
             if (stmt.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -358,7 +362,7 @@ public class UserDAO {
     }
 
     public int getRoleIdByRoleName(String roleName) {
-        String sql = "SELECT setting_id FROM setting WHERE setting_name = ? AND setting_type = 'Role'";
+        String sql = "SELECT setting_id FROM setting WHERE setting_name = ? AND type_id = 1 ";
 
         int roleId = -1;
 
@@ -394,8 +398,8 @@ public class UserDAO {
             stmt.setBoolean(3, user.isStatus());
             stmt.setString(4, user.getAvatarUrl());
             stmt.setString(5, hashed);
-            stmt.setInt(5, roleId);
-            stmt.setInt(6, user.getId());
+            stmt.setInt(6, roleId);
+            stmt.setInt(7, user.getId());
 
             return stmt.executeUpdate() > 0;
 
@@ -403,5 +407,44 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<Object[]> getTopInstructorsByEnrollment(int limit) {
+        List<Object[]> topStatsList = new ArrayList<>();
+
+        String sql = "SELECT u.user_id, u.fullname, u.status, " +
+                "COUNT(cl_u.user_id) AS enrollments_count " +
+                "FROM user u " +
+                "JOIN class cl ON u.user_id = cl.instructor_id " +
+                "LEFT JOIN class_user cl_u ON cl.class_id = cl_u.class_id " +
+                "WHERE u.role_id = (SELECT setting_id FROM setting WHERE setting_name = 'Instructor') " +
+                "GROUP BY u.user_id, u.fullname " +
+                "ORDER BY enrollments_count DESC " +
+                "LIMIT ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User instructor = new User();
+                    instructor.setId(rs.getInt("user_id"));
+                    instructor.setFullname(rs.getString("fullname"));
+                    instructor.setStatus(rs.getBoolean("status"));
+                    Integer enrollments = rs.getInt("enrollments_count");
+
+                    Object[] statArray = new Object[2];
+                    statArray[0] = instructor;
+                    statArray[1] = enrollments;
+
+                    topStatsList.add(statArray);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return topStatsList;
     }
 }

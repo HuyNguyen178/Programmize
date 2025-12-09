@@ -2,9 +2,12 @@ package dao;
 
 import utils.DBUtil;
 import model.Course;
+
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static utils.DBUtil.getConnection;
 
@@ -856,5 +859,66 @@ public class CourseDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int getTotalCourses() {
+        String sql = "SELECT COUNT(course_id) FROM course";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Object[]> getTopSellingCourses(int limit) {
+        List<Object[]> topStatsList = new ArrayList<>();
+
+        String sql =
+                "SELECT " +
+                        "   c.course_id, c.course_name, c.listed_price, c.sale_price, " +
+                        "   COUNT(cu.user_id) AS enrollments_count, " +
+                        "   (COUNT(cu.user_id) * c.sale_price) AS total_revenue " +
+                        "FROM " +
+                        "   course c " +
+                        "LEFT JOIN " +
+                        "   course_user cu ON c.course_id = cu.course_id " +
+                        "GROUP BY " +
+                        "   c.course_id, c.course_name, c.listed_price, c.sale_price " +
+                        "ORDER BY " +
+                        "   total_revenue DESC " +
+                        "LIMIT ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Course course = new Course();
+                    course.setId(rs.getInt("course_id"));
+                    course.setCourseName(rs.getString("course_name"));
+
+                    Integer enrollments = rs.getInt("enrollments_count");
+                    BigDecimal revenue = rs.getBigDecimal("total_revenue");
+
+                    Object[] statArray = new Object[3];
+                    statArray[0] = course;
+                    statArray[1] = enrollments;
+                    statArray[2] = revenue;
+                    topStatsList.add(statArray);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return topStatsList;
     }
 }
