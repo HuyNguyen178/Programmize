@@ -19,7 +19,7 @@ public class MyCoursesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        User user = (User) request.getSession().getAttribute("user");
+        User user = (User) request.getSession().getAttribute("loginUser");
 
         if (user == null) {
             response.sendRedirect("login");
