@@ -11,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/admin.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #0d6efd;
@@ -124,22 +125,66 @@
             font-style: italic;
             padding: 10px 0;
         }
+        #content {
+            margin-left: 260px; /* Default position when Sidebar is open [cite: 89] */
+            transition: margin-left 0.25s ease; /* [cite: 90] */
+            min-height: 100vh;
+            padding: 20px;
+        }
+        #content.expanded {
+            margin-left: 72px; /* Position when Sidebar is closed [cite: 91] */
+        }
+        /* Topbar Shift Configuration (Copied from account-list.jsp) */
+        #topbar {
+            margin-left: 260px; /* [cite: 4] */
+            transition: margin-left 0.25s ease; /* [cite: 4] */
+            width: calc(100% - 260px);
+        }
+        #topbar.expanded {
+            margin-left: 72px; /* [cite: 5] */
+            width: calc(100% - 72px); /* [cite: 5] */
+        }
+
+        /* Table alignment (Copied from account-list.jsp) */
+        .table th, .table td {
+            vertical-align: middle; /* [cite: 6] */
+            text-align: center; /* [cite: 6] */
+        }
+        /* Course Name (2nd column) left-aligned */
+        .table td:nth-child(2) {
+            text-align: left; /* Tương tự cột Full Name ở account-list.jsp [cite: 7] */
+        }
+
+        /* Thumbnail style (Giữ nguyên kích thước 50px như ban đầu để tránh làm thay đổi cấu trúc dữ liệu nếu có) */
+        .thumbnail {
+            width: 50px; /* [cite: 83] */
+            height: 50px; /* [cite: 83] */
+            object-fit: cover;
+        }
+
+        /* Loại bỏ các style cũ của course-list.jsp không cần thiết */
+
+        /* Đảm bảo các trạng thái status dùng lớp badge của Bootstrap */
+        .status-active {
+            font-weight: bold;
+        }
+        .status-inactive {
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body class="bg-light">
 
-<div class="container py-4">
+<%@ include file="include/instructor-topbar.jsp" %>
+<%@ include file="include/instructor-sidebar.jsp" %>
+
+<div id="content" class="py-4">
 
     <div class="page-header">
         <h1 class="fw-bold mb-4 text-primary">
             <i class="bi bi-journal-bookmark me-2"></i>Course Content
         </h1>
-    </div>
-
-    <!-- Debug info - remove after testing -->
-    <div class="alert alert-info mb-3">
-        <strong>Debug:</strong> Total courses loaded: ${courses.size()}
     </div>
 
     <!-- Success/Error Messages -->
@@ -355,6 +400,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/admin_scripts.js"></script>
 <script>
     function toggleCourse(index) {
         var header = event.currentTarget;

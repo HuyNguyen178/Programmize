@@ -13,7 +13,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link text-white">
+            <a href="course-content" class="nav-link text-white">
                 <i class="fa fa-book-open me-2"></i> <span class="label">Course Content</span>
             </a>
         </li>

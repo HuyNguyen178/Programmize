@@ -6,7 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Add New Course</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/admin.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -155,9 +157,74 @@
             cursor: pointer;
             text-decoration: none;
         }
+        /* Layout and styling fixes */
+        body { margin: 0; background-color: #f8f9fa; }
+
+        /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
+        /* Sử dụng #content để khớp với cơ chế ẩn/hiện của Sidebar */
+        #content {
+            margin-left: 260px; /* Độ rộng của Sidebar */
+            transition: margin-left 0.25s ease;
+            min-height: 100vh;
+            padding: 20px;
+
+            /* CSS CĂN GIỮA */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - 260px);
+            box-sizing: border-box;
+        }
+
+        #content.expanded {
+            margin-left: 72px;
+            width: calc(100% - 72px);
+        }
+
+        /* Cấu hình Topbar Shift (Dùng ID #topbar để khớp với JS) */
+        #topbar {
+            margin-left: 260px;
+            transition: margin-left 0.25s ease;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        #topbar.expanded {
+            margin-left: 72px;
+        }
+
+        /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
+        .container-fluid-custom {
+            max-width: 850px; /* Chiều rộng tối đa thống nhất */
+            width: 100%;
+        }
+
+        /* Cải thiện Header tối giản */
+        .page-header {
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+            width: 100%;
+        }
+
+        /* Cập nhật các thành phần Form cũ sang style Bootstrap */
+        .checkbox-group {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 0.25rem;
+        }
+        .form-group label {
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
+
+<%@ include file="include/admin-sidebar.jsp" %>
+<%@ include file="include/admin-topbar.jsp" %>
+
 <div class="container">
     <h1>➕ Add New Course</h1>
 
@@ -245,5 +312,8 @@
         </div>
     </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/admin_scripts.js"></script>
 </body>
 </html>
