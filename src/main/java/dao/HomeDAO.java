@@ -13,9 +13,6 @@ public class HomeDAO {
 
     public List<Course> getHighlightedCourses() {
         List<Course> list = new ArrayList<>();
-        // Query lấy 8 khóa học mới nhất đang active (status = 1)
-        // JOIN bảng user để lấy tên giảng viên (fullname)
-        // JOIN bảng setting để lấy tên category (nếu cần hiển thị category)
         String sql = "SELECT c.*, u.fullname AS instructor_name, s.value AS category_name " +
                 "FROM course c " +
                 "JOIN user u ON c.instructor_id = u.user_id " +
