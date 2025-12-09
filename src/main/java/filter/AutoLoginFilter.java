@@ -5,6 +5,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class AutoLoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
         if (session != null && session.getAttribute("loginUser") != null) {
@@ -34,12 +36,22 @@ public class AutoLoginFilter implements Filter {
                     if (user != null) {
                         HttpSession newSession = req.getSession();
                         newSession.setAttribute("loginUser", user);
+
+                        switch (user.getRoleName()) {
+                            case "Admin":
+                                res.sendRedirect("dashboard");
+                                return;
+                            case "Instructor":
+                                res.sendRedirect("student-list");
+                                return;
+                            default:
+                                res.sendRedirect("home");
+                                return;
+                        }
                     }
-                    break;
                 }
             }
         }
-
         chain.doFilter(request, response);
     }
 }
