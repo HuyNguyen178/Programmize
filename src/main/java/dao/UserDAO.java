@@ -85,7 +85,7 @@ public class UserDAO {
             stmt.setString(4, hashed);
             stmt.setBoolean(5, user.isStatus());
             stmt.setString(6, user.getAvatarUrl());
-            stmt.setInt(7, 3);
+            stmt.setInt(7, getRoleIdByRoleName(user.getRoleName()));
 
             if (stmt.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
