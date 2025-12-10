@@ -55,7 +55,7 @@ public class CourseContentServlet extends HttpServlet {
             System.out.println("Course ID " + courseId + " (" + course.getCourseName() + "): " + chapters.size() + " chapters");
         }
 
-        List<String[]> categories = courseDAO.getAllCategoriesFromSettings();
+        List<String> categories = courseDAO.getAllCategoriesFromSettings();
 
         request.setAttribute("courses", courses);
         request.setAttribute("courseChaptersMap", courseChaptersMap);
