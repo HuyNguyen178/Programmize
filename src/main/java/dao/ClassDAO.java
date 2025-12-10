@@ -102,7 +102,7 @@ public class ClassDAO {
         return classes;
     }
 
-    public List<Class> getActiveClasses(String keyword, String category, String priceSort) {
+    public List<Class> getActiveClasses(String keyword, String category, String priceSort, int limit, int offset) {
         List<Class> classes = new ArrayList<>();
 
         try (Connection conn = DBUtil.getConnection()) {
@@ -149,6 +149,8 @@ public class ClassDAO {
                 sql.append(" ORDER BY c.class_id ASC");
             }
 
+            sql.append(" LIMIT ? OFFSET ? ");
+
             PreparedStatement stmt = conn.prepareStatement(sql.toString());
 
             int paramIndex = 1;
@@ -162,6 +164,9 @@ public class ClassDAO {
             if (category != null && !category.trim().isEmpty()) {
                 stmt.setString(paramIndex++, category);
             }
+
+            stmt.setInt(paramIndex++, limit);
+            stmt.setInt(paramIndex++, offset);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -237,40 +242,48 @@ public class ClassDAO {
 
     public int countClassesByUserId(int userId, String category, String keyword) {
         try (Connection connection = DBUtil.getConnection()) {
-            String sql = "SELECT COUNT(*) FROM class c "
-                    + "LEFT JOIN class_user cu ON c.class_id = cu.class_id "
-                    + "WHERE cu.user_id = ? ";
 
-            if (category != null && !category.isEmpty()) {
-                sql += " AND c.category = ? ";
+            StringBuilder sql = new StringBuilder(
+                    "SELECT COUNT(DISTINCT c.class_id) " +
+                            "FROM class c " +
+                            "LEFT JOIN class_user cu ON cu.class_id = c.class_id " +
+                            "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                            "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
+                            "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                            "WHERE cu.user_id = ? AND c.status = 1 "
+            );
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
             }
 
-            if (keyword != null && !keyword.isEmpty()) {
-                sql += " AND c.class_name LIKE ? ";
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ? ");
             }
 
-            PreparedStatement ps = connection.prepareStatement(sql);
-
+            PreparedStatement ps = connection.prepareStatement(sql.toString());
             int idx = 1;
+
             ps.setInt(idx++, userId);
 
-            if (category != null && !category.isEmpty()) {
-                ps.setString(idx++, category);
-            }
-
-            if (keyword != null && !keyword.isEmpty()) {
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                ps.setString(idx++, "%" + keyword + "%");
                 ps.setString(idx++, "%" + keyword + "%");
             }
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            if (category != null && !category.trim().isEmpty()) {
+                ps.setString(idx++, category);
             }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
     }
+
 
     public int getTotalClasses() {
         String sql = "SELECT COUNT(class_id) FROM class";
@@ -334,4 +347,45 @@ public class ClassDAO {
         return topStatsList;
     }
 
+    public int countActiveClasses(String keyword, String category) {
+        try (Connection connection = DBUtil.getConnection()) {
+
+            StringBuilder sql = new StringBuilder(
+                    "SELECT COUNT(DISTINCT c.class_id) " +
+                            "FROM class c " +
+                            "LEFT JOIN class_user cu ON cu.class_id = c.class_id " +
+                            "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                            "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
+                            "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                            "WHERE c.status = 1 "
+            );
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
+            }
+
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ? ");
+            }
+
+            PreparedStatement ps = connection.prepareStatement(sql.toString());
+            int idx = 1;
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                ps.setString(idx++, "%" + keyword + "%");
+                ps.setString(idx++, "%" + keyword + "%");
+            }
+
+            if (category != null && !category.trim().isEmpty()) {
+                ps.setString(idx++, category);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

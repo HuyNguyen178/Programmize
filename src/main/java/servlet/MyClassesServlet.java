@@ -17,7 +17,7 @@ import java.util.List;
 public class MyClassesServlet extends HttpServlet {
 
     private ClassDAO classDAO;
-    private static final int PAGE_SIZE = 6;
+    private static final int PAGE_SIZE = 12;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -56,8 +56,8 @@ public class MyClassesServlet extends HttpServlet {
 
         List<Class> classes = classDAO.getClassesByUserId(userId, category, keyword, offset, PAGE_SIZE);
 
-        int totalRecords = classDAO.countClassesByUserId(userId, category, keyword);
-        int totalPages = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
+        int totalClasses = classDAO.countClassesByUserId(userId, category, keyword);
+        int totalPages = (int) Math.ceil((double) totalClasses / PAGE_SIZE);
 
         List<String> allCategories = classDAO.getAllCategories();
 
@@ -67,6 +67,7 @@ public class MyClassesServlet extends HttpServlet {
         request.setAttribute("keyword", keyword);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalClasses", totalClasses);
 
         request.getRequestDispatcher("/WEB-INF/views/my-classes.jsp")
                 .forward(request, response);
