@@ -12,11 +12,12 @@ public class Chapter {
     private Date createdAt;
     private Date updatedAt;
 
+    private int lessonCount;
+
 
     public Chapter() {
     }
 
-    // Parameterized Constructor
     public Chapter(Integer chapterId, Integer courseId, String chapterName, String description,
                    Integer orderIndex, Boolean status, Date createdAt, Date updatedAt) {
         this.chapterId = chapterId;
@@ -29,7 +30,7 @@ public class Chapter {
         this.updatedAt = updatedAt;
     }
 
-    // Constructor without ID (for creating new chapter)
+    // constructor w/o ID -> for creating new chapter
     public Chapter(Integer courseId, String chapterName, String description,
                    Integer orderIndex, Boolean status, Date createdAt, Date updatedAt) {
         this.courseId = courseId;
@@ -41,7 +42,6 @@ public class Chapter {
         this.updatedAt = updatedAt;
     }
 
-    // Getters and Setters
     public Integer getChapterId() {
         return chapterId;
     }
@@ -98,7 +98,10 @@ public class Chapter {
         this.updatedAt = updatedAt;
     }
 
-    // toString method for debugging
+    public int getLessonCount() {return lessonCount; }
+    public void setLessonCount(int lessonCount) {this.lessonCount = lessonCount; }
+
+
     @Override
     public String toString() {
         return "Chapter{" +
