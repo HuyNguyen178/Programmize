@@ -1,5 +1,6 @@
 package dao;
 
+import model.Course;
 import model.User;
 import utils.DBUtil;
 
@@ -196,24 +197,50 @@ public class ClassDAO {
 
 
     public Class getClassById(int id) {
-        try (Connection connection = DBUtil.getConnection()) {
-            String sql = "SELECT class_id, class_name, thumbnail_url, number_of_students, status, description, start_date, end_date FROM class WHERE class_id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet rs = statement.executeQuery();
+        String sql = "SELECT c.*, u.user_id AS instructor_id, u.fullname AS instructor_name, " +
+                "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
+                "FROM class c " +
+                "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
+                "WHERE c.class_id = ? " +
+                "GROUP BY c.class_id";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 Class c = new Class();
                 c.setId(rs.getInt("class_id"));
-                c.setName(rs.getString("class_name"));
                 c.setThumbnailUrl(rs.getString("thumbnail_url"));
-                c.setNumberOfStudents(rs.getInt("number_of_students"));
-                c.setStatus(rs.getBoolean("status"));
-                c.setDescription(rs.getString("description"));
+                c.setName(rs.getString("class_name"));
+
+                User instructor = new User();
+                instructor.setId(rs.getInt("instructor_id"));
+                instructor.setFullname(rs.getString("instructor_name"));
+                c.setInstructor(instructor);
+
                 c.setStartDate(rs.getDate("start_date"));
                 c.setEndDate(rs.getDate("end_date"));
+                c.setListedPrice(rs.getBigDecimal("listed_price"));
+                c.setSalePrice(rs.getBigDecimal("sale_price"));
+
+                String cats = rs.getString("category_names");
+                if (cats != null && !cats.isEmpty()) {
+                    c.setCategories(cats.split(", "));
+                } else {
+                    c.setCategories(new String[0]);
+                }
+
+                c.setDescription(rs.getString("description"));
+                c.setStatus(rs.getBoolean("status"));
                 return c;
             }
-        } catch (Exception e) {
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 

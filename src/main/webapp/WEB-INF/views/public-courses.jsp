@@ -138,11 +138,12 @@
 
         /* PRICE */
         .card-price {
-            font-size: 1.05rem;
+            font-size: 25px;
             font-weight: 700;
             color: #28a745;
         }
         .card-price .original-price {
+            font-size: 1.05rem;
             color: #999;
             text-decoration: line-through;
             margin-right: 4px;

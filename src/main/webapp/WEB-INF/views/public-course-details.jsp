@@ -169,7 +169,7 @@
         .enroll-card .price-tag {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #dc3545;
+            color: #28a745;
             margin-bottom: 15px;
         }
 
@@ -280,8 +280,10 @@
 <!-- Header Section -->
 <section class="header-section">
     <div class="container">
-        <c:if test="${not empty course.courseCategory}">
-            <span class="badge-category">${course.courseCategory}</span>
+        <c:if test="${not empty course.courseCategories}">
+            <c:forEach var="cat" items="${course.courseCategories}">
+                <span class="badge-category">${cat}</span>
+            </c:forEach>
         </c:if>
         <h1 class="fw-bold">${course.courseName}</h1>
         <div class="info-bar">
@@ -502,7 +504,7 @@
                         <c:when test="${empty sessionScope.loginUser}">
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this course</p>
-                                <a href="${pageContext.request.contextPath}/login?redirect=public-course-details%3Fid%3D${course.courseId}">
+                                <a href="${pageContext.request.contextPath}/login?redirect=public-course-details?id=${course.courseId}">
                                     Login to Continue
                                 </a>
                             </div>
@@ -513,7 +515,7 @@
                             <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
 
                                 <input type="hidden" name="courseId" value="${course.courseId}">
-                                <button type="submit" class="btn btn-danger btn-lg btn-buy">
+                                <button type="submit" class="btn btn-success btn-lg btn-buy">
                                     <i class="fas fa-shopping-cart me-2"></i>
                                     <c:choose>
                                         <c:when test="${priceDisplay == 'FREE'}">

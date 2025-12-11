@@ -44,6 +44,7 @@
 
 
     <form action="login" method="post">
+        <input type="hidden" name="redirect" value="<%= request.getParameter("redirect") != null ? request.getParameter("redirect") : "" %>">
         <div class="mb-3">
             <label class="form-label">Username or Email</label>
             <input type="text" name="userOrEmail" class="form-control" placeholder="Enter your username or email"
@@ -71,7 +72,6 @@
         <div class="text-danger mb-3"><%= request.getAttribute("passError") %>
         </div>
         <% } %>
-        <%--Chưa làm--%>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <input type="checkbox" id="remember" name="rememberMe">

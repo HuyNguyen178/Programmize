@@ -51,6 +51,13 @@ public class LoginServlet extends HttpServlet {
                 dao.saveRememberToken(user.getId(), token);
             }
 
+            String redirectUrl = request.getParameter("redirect");
+
+            if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                response.sendRedirect(redirectUrl);
+                return;
+            }
+
             switch (user.getRoleName()) {
                 case "Admin":
                     response.sendRedirect("dashboard");

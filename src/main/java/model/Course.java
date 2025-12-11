@@ -56,10 +56,10 @@ public class Course {
         this.courseName = courseName;
     }
 
-    public String[] getCourseCategory() {
+    public String[] getCourseCategories() {
         return courseCategories;
     }
-    public void setCourseCategory(String[] courseCategories) {
+    public void setCourseCategories(String[] courseCategories) {
         this.courseCategories = courseCategories;
     }
 

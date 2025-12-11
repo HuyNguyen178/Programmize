@@ -23,6 +23,6 @@ public class LogoutServlet extends HttpServlet {
         c.setPath("/");
         response.addCookie(c);
 
-        response.sendRedirect(request.getContextPath() + "/login");
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 }

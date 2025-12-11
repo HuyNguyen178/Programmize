@@ -358,6 +358,14 @@ public class CourseDAO {
                 course.setCourseInstructor(rs.getString("instructor_name"));
                 course.setListedPrice(rs.getBigDecimal("listed_price"));
                 course.setSalePrice(rs.getBigDecimal("sale_price"));
+
+                String cats = rs.getString("category_names");
+                if (cats != null && !cats.isEmpty()) {
+                    course.setCourseCategories(cats.split(", "));
+                } else {
+                    course.setCourseCategories(new String[0]);
+                }
+
                 course.setDescription(rs.getString("description"));
                 course.setStatus(rs.getBoolean("status"));
                 course.setDuration(rs.getInt("duration"));

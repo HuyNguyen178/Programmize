@@ -12,18 +12,21 @@ import java.io.IOException;
 
 @WebServlet("/public-class-details")
 public class PublicClassDetailsServlet extends HttpServlet {
-
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
 
         String idParam = request.getParameter("id");
-        Class clazz = null;
+
+        if (idParam == null || !idParam.matches("\\d+")) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
         int classId = Integer.parseInt(idParam);
         ClassDAO dao = new ClassDAO();
-        clazz = dao.getClassById(classId);
+        Class clazz = dao.getClassById(classId);
 
         if (clazz == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -33,12 +36,5 @@ public class PublicClassDetailsServlet extends HttpServlet {
         request.setAttribute("clazz", clazz);
         request.getRequestDispatcher("/WEB-INF/views/public-class-details.jsp")
                 .forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req,
-                          HttpServletResponse resp)
-            throws ServletException, IOException {
-        doGet(req, resp);
     }
 }
