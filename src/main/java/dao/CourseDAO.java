@@ -601,7 +601,7 @@ public class CourseDAO {
 
     // Get public courses (active status) with filters
     // categoryIds can be setting_id values or category names
-    public List<Course> getPublicCourses(String category, String keyword, int offset, int limit) {
+    public List<Course> getPublicCourses(String category, String keyword, String priceSort, int offset, int limit) {
         List<Course> courses = new ArrayList<>();
 
         try (Connection connection = DBUtil.getConnection()) {
@@ -636,6 +636,14 @@ public class CourseDAO {
                     "    c.course_id, c.course_name, c.thumbnail_url, c.listed_price, " +
                     "    c.sale_price, c.status, c.description," +
                     "    u.user_id, u.fullname");
+
+            if ("low".equalsIgnoreCase(priceSort)) {
+                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
+            } else if ("high".equalsIgnoreCase(priceSort)) {
+                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
+            } else {
+                sql.append(" ORDER BY c.course_id ASC");
+            }
 
             sql.append(" LIMIT ? OFFSET ?");
 

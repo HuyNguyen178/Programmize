@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programmize - Course Detail: ${course.courseName}</title>
+    <title>Programmize - Course: ${course.courseName}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -18,18 +18,6 @@
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
             padding-top: 75px;
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 28px;
-            color: #007bff !important;
         }
 
         /* Header Section */

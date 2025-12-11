@@ -41,7 +41,7 @@ public class PublicCoursesServlet extends HttpServlet {
 
         // Get all active courses (status = "1") with filters
         // Note: categories can be either category IDs or category names
-        List<Course> courses = publicCourseDAO.getPublicCourses(category, keyword, offset, COURSES_PER_PAGE);
+        List<Course> courses = publicCourseDAO.getPublicCourses(category, keyword, priceSort, offset, COURSES_PER_PAGE);
 
         // Calculate pagination
         int totalCourses = publicCourseDAO.countPublicCourses(category, keyword);
