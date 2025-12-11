@@ -169,7 +169,7 @@
         .enroll-card .price-tag {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #dc3545;
+            color: #28a745;
             margin-bottom: 15px;
         }
 
@@ -515,7 +515,7 @@
                             <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
 
                                 <input type="hidden" name="courseId" value="${course.courseId}">
-                                <button type="submit" class="btn btn-danger btn-lg btn-buy">
+                                <button type="submit" class="btn btn-success btn-lg btn-buy">
                                     <i class="fas fa-shopping-cart me-2"></i>
                                     <c:choose>
                                         <c:when test="${priceDisplay == 'FREE'}">
