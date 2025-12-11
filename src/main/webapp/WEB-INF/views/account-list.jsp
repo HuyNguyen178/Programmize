@@ -129,7 +129,7 @@
 
                     <%-- 4. ADD NEW BUTTON  --%>
                     <div class="col-md-3 d-flex ms-md-auto justify-content-end">
-                        <a href="account-list?action=create" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
+                        <a href="account-add" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
                     </div>
                 </form>
 
@@ -156,7 +156,7 @@
                         <tr>
                             <td><%= user.getId() %></td>
                             <td>
-                                <img src="<%= user.getAvatarUrl() != null ? user.getAvatarUrl() : "https://via.placeholder.com/40" %>"
+                                <img src="<%= user.getAvatarUrl() != null ? user.getAvatarUrl() : "https://i.pinimg.com/736x/20/ef/6b/20ef6b554ea249790281e6677abc4160.jpg" %>"
                                      alt="Avatar" class="rounded-circle">
                             </td>
                             <td style="text-align: left;"><%= user.getFullname() %></td>
