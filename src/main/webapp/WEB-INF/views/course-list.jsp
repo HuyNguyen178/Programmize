@@ -88,8 +88,8 @@
                         <select class="form-select" name="category">
                             <option value="">All Categories</option>
                             <c:forEach items="${categories}" var="cat">
-                                <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
-                                        ${cat[1]}
+                                <option value="${cat}" ${selectedCategory == cat ? 'selected' : ''}>
+                                        ${cat}
                                 </option>
                             </c:forEach>
                         </select>
