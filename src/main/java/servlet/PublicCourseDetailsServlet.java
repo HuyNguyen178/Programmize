@@ -46,13 +46,6 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             // get course details from database
             Course course = publicCourseDAO.getCourseById(courseId);
 
-            // check if course exists and active
-            if (course == null || !"1".equals(course.getStatus())) {
-                request.setAttribute("errorMessage", "Course not found or not available");
-                response.sendRedirect(request.getContextPath() + "/public-courses");
-                return;
-            }
-
             // calculate some display values
             String priceDisplay = getPriceDisplay(course);
             String durationDisplay = getDurationDisplay(course.getDuration());

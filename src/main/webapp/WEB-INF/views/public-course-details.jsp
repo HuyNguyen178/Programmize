@@ -508,12 +508,10 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-<<<<<<< HEAD
+
                             <!-- User is logged in -->
-                            <form action="${pageContext.request.contextPath}/learning-enrollment" method="get">
-=======
                             <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
->>>>>>> 14dfebe77ddab8f5ac7ce2a4add4f618dedab3fb
+
                                 <input type="hidden" name="courseId" value="${course.courseId}">
                                 <button type="submit" class="btn btn-danger btn-lg btn-buy">
                                     <i class="fas fa-shopping-cart me-2"></i>
