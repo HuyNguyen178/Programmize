@@ -706,7 +706,7 @@ public class CourseDAO {
 
     // Get course enrollment count
     public int getCourseEnrollmentCount(int courseId) {
-        String sql = "SELECT COUNT(*) as enrollment_count FROM enrollment WHERE course_id = ?";
+        String sql = "SELECT COUNT(*) as enrollment_count FROM course_enrollment WHERE course_id = ?";
         int count = 0;
 
         try (Connection conn = DBUtil.getConnection();
@@ -807,7 +807,7 @@ public class CourseDAO {
 
     // Check if user is enrolled in a course
     public boolean isUserEnrolled(int userId, int courseId) {
-        String sql = "SELECT COUNT(*) FROM enrollment WHERE user_id = ? AND course_id = ?";
+        String sql = "SELECT COUNT(*) FROM course_enrollment WHERE user_id = ? AND course_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -830,7 +830,7 @@ public class CourseDAO {
 
     // Enroll user in a course
     public boolean enrollUser(int userId, int courseId) {
-        String sql = "INSERT INTO enrollment (user_id, course_id, enrolled_at) VALUES (?, ?, NOW())";
+        String sql = "INSERT INTO course_enrollment (user_id, course_id, enrolled_at) VALUES (?, ?, NOW())";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
