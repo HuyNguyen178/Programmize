@@ -32,7 +32,7 @@ public class LearningEnrollmentDAO {
                 course.setInstructorId(rs.getInt("instructor_id"));
                 course.setDuration(rs.getInt("duration"));
                 course.setDescription(rs.getString("description"));
-                course.setStatus(rs.getBoolean("status") ? "Active" : "Inactive");
+                course.setStatus(rs.getBoolean("status"));
                 course.setCourseInstructor(rs.getString("fullname"));
 
                 courses.add(course);

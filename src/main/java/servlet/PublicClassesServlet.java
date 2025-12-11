@@ -13,7 +13,7 @@ import java.util.List;
 public class PublicClassesServlet extends HttpServlet {
 
     private ClassDAO classDAO;
-    private static final int CLASSES_PER_PAGE = 16;
+    private static final int CLASSES_PER_PAGE = 12;
 
     @Override
     public void init() throws ServletException {
@@ -27,44 +27,34 @@ public class PublicClassesServlet extends HttpServlet {
         String category = request.getParameter("category");
         String keyword = request.getParameter("keyword");
         String priceSort = request.getParameter("price");
-        String pageStr = request.getParameter("page");
+        String pageParam = request.getParameter("page");
 
-        int currentPage = 1;
-        if (pageStr != null && !pageStr.isEmpty()) {
+        int page = 1;
+        if (pageParam != null && !pageParam.isEmpty()) {
             try {
-                currentPage = Integer.parseInt(pageStr);
-                if (currentPage < 1) currentPage = 1;
-            } catch (NumberFormatException e) {
-                currentPage = 1;
-            }
+                page = Integer.parseInt(pageParam);
+            } catch (Exception ignored) { }
         }
 
-        List<Class> classes = classDAO.getActiveClasses(keyword, category, priceSort);
+        int offset = (page - 1) * CLASSES_PER_PAGE;
 
-        int totalClasses = classes.size();
+        List<Class> classes = classDAO.getActiveClasses(keyword, category, priceSort, CLASSES_PER_PAGE, offset);
+
+        int totalClasses = classDAO.countActiveClasses(keyword, category);
         int totalPages = (int) Math.ceil((double) totalClasses / CLASSES_PER_PAGE);
 
-        // Make sure current page doesn't exceed total pages
-        if (currentPage > totalPages && totalPages > 0) {
-            currentPage = totalPages;
-        }
-
-        int startIndex = (currentPage - 1) * CLASSES_PER_PAGE;
-        int endIndex = Math.min(startIndex + CLASSES_PER_PAGE, totalClasses);
-
-        List<Class> classesForPage = new ArrayList<>();
-        if (startIndex < totalClasses) {
-            classesForPage = classes.subList(startIndex, endIndex);
+        if (page > totalPages && totalPages > 0) {
+            page = totalPages;
         }
 
         List<String> allCategories = classDAO.getAllCategories();
 
-        request.setAttribute("classes", classesForPage);
+        request.setAttribute("classes", classes);
         request.setAttribute("allCategories", allCategories);
         request.setAttribute("category", category != null ? category : "");
         request.setAttribute("searchKeyword", keyword != null ? keyword : "");
         request.setAttribute("price", priceSort != null ? priceSort : "");
-        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalClasses", totalClasses);
 

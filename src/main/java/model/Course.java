@@ -1,18 +1,19 @@
 package model;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Course {
     private Integer courseId;
     private String courseName;
-    private String courseCategory;
+    private String[] courseCategories;
     private String courseInstructor;
     private BigDecimal listedPrice;
     private BigDecimal salePrice;
     private String thumbnailUrl;
     private String description;
-    private String status;
+    private boolean status;
     private Integer duration;
     private Integer instructorId;
 
@@ -20,10 +21,10 @@ public class Course {
 
 
     // Parameterized constructor
-    public Course(String courseName,String courseCategory, String courseInstructor, String thumbnailUrl, String description,
-                  BigDecimal listedPrice, BigDecimal salePrice, String status, Integer duration,  Integer instructorId) {
+    public Course(String courseName,String[] courseCategories, String courseInstructor, String thumbnailUrl, String description,
+                  BigDecimal listedPrice, BigDecimal salePrice, boolean status, Integer duration,  Integer instructorId) {
         this.courseName = courseName;
-        this.courseCategory = courseCategory;
+        this.courseCategories = courseCategories;
         this.courseInstructor = courseInstructor;
         this.thumbnailUrl = thumbnailUrl;
         this.description = description;
@@ -41,7 +42,6 @@ public class Course {
         this.courseId = courseId;
     }
 
-    // Alt getter and setter for JSP compatibility
     public Integer getId() {
         return courseId;
     }
@@ -56,11 +56,11 @@ public class Course {
         this.courseName = courseName;
     }
 
-    public String getCourseCategory() {
-        return courseCategory;
+    public String[] getCourseCategory() {
+        return courseCategories;
     }
-    public void setCourseCategory(String courseCategory) {
-        this.courseCategory = courseCategory;
+    public void setCourseCategory(String[] courseCategories) {
+        this.courseCategories = courseCategories;
     }
 
     public String getCourseInstructor() {
@@ -98,10 +98,10 @@ public class Course {
         this.description = description;
     }
 
-    public String getStatus() {
+    public boolean getStatus() {
         return status;
     }
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 
@@ -119,7 +119,7 @@ public class Course {
         return "Course{" +
                 "courseId=" + courseId +
                 ", courseName='" + courseName + '\'' +
-                ", courseCategory='" + courseCategory + '\'' +
+                ", courseCategories='" + Arrays.toString(courseCategories) + '\'' +
                 ", courseInstructor='" + courseInstructor + '\'' +
                 ", listedPrice=" + listedPrice +
                 ", salePrice=" + salePrice +
@@ -139,7 +139,7 @@ public class Course {
 
         if (!Objects.equals(courseId, course.courseId)) return false;
         if (!Objects.equals(courseName, course.courseName)) return false;
-        if (!Objects.equals(courseCategory, course.courseCategory)) return false;
+        if (!Arrays.equals(courseCategories, course.courseCategories)) return false;
         if (!Objects.equals(courseInstructor, course.courseInstructor)) return false;
         if (!Objects.equals(listedPrice, course.listedPrice)) return false;
         if (!Objects.equals(salePrice, course.salePrice)) return false;
@@ -148,17 +148,4 @@ public class Course {
         return Objects.equals(status, course.status);
     }
 
-    @Override
-    public int hashCode() {
-        int result = courseId;
-        result = 31 * result + (courseName != null ? courseName.hashCode() : 0);
-        result = 31 * result + (courseCategory != null ? courseCategory.hashCode() : 0);
-        result = 31 * result + (courseInstructor != null ? courseInstructor.hashCode() : 0);
-        result = 31 * result + (listedPrice != null ? listedPrice.hashCode() : 0);
-        result = 31 * result + (salePrice != null ? salePrice.hashCode() : 0);
-        result = 31 * result + (thumbnailUrl != null ? thumbnailUrl.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        return result;
-    }
 }

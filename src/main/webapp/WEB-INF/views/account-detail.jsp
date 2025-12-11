@@ -14,40 +14,58 @@
     String repopulateRoleValue = (String) request.getAttribute("roleValue");
     String repopulateStatusValue = (String) request.getAttribute("statusValue");
 
-    // Khởi tạo các biến với giá trị mặc định để tránh NPE
     String finalFullname = "";
     String finalEmail = "";
+    String finalUsername = "";
     String finalAvatarUrl = "";
     String finalSelectedRoleName = "";
-    boolean defaultIsActive = false;
+    boolean defaultIsActive = true;
 
-    // Nếu đối tượng user TỒN TẠI, thì tiến hành xử lý giá trị
-    if (user != null) {
-        // Xác định giá trị cuối cùng cho các trường input
-        finalFullname = repopulateFullname != null ? repopulateFullname : user.getFullname();
+    boolean isEditMode = (user != null);
+
+    if (isEditMode) {
+        finalFullname = repopulateFullname != null ?
+                repopulateFullname : user.getFullname();
         finalEmail = repopulateEmail != null ? repopulateEmail : user.getEmail();
-        String userAvatarUrl = user.getAvatarUrl() != null ? user.getAvatarUrl() : "";
+        finalUsername = user.getUsername();
+        String userAvatarUrl = user.getAvatarUrl() != null ?
+                user.getAvatarUrl() : "";
         finalAvatarUrl = repopulateAvatar != null ? repopulateAvatar : userAvatarUrl;
-        finalSelectedRoleName = repopulateRoleValue != null ? repopulateRoleValue : user.getRoleName();
+        finalSelectedRoleName = repopulateRoleValue != null ?
+                repopulateRoleValue : user.getRoleName();
 
-        // Xác định trạng thái hiện tại (tái điền hoặc từ DB)
         if (repopulateStatusValue != null) {
             defaultIsActive = "1".equals(repopulateStatusValue);
         } else {
             defaultIsActive = user.isStatus();
         }
+    } else {
+        finalFullname = repopulateFullname != null ? repopulateFullname : "";
+        finalEmail = repopulateEmail != null ? repopulateEmail : "";
+        finalAvatarUrl = repopulateAvatar != null ? repopulateAvatar : "";
+        finalSelectedRoleName = repopulateRoleValue != null ? repopulateRoleValue : "";
+
+        if (repopulateStatusValue != null) {
+            defaultIsActive = "1".equals(repopulateStatusValue);
+        } else {
+            defaultIsActive = true ;
+        }
     }
 
-    // Placeholder Avatar
-    String placeholderAvatar = "https://via.placeholder.com/100/CCCCCC/808080?text=Avatar";
+
+    String placeholderAvatar = "https://i.pinimg.com/736x/20/ef/6b/20ef6b554ea249790281e6677abc4160.jpg";
     String currentAvatarUrl = finalAvatarUrl.isEmpty() ? placeholderAvatar : finalAvatarUrl;
+
+    String pageTitle = isEditMode ? "Account Detail - " + finalUsername : "Add New Account";
+    String headerTitle = isEditMode ? "Account Detail" : "Add New Account";
+    String formAction = isEditMode ? "account-detail" : "account-add";
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Detail - <%= user != null ? user.getUsername() : "Error" %></title>
+    <title><%= pageTitle %></title>
 
     <%-- REQUIRED LIBRARIES --%>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -56,7 +74,8 @@
 
     <style>
         /* Layout and styling fixes */
-        body { margin: 0; background-color: #f8f9fa; }
+        body { margin: 0;
+            background-color: #f8f9fa; }
 
         /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
         #content {
@@ -66,9 +85,12 @@
             padding: 20px;
 
             /* CSS CĂN GIỮA MỚI */
-            display: flex; /* Bật Flexbox */
-            flex-direction: column; /* Xếp dọc */
-            align-items: center; /* Căn giữa theo chiều ngang */
+            display: flex;
+            /* Bật Flexbox */
+            flex-direction: column;
+            /* Xếp dọc */
+            align-items: center;
+            /* Căn giữa theo chiều ngang */
             /* Dùng width: 100% để đảm bảo nó chiếm toàn bộ khoảng trống */
             width: calc(100% - 260px);
             box-sizing: border-box; /* Bao gồm padding trong width */
@@ -81,7 +103,8 @@
 
         /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
         .container-fluid {
-            max-width: 850px; /* Chiều rộng tối đa của nội dung (có thể điều chỉnh) */
+            max-width: 850px;
+            /* Chiều rộng tối đa của nội dung (có thể điều chỉnh) */
             width: 100%;
         }
 
@@ -118,15 +141,13 @@
 <div id="content" class="p-4">
     <div class="container-fluid p-0">
 
-        <%-- HEADER SECTION (TỐI GIẢN - CHỈ CÒN TIÊU ĐỀ) --%>
+        <%-- HEADER SECTION --%>
         <div class="d-flex justify-content-start align-items-center page-header">
-            <h2 class="text-primary fw-bold">Account Detail</h2>
-
-            <%-- NÚT BACK TO LIST ĐÃ BỊ XÓA KHỎI ĐÂY --%>
+            <h2 class="text-primary fw-bold"><%= headerTitle %></h2>
         </div>
 
         <%-- Nội dung chính (Form) --%>
-        <% if (user != null) { %>
+        <% if (isEditMode || !isEditMode) {  %>
 
         <%-- Error Message Display --%>
         <% String errorMsg = (String) request.getAttribute("errorMsg"); %>
@@ -134,13 +155,16 @@
         <div class="alert alert-danger"><%= errorMsg %></div>
         <% } %>
 
-        <form action="account-detail" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="<%= formAction %>" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%-- USER ID  --%>
+            <% if (isEditMode) { %>
             <input type="hidden" name="userId" value="<%= user.getId() %>">
+            <% } %>
 
             <div class="row g-4">
 
-                <%-- COLUMN 1: Personal Details & Password (KHÔI PHỤC) --%>
+                <%-- COLUMN 1: Personal Details & Password --%>
                 <div class="col-md-6 border-end pe-4">
                     <h5 class="text-secondary mb-3"><i class="fas fa-user-edit"></i> Personal Details</h5>
 
@@ -151,13 +175,21 @@
                                value="<%= finalFullname %>">
                     </div>
 
-                    <%-- USERNAME (READONLY) --%>
+                    <%-- USERNAME --%>
+                    <% if (!isEditMode) { %>
+                    <div class="mb-3">
+                        <label for="usernameString" class="form-label">Username<span class="text-danger">*</span></label>
+                        <input id="usernameString" type="text" name="username" class="form-control" required>
+                    </div>
+                    <% } else { %>
+                    <%-- USERNAME--%>
                     <div class="mb-3">
                         <label for="usernameString" class="form-label">Username</label>
                         <input id="usernameString" type="text" name="username" class="form-control bg-light" readonly
-                               value="<%= user.getUsername() %>">
+                               value="<%= finalUsername %>">
                         <div class="form-text">Username cannot be changed.</div>
                     </div>
+                    <% } %>
 
                     <%-- EMAIL --%>
                     <div class="mb-3">
@@ -166,11 +198,16 @@
                                value="<%= finalEmail %>">
                     </div>
 
-                    <%-- PASSWORD FIELD (ĐÃ KHÔI PHỤC) --%>
+                    <%-- PASSWORD FIELD --%>
                     <div class="mb-3">
-                        <label for="passwordInput" class="form-label">Password</label>
-                        <input id="passwordInput" type="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
-                        <div class="form-text text-warning">Only fill in if you want to change the password.</div>
+                        <label for="passwordInput" class="form-label">Password<span class="text-danger"><%= !isEditMode ? "*" : "" %></span></label>
+                        <input id="passwordInput" type="password" name="password" class="form-control"
+                               placeholder="<%= isEditMode ? "Leave blank to keep current password" : "Enter a password" %>"
+                            <%= !isEditMode ? "required" : "" %>>
+                        <div class="form-text <%= isEditMode ? "text-warning" : "text-danger" %>">
+                            <%--chưa làm nút showpass--%>
+                            <%= isEditMode ? "Only fill in if you want to change the password." : "" %>
+                        </div>
                     </div>
                 </div>
 
@@ -205,7 +242,8 @@
                                     for (String roleName : roles) {
                                         boolean selected = finalSelectedRoleName != null && finalSelectedRoleName.equals(roleName);
                             %>
-                            <option value="<%= roleName %>" <%= selected ? "selected" : "" %>><%= roleName %></option>
+                            <option value="<%= roleName %>" <%= selected ?
+                                    "selected" : "" %>><%= roleName %></option>
                             <%
                                     }
                                 }
@@ -216,41 +254,30 @@
                     <%-- STATUS RADIO BUTTONS --%>
                     <div class="mb-3">
                         <label class="form-label">Status<span class="text-danger">*</span></label><br>
-                        <%
-                            String statusValue = (String) request.getAttribute("statusValue");
-                            boolean isActive = false;
 
-                            if (statusValue != null) {
-                                isActive = "1".equals(statusValue);
-                            } else if (user != null) {
-                                isActive = user.isStatus();
-                            }
-                        %>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" id="activeStatus" type="radio" name="status" value="1"
-                                <%= isActive ? "checked" : "" %> required>
+                                <%= defaultIsActive ? "checked" : "" %> required>
                             <label for="activeStatus" class="form-check-label text-success">Active</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" id="inactiveStatus" type="radio" name="status" value="0"
-                                <%= !isActive ? "checked" : "" %> required>
+                                <%= !defaultIsActive ? "checked" : "" %> required>
                             <label for="inactiveStatus" class="form-check-label text-danger">Inactive</label>
                         </div>
                     </div>
 
                 </div>
 
-                <%-- HÀNG MỚI CHO NÚT LƯU VÀ QUAY LẠI (FULL WIDTH) --%>
                 <div class="col-12 pt-3 border-top">
                     <div class="d-flex justify-content-between">
-                        <%-- NÚT BACK TO LIST (Đã di chuyển xuống đây) --%>
                         <a href="account-list" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back to List
                         </a>
 
-                        <%-- NÚT SAVE CHANGES --%>
+                        <%-- SAVE/ADD CHANGES --%>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save Changes
+                            <i class="fas fa-save"></i> <%= isEditMode ? "Save Changes" : "Add New Account" %>
                         </button>
                     </div>
                 </div>
@@ -272,7 +299,7 @@
 <script>
     function updateAvatarPreview(url) {
         const img = document.getElementById('avatarPreviewImg');
-        const defaultUrl = "https://via.placeholder.com/100/CCCCCC/808080?text=Avatar";
+        const defaultUrl = placeholderAvatar;
 
         const tempImg = new Image();
         tempImg.onload = function() {
@@ -298,12 +325,17 @@
             updateAvatarPreview(avatarUrlInput.value);
         }
     });
-
     <%-- Xử lý thông báo --%>
     <% Boolean updateSuccess = (Boolean) request.getAttribute("updateSuccess"); %>
+    <% Boolean addSuccess = (Boolean) request.getAttribute("addSuccess"); %>
     <% if (updateSuccess != null) { %>
     alert("<%= updateSuccess ? "Update successful!" : "Update failed! Please review the form data." %>");
     <% if (updateSuccess) { %>
+    window.location.href = window.location.href;
+    <% } %>
+    <% } else if (addSuccess != null) { %>
+    alert("<%= addSuccess ? "New account added successfully!" : "Failed to add new account! Username or Email may already exist." %>");
+    <% if (addSuccess) { %>
     window.location.href = "account-list";
     <% } %>
     <% } %>

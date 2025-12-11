@@ -46,7 +46,7 @@ public class EditCourseServlet extends HttpServlet {
             }
 
             // Lấy danh sách categories và instructors cho dropdown
-            List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
+            List<String> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
             List<String[]> allInstructors = publicCourseDAO.getAllUsersAsInstructors();
 
             // Lấy categories hiện tại của course
@@ -114,7 +114,7 @@ public class EditCourseServlet extends HttpServlet {
             course.setDescription(description);
             course.setListedPrice(listedPrice);
             course.setSalePrice(salePrice);
-            course.setStatus(status);
+            course.setStatus(Boolean.parseBoolean(status));
             course.setDuration(duration);
             course.setInstructorId(instructorId);
 

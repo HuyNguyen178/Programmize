@@ -176,16 +176,29 @@
         }
 
         /* PAGINATION */
-        .pagination a {
+        .pagination .page-link {
             padding: 0.45rem 0.95rem;
             border-radius: 6px;
             border: 1px solid #ccc;
-            font-size: 0.9rem;
+            margin: 0 2px;
+            color: #333;
         }
-        .pagination a.active {
+
+        .pagination .active .page-link {
             background: #2d6cdf;
             color: #fff;
             border-color: #2d6cdf;
+        }
+
+        .pagination .disabled .page-link {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .pagination-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
         }
 
         /* Responsive */
@@ -211,16 +224,11 @@
         <form action="${pageContext.request.contextPath}/public-courses" method="get" class="filter-bar">
 
             <select name="category" class="filter-select" onchange=this.form.submit()>
-                <option value="all">Category (All)</option>
+                <option value="">Category</option>
                 <c:forEach items="${allCategories}" var="cat">
-                    <c:set var="isSelected" value="false"/>
-                    <c:forEach items="${selectedCategories}" var="selected">
-                        <c:if test="${selected == cat}">
-                            <c:set var="isSelected" value="true"/>
-                        </c:if>
-                    </c:forEach>
-                    <option value="${cat}" ${isSelected ? 'selected' : ''}>${cat}</option>
+                    <option value="${cat}" ${category == cat ? 'selected' : ''}>${cat}</option>
                 </c:forEach>
+
             </select>
 
             <select name="price" class="filter-select" onchange=this.form.submit()>
@@ -230,8 +238,8 @@
             </select>
 
             <div class="search-group">
-                <input type="text" name="keyword" placeholder="Search for courses"
-                       value="${searchKeyword}">
+                <input type="text" name="search" placeholder="Search for courses"
+                       value="${keyword}">
                 <button type="submit">
                     <i class="fa fa-search"></i> Search
                 </button>
@@ -245,7 +253,7 @@
         <div class="results-info">
             <c:choose>
                 <c:when test="${totalCourses > 0}">
-                    Showing ${(currentPage - 1) * 16 + 1}-${(currentPage * 16) > totalCourses ? totalCourses : (currentPage * 16)}
+                    Showing ${(currentPage - 1) * 12 + 1}-${(currentPage * 12) > totalCourses ? totalCourses : (currentPage * 12)}
                     of ${totalCourses} courses
                 </c:when>
                 <c:otherwise>
@@ -274,9 +282,6 @@
                                 <div class="card-meta">
                                     <c:if test="${not empty course.courseInstructor}">
                                         👤 ${course.courseInstructor}
-                                    </c:if>
-                                    <c:if test="${course.duration > 0}">
-                                        | ⏱ ${course.duration} minutes
                                     </c:if>
                                 </div>
                                 <c:if test="${not empty course.description}">
@@ -319,70 +324,43 @@
         </c:choose>
 
         <!-- Pagination -->
-        <c:if test="${totalPages > 1}">
-            <nav class="pagination">
-                <ul>
-                    <!-- Previous button -->
-                    <li>
-                        <a href="?page=${currentPage - 1}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                    <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
-                           class="${currentPage == 1 ? 'disabled' : ''}">
-                            &lt; Previous
+        <nav class="pagination-wrapper">
+            <ul class="pagination">
+
+                <!-- Previous -->
+                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link"
+                       href="?page=${currentPage - 1}
+                   ${not empty keyword ? '&search=' : ''}${keyword}
+                   ${not empty category ? '&category=' : ''}${category}">
+                        Previous
+                    </a>
+                </li>
+
+                <!-- Page numbers -->
+                <c:forEach var="i" begin="1" end="${totalPages}">
+                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                        <a class="page-link"
+                           href="?page=${i}
+                       ${not empty keyword ? '&search=' : ''}${keyword}
+                       ${not empty category ? '&category=' : ''}${category}">
+                                ${i}
                         </a>
                     </li>
+                </c:forEach>
 
-                    <!-- Page numbers -->
-                    <c:choose>
-                        <c:when test="${totalPages <= 7}">
-                            <!-- Show all pages if 7 or less -->
-                            <c:forEach begin="1" end="${totalPages}" var="i">
-                                <li>
-                                    <a href="?page=${i}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                                <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
-                                       class="${i == currentPage ? 'active' : ''}">
-                                            ${i}
-                                    </a>
-                                </li>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <!-- Show limited pages with ellipsis -->
-                            <c:if test="${currentPage > 3}">
-                                <li><a href="?page=1${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                          <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>">1</a></li>
-                                <li><span>...</span></li>
-                            </c:if>
+                <!-- Next -->
+                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                    <a class="page-link"
+                       href="?page=${currentPage + 1}
+                   ${not empty keyword ? '&search=' : ''}${keyword}
+                   ${not empty category ? '&category=' : ''}${category}">
+                        Next
+                    </a>
+                </li>
 
-                            <c:forEach begin="${(currentPage - 2) < 1 ? 1 : (currentPage - 2)}"
-                                       end="${(currentPage + 2) > totalPages ? totalPages : (currentPage + 2)}" var="i">
-                                <li>
-                                    <a href="?page=${i}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                                <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
-                                       class="${i == currentPage ? 'active' : ''}">
-                                            ${i}
-                                    </a>
-                                </li>
-                            </c:forEach>
-
-                            <c:if test="${currentPage < totalPages - 2}">
-                                <li><span>...</span></li>
-                                <li><a href="?page=${totalPages}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                          <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>">${totalPages}</a></li>
-                            </c:if>
-                        </c:otherwise>
-                    </c:choose>
-
-                    <!-- Next button -->
-                    <li>
-                        <a href="?page=${currentPage + 1}${not empty searchKeyword ? '&keyword=' : ''}${searchKeyword}
-                                    <c:forEach items='${selectedCategories}' var='cat'>&category=${cat}</c:forEach>"
-                           class="${currentPage == totalPages ? 'disabled' : ''}">
-                            Next &gt;
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </c:if>
+            </ul>
+        </nav>
     </section>
 </main>
 

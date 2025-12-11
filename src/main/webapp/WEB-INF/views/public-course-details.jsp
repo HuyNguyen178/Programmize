@@ -17,7 +17,6 @@
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
-            /* Padding top for fixed navbar */
             padding-top: 75px;
         }
 
@@ -33,8 +32,7 @@
             color: #007bff !important;
         }
 
-        /* --- Custom styles for Course Detail page --- */
-
+        /* Header Section */
         .header-section {
             background-color: #007bff;
             color: white;
@@ -53,7 +51,7 @@
             margin-top: 10px;
         }
 
-        /* Main Content and Sidebar */
+        /* Main Content */
         .content-area {
             padding-top: 20px;
         }
@@ -66,7 +64,7 @@
             padding: 25px;
         }
 
-        /* Syllabus/Accordion Customization */
+        /* Accordion Styles */
         .accordion-button {
             font-weight: 700;
             font-size: 1.1rem;
@@ -79,33 +77,80 @@
             background-color: #007bff;
         }
 
+        /* Lesson Item Styles */
         .lesson-item {
             display: flex;
             align-items: center;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
         }
 
         .lesson-item:last-child {
             border-bottom: none;
         }
 
-        .lesson-item i {
-            width: 20px;
+        .lesson-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .lesson-item i.lesson-icon {
+            width: 24px;
             text-align: center;
             margin-right: 15px;
+            font-size: 1rem;
+        }
+
+        .lesson-item i.lesson-icon.fa-video {
+            color: #dc3545;
+        }
+
+        .lesson-item i.lesson-icon.fa-file-alt {
+            color: #17a2b8;
+        }
+
+        .lesson-item i.lesson-icon.fa-question-circle {
+            color: #ffc107;
+        }
+
+        .lesson-item i.lesson-icon.fa-laptop-code {
+            color: #28a745;
+        }
+
+        .lesson-title {
+            flex-grow: 1;
+            font-size: 0.95rem;
+        }
+
+        .lesson-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
             color: #6c757d;
         }
 
         .lesson-duration {
-            font-size: 0.85rem;
-            color: #999;
+            white-space: nowrap;
         }
 
-        /* Sticky Sidebar Card (Enrollment Card) */
+        .lesson-preview-badge {
+            background-color: #28a745;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .lesson-locked {
+            color: #adb5bd;
+        }
+
+        /* Enrollment Card */
         .enroll-card {
             position: sticky;
-            top: 100px; /* Offset for fixed navbar */
+            top: 100px;
             background: white;
             padding: 0;
             border-radius: 10px;
@@ -136,7 +181,7 @@
         .enroll-card .price-tag {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #dc3545; /* Danger red for price */
+            color: #dc3545;
             margin-bottom: 15px;
         }
 
@@ -168,7 +213,7 @@
         }
 
         .features-list li i {
-            color: #28a745; /* Success green for checkmark */
+            color: #28a745;
             margin-right: 10px;
         }
 
@@ -202,6 +247,42 @@
             color: #007bff;
             font-weight: bold;
         }
+
+        /* Course Content Summary */
+        .course-content-summary {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        /* Chapter description */
+        .chapter-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* No content message */
+        .no-content-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .no-content-message i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+
+        /* Chapter lesson count badge */
+        .chapter-lesson-badge {
+            font-size: 0.75rem;
+            font-weight: normal;
+            margin-left: 10px;
+        }
     </style>
 </head>
 
@@ -219,8 +300,11 @@
             <c:if test="${not empty course.courseInstructor}">
                 <i class="fas fa-chalkboard-teacher"></i> Instructor: <strong>${course.courseInstructor}</strong>
             </c:if>
-            <c:if test="${not empty durationDisplay}">
-                | <i class="fas fa-clock"></i> Total Duration: <strong>${durationDisplay}</strong>
+            <c:if test="${totalDurationSeconds > 0}">
+                | <i class="fas fa-clock"></i> Total Duration: <strong>${totalDurationFromLessons}</strong>
+            </c:if>
+            <c:if test="${totalLessons > 0}">
+                | <i class="fas fa-play-circle"></i> <strong>${totalLessons}</strong> Lessons
             </c:if>
         </div>
     </div>
@@ -268,106 +352,111 @@
 
             <!-- Course Content (Syllabus) -->
             <h3 class="fw-bold mb-3 text-primary">Course Content (Syllabus)</h3>
+
+            <!-- Course Content Summary -->
+            <c:if test="${not empty chapters}">
+                <p class="course-content-summary">
+                    <i class="fas fa-folder me-2"></i> ${totalChapters} ${totalChapters == 1 ? 'Chapter' : 'Chapters'}
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-play-circle me-2"></i> ${totalLessons} ${totalLessons == 1 ? 'Lesson' : 'Lessons'}
+                    <c:if test="${totalDurationSeconds > 0}">
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-clock me-2"></i> ${totalDurationFromLessons} total
+                    </c:if>
+                </p>
+            </c:if>
+
             <div class="accordion mb-5" id="courseSyllabus">
+                <c:choose>
+                    <c:when test="${not empty chapters}">
+                        <c:forEach var="chapter" items="${chapters}" varStatus="chapterStatus">
+                            <div class="accordion-item card-custom p-0">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button ${chapterStatus.index > 0 ? 'collapsed' : ''}"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapse${chapter.chapterId}">
+                                        <i class="fas fa-folder me-3"></i>
+                                        Chapter ${chapterStatus.index + 1}: ${chapter.chapterName}
+                                        <c:if test="${chapter.lessonCount > 0}">
+                                            <span class="badge bg-secondary chapter-lesson-badge">
+                                                ${chapter.lessonCount} ${chapter.lessonCount == 1 ? 'Lesson' : 'Lessons'}
+                                            </span>
+                                        </c:if>
+                                    </button>
+                                </h2>
+                                <div id="collapse${chapter.chapterId}"
+                                     class="accordion-collapse collapse ${chapterStatus.index == 0 ? 'show' : ''}"
+                                     data-bs-parent="#courseSyllabus">
+                                    <div class="accordion-body p-0">
+                                        <!-- Chapter Description -->
+                                        <c:if test="${not empty chapter.description}">
+                                            <div class="chapter-description">
+                                                <i class="fas fa-info-circle me-2"></i> ${chapter.description}
+                                            </div>
+                                        </c:if>
 
-                <!-- Module 1 -->
-                <div class="accordion-item card-custom p-0">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                            <i class="fas fa-folder me-3"></i> Module 1: Getting Started (3 Lessons)
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#courseSyllabus">
-                        <div class="accordion-body p-0">
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">1.1: Course Introduction and Setup</span>
-                                <span class="lesson-duration">15 min</span>
+                                        <!-- Lessons List -->
+                                        <c:set var="lessons" value="${chapterLessonsMap[chapter.chapterId]}" />
+                                        <c:choose>
+                                            <c:when test="${not empty lessons}">
+                                                <c:forEach var="lesson" items="${lessons}" varStatus="lessonStatus">
+                                                    <div class="lesson-item">
+                                                        <!-- Lesson Type Icon -->
+                                                        <i class="lesson-icon ${lesson.typeIcon}"></i>
+
+                                                        <!-- Lesson Title -->
+                                                        <span class="lesson-title">
+                                                            ${chapterStatus.index + 1}.${lessonStatus.index + 1}: ${lesson.lessonName}
+                                                        </span>
+
+                                                        <!-- Lesson Meta (Preview badge, Duration, Lock) -->
+                                                        <div class="lesson-meta">
+                                                            <c:if test="${lesson.preview}">
+                                                                <span class="lesson-preview-badge">
+                                                                    <i class="fas fa-eye me-1"></i> Preview
+                                                                </span>
+                                                            </c:if>
+
+                                                            <c:if test="${lesson.duration > 0}">
+                                                                <span class="lesson-duration">
+                                                                    <i class="fas fa-clock me-1"></i> ${lesson.durationFormatted}
+                                                                </span>
+                                                            </c:if>
+
+                                                            <c:if test="${!lesson.preview}">
+                                                                <i class="fas fa-lock lesson-locked" title="Enroll to access"></i>
+                                                            </c:if>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- No lessons in this chapter -->
+                                                <div class="lesson-item">
+                                                    <i class="fas fa-hourglass-half text-warning"></i>
+                                                    <span class="lesson-title text-muted fst-italic">
+                                                        Lessons coming soon...
+                                                    </span>
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">1.2: Understanding the Fundamentals</span>
-                                <span class="lesson-duration">20 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-file-alt"></i>
-                                <span class="lesson-title flex-grow-1">1.3: Resources and Documentation</span>
-                                <span class="lesson-duration">10 min</span>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- No chapters available -->
+                        <div class="card-custom">
+                            <div class="no-content-message">
+                                <i class="fas fa-book-open d-block"></i>
+                                <h5>Course content is being prepared</h5>
+                                <p class="mb-0">The syllabus for this course is currently being developed. Check back soon!</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Module 2 -->
-                <div class="accordion-item card-custom p-0">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                            <i class="fas fa-folder me-3"></i> Module 2: Core Concepts (5 Lessons)
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#courseSyllabus">
-                        <div class="accordion-body p-0">
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">2.1: Deep Dive into Core Principles</span>
-                                <span class="lesson-duration">30 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">2.2: Advanced Techniques</span>
-                                <span class="lesson-duration">35 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-laptop-code"></i>
-                                <span class="lesson-title flex-grow-1">2.3: Hands-on Practice Exercise</span>
-                                <span class="lesson-duration">45 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">2.4: Common Patterns and Solutions</span>
-                                <span class="lesson-duration">25 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-question-circle"></i>
-                                <span class="lesson-title flex-grow-1">2.5: Quiz: Test Your Knowledge</span>
-                                <span class="lesson-duration">15 min</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Module 3 -->
-                <div class="accordion-item card-custom p-0">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                            <i class="fas fa-folder me-3"></i> Module 3: Real-World Applications (4 Lessons)
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#courseSyllabus">
-                        <div class="accordion-body p-0">
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">3.1: Building Your First Project</span>
-                                <span class="lesson-duration">40 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-video"></i>
-                                <span class="lesson-title flex-grow-1">3.2: Optimization and Best Practices</span>
-                                <span class="lesson-duration">30 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-laptop-code"></i>
-                                <span class="lesson-title flex-grow-1">3.3: Final Project: Complete Application</span>
-                                <span class="lesson-duration">60 min</span>
-                            </div>
-                            <div class="lesson-item">
-                                <i class="fas fa-trophy"></i>
-                                <span class="lesson-title flex-grow-1">3.4: Course Conclusion and Next Steps</span>
-                                <span class="lesson-duration">15 min</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <!-- About the Instructor -->
@@ -405,9 +494,9 @@
                         <c:choose>
                             <c:when test="${course.salePrice != null}">
                                 <c:if test="${course.listedPrice > course.salePrice}">
-                                        <span class="original-price">
-                                            $<fmt:formatNumber value="${course.listedPrice}" pattern="#,##0.00"/>
-                                        </span>
+                                    <span class="original-price">
+                                        $<fmt:formatNumber value="${course.listedPrice}" pattern="#,##0.00"/>
+                                    </span>
                                 </c:if>
                                 $<fmt:formatNumber value="${course.salePrice}" pattern="#,##0.00"/>
                             </c:when>
@@ -423,7 +512,6 @@
                     <!-- Enrollment Buttons -->
                     <c:choose>
                         <c:when test="${empty sessionScope.loginUser}">
-                            <!-- User not logged in -->
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this course</p>
                                 <a href="${pageContext.request.contextPath}/login?redirect=public-course-details%3Fid%3D${course.courseId}">
@@ -432,8 +520,12 @@
                             </div>
                         </c:when>
                         <c:otherwise>
+<<<<<<< HEAD
                             <!-- User is logged in -->
                             <form action="${pageContext.request.contextPath}/learning-enrollment" method="get">
+=======
+                            <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
+>>>>>>> 14dfebe77ddab8f5ac7ce2a4add4f618dedab3fb
                                 <input type="hidden" name="courseId" value="${course.courseId}">
                                 <button type="submit" class="btn btn-danger btn-lg btn-buy">
                                     <i class="fas fa-shopping-cart me-2"></i>
@@ -456,8 +548,14 @@
                     <!-- Course Features -->
                     <h5 class="fw-bold mt-4 mb-3">This course includes:</h5>
                     <ul class="features-list">
-                        <c:if test="${course.duration > 0}">
-                            <li><i class="fas fa-check-circle"></i> ${durationDisplay} of Content</li>
+                        <c:if test="${totalDurationSeconds > 0}">
+                            <li><i class="fas fa-check-circle"></i> ${totalDurationFromLessons} of Content</li>
+                        </c:if>
+                        <c:if test="${totalChapters > 0}">
+                            <li><i class="fas fa-check-circle"></i> ${totalChapters} ${totalChapters == 1 ? 'Chapter' : 'Chapters'}</li>
+                        </c:if>
+                        <c:if test="${totalLessons > 0}">
+                            <li><i class="fas fa-check-circle"></i> ${totalLessons} ${totalLessons == 1 ? 'Lesson' : 'Lessons'}</li>
                         </c:if>
                         <li><i class="fas fa-check-circle"></i> Video Lectures</li>
                         <li><i class="fas fa-check-circle"></i> Coding Exercises</li>

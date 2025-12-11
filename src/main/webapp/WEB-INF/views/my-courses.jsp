@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Public courses - E-Learning Platform</title>
+    <title>My Courses - E-Learning Platform</title>
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <style>
@@ -66,7 +66,7 @@
         }
 
         /* GRID */
-        .courses-grid {
+        .classes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
@@ -107,16 +107,6 @@
             margin-bottom: 0.4rem;
             line-height: 1.3;
             color: #222;
-        }
-
-        /* CATEGORY LABEL */
-        .card-category {
-            font-size: 0.75rem;
-            background: #f1f3f5;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-weight: 600;
-            color: #444;
         }
 
         /* META */
@@ -166,19 +156,31 @@
         }
 
         /* PAGINATION */
-        .pagination a {
+        .pagination .page-link {
             padding: 0.45rem 0.95rem;
             border-radius: 6px;
             border: 1px solid #ccc;
-            font-size: 0.9rem;
+            margin: 0 2px;
+            color: #333;
         }
-        .pagination a.active {
+
+        .pagination .active .page-link {
             background: #2d6cdf;
             color: #fff;
             border-color: #2d6cdf;
         }
 
-        /* Responsive */
+        .pagination .disabled .page-link {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .pagination-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
         @media (max-width: 768px) {
             .filter-bar {
                 flex-direction: column;
@@ -232,33 +234,44 @@
         </form>
     </aside>
 
-    <br>
-    <section class="courses-content">
+    <section class="classes-content">
+
+        <div class="results-info">
+            <c:choose>
+                <c:when test="${totalCourses > 0}">
+                    Showing ${(currentPage - 1) * 12 + 1}-${(currentPage * 12) > totalCourses ? totalCourses : (currentPage * 12)}
+                    of ${totalCourses} courses
+                </c:when>
+                <c:otherwise>
+                    No courses found
+                </c:otherwise>
+            </c:choose>
+        </div>
 
         <c:choose>
             <c:when test="${not empty courses}">
-                <div class="courses-grid">
-                    <c:forEach items="${courses}" var="clazz">
+                <div class="classes-grid">
+                    <c:forEach items="${courses}" var="course">
                         <article class="class-card">
                             <div class="card-image">
                                 <c:choose>
-                                    <c:when test="${not empty clazz.thumbnailUrl}">
-                                        <img src="${clazz.thumbnailUrl}" alt="${clazz.name}">
+                                    <c:when test="${not empty course.thumbnailUrl}">
+                                        <img src="${course.thumbnailUrl}" alt="${course.courseName}">
                                     </c:when>
                                     <c:otherwise>
-                                        Class Image (16:9 ratio)
+                                        Course Image (16:9 ratio)
                                     </c:otherwise>
                                 </c:choose>
                             </div>
                             <div class="card-content">
-                                <h3>${clazz.name}</h3>
+                                <h3>${course.courseName}</h3>
                                 <div class="card-meta">
-                                    <c:if test="${not empty clazz.instructor.fullname}">
-                                        👤 ${clazz.instructor.fullname}
+                                    <c:if test="${not empty course.courseInstructor}">
+                                        👤 ${course.courseInstructor}
                                     </c:if>
                                 </div>
                             </div>
-                            <a href="${pageContext.request.contextPath}/my-courses-details?id=${clazz.id}"
+                            <a href="${pageContext.request.contextPath}/my-course-details?id=${course.id}"
                                class="btn-details">VIEW DETAILS</a>
                         </article>
                     </c:forEach>
@@ -273,85 +286,43 @@
         </c:choose>
 
         <!-- Pagination -->
-        <c:if test="${totalPages > 1}">
-            <nav class="pagination">
-                <ul>
+        <nav class="pagination-wrapper">
+            <ul class="pagination">
 
-                    <!-- Previous -->
-                    <li>
-                        <a href="?page=${currentPage - 1}
-                        ${not empty keyword ? '&search=' : ''}${keyword}
-                        ${not empty category ? '&category=' : ''}${category}"
-                           class="${currentPage == 1 ? 'disabled' : ''}">
-                            &lt; Previous
+                <!-- Previous -->
+                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link"
+                       href="?page=${currentPage - 1}
+                   ${not empty keyword ? '&search=' : ''}${keyword}
+                   ${not empty category ? '&category=' : ''}${category}">
+                        Previous
+                    </a>
+                </li>
+
+                <!-- Page numbers -->
+                <c:forEach var="i" begin="1" end="${totalPages}">
+                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                        <a class="page-link"
+                           href="?page=${i}
+                       ${not empty keyword ? '&search=' : ''}${keyword}
+                       ${not empty category ? '&category=' : ''}${category}">
+                                ${i}
                         </a>
                     </li>
+                </c:forEach>
 
-                    <!-- Page numbers -->
-                    <c:choose>
-                        <c:when test="${totalPages <= 7}">
-                            <c:forEach begin="1" end="${totalPages}" var="i">
-                                <li>
-                                    <a href="?page=${i}
-                                    ${not empty keyword ? '&search=' : ''}${keyword}
-                                    ${not empty category ? '&category=' : ''}${category}"
-                                       class="${i == currentPage ? 'active' : ''}">
-                                            ${i}
-                                    </a>
-                                </li>
-                            </c:forEach>
-                        </c:when>
+                <!-- Next -->
+                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                    <a class="page-link"
+                       href="?page=${currentPage + 1}
+                   ${not empty keyword ? '&search=' : ''}${keyword}
+                   ${not empty category ? '&category=' : ''}${category}">
+                        Next
+                    </a>
+                </li>
 
-                        <c:otherwise>
-                            <c:if test="${currentPage > 3}">
-                                <li>
-                                    <a href="?page=1
-                                    ${not empty keyword ? '&search=' : ''}${keyword}
-                                    ${not empty category ? '&category=' : ''}${category}">
-                                        1
-                                    </a>
-                                </li>
-                                <li><span>...</span></li>
-                            </c:if>
-                            <c:forEach begin="${currentPage - 2 > 1 ? currentPage - 2 : 1}"
-                                       end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}" var="i">
-                                <li>
-                                    <a href="?page=${i}
-                                    ${not empty keyword ? '&search=' : ''}${keyword}
-                                    ${not empty category ? '&category=' : ''}${category}"
-                                       class="${i == currentPage ? 'active' : ''}">
-                                            ${i}
-                                    </a>
-                                </li>
-                            </c:forEach>
-                            <c:if test="${currentPage < totalPages - 2}">
-                                <li><span>...</span></li>
-                                <li>
-                                    <a href="?page=${totalPages}
-                                    ${not empty keyword ? '&search=' : ''}${keyword}
-                                    ${not empty category ? '&category=' : ''}${category}">
-                                            ${totalPages}
-                                    </a>
-                                </li>
-                            </c:if>
-
-                        </c:otherwise>
-
-                    </c:choose>
-
-                    <!-- Next -->
-                    <li>
-                        <a href="?page=${currentPage + 1}
-                        ${not empty keyword ? '&keyword=' : ''}${keyword}
-                        ${not empty category ? '&category=' : ''}${category}"
-                           class="${currentPage == totalPages ? 'disabled' : ''}">
-                            Next &gt;
-                        </a>
-                    </li>
-
-                </ul>
-            </nav>
-        </c:if>
+            </ul>
+        </nav>
 
     </section>
 </main>
