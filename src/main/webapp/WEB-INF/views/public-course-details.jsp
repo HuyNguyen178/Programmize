@@ -280,8 +280,10 @@
 <!-- Header Section -->
 <section class="header-section">
     <div class="container">
-        <c:if test="${not empty course.courseCategory}">
-            <span class="badge-category">${course.courseCategory}</span>
+        <c:if test="${not empty course.courseCategories}">
+            <c:forEach var="cat" items="${course.courseCategories}">
+                <span class="badge-category">${cat}</span>
+            </c:forEach>
         </c:if>
         <h1 class="fw-bold">${course.courseName}</h1>
         <div class="info-bar">
