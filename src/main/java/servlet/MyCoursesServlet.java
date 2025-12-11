@@ -40,9 +40,6 @@ public class MyCoursesServlet extends HttpServlet {
         String category = request.getParameter("category");
         String pageParam = request.getParameter("page");
 
-        if (keyword == null) keyword = "";
-        if (category == null) category = "";
-
         int page = 1;
         if (pageParam != null && !pageParam.isEmpty()) {
             try {
@@ -62,7 +59,7 @@ public class MyCoursesServlet extends HttpServlet {
         request.setAttribute("allCategories", allCategories);
         request.setAttribute("courses", courses);
         request.setAttribute("category", category);
-        request.setAttribute("keyword", keyword);
+        request.setAttribute("search", keyword);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalCourses", totalCourses);
