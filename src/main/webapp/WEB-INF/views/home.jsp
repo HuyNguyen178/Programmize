@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%-- Thêm thư viện JSTL Core --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -304,9 +304,42 @@
                 <c:forEach var="course" items="${highlightedCourses}">
                     <div class="course-item"
                          style="background-image: url('${pageContext.request.contextPath}/${course.thumbnailUrl}');"
-                         onclick="window.location.href='/public-course-details?id=${course.courseId}'"> <span> ${course.courseName} </span>
+                         onclick="window.location.href='/public-course-details?id=${course.courseId}'">
+
+                            <%-- Container for Text (Replaces the single span to hold both Name and Price) --%>
+                        <div style="position: relative; z-index: 2; width: 100%; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+
+                                <%-- Course Name --%>
+                            <div style="font-weight: 700; margin-bottom: 5px; line-height: 1.2;">
+                                    ${course.courseName}
+                            </div>
+
+                                <%-- Price Logic --%>
+                            <div style="font-size: 0.9em;">
+                                <c:choose>
+                                    <%-- If on Sale: Show old price crossed out and new price in yellow --%>
+                                    <c:when test="${course.salePrice != null && course.listedPrice != null && course.salePrice < course.listedPrice}">
+                                        <span class="text-decoration-line-through" style="opacity: 0.8; margin-right: 8px;">
+                                            <fmt:formatNumber value="${course.listedPrice}" type="currency" currencySymbol="$" />
+                                        </span>
+                                        <span class="text-warning fw-bold">
+                                            <fmt:formatNumber value="${course.salePrice}" type="currency" currencySymbol="$" />
+                                        </span>
+                                    </c:when>
+
+                                    <%-- Normal Price --%>
+                                    <c:otherwise>
+                                        <span class="fw-bold">
+                                            <fmt:formatNumber value="${course.listedPrice}" type="currency" currencySymbol="$" />
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+
                     </div>
                 </c:forEach>
+            </div>
             </div>
 
         </div>

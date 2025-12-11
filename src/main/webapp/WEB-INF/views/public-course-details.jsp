@@ -433,7 +433,7 @@
                         </c:when>
                         <c:otherwise>
                             <!-- User is logged in -->
-                            <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
+                            <form action="${pageContext.request.contextPath}/learning-enrollment" method="get">
                                 <input type="hidden" name="courseId" value="${course.courseId}">
                                 <button type="submit" class="btn btn-danger btn-lg btn-buy">
                                     <i class="fas fa-shopping-cart me-2"></i>

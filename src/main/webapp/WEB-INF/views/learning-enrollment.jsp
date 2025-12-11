@@ -1,10 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programmize - Enrollment</title>
+    <title>Enrollment: ${course.courseName}</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,339 +31,235 @@
             padding: 1.5rem;
             border-radius: 0.75rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            border: 1px solid #f3f4f6;
         }
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: whitesmoke;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .badge {
-            background-color: #dbeafe;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.25rem;
-            font-size: 1.125rem;
-        }
-        .user-badge {
-            background-color: #ecfeff;
-            border-left: 4px solid #06b6d4;
-            padding: 0.75rem;
-            margin-bottom: 1.25rem;
-            color: #0e7490;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
+        .readonly-field {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+            color: #4b5563;
         }
     </style>
 </head>
+<body class="bg-gray-50 min-h-screen">
 
-<body class="bg-gray-50 font-sans text-gray-800">
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-900">Confirm Enrollment</h1>
+        <p class="text-gray-500 mt-2">You are enrolling in <span class="text-blue-600 font-semibold">${course.courseName}</span></p>
+    </div>
 
-<main class="container mx-auto px-4 py-8 max-w-6xl">
-    <h1 class="text-3xl font-bold text-blue-600 text-center mb-8">Programmize - Learning Enrollment</h1>
+    <form id="registration-form" action="register" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    <form id="registration-form" action="register" method="POST" class="flex flex-col lg:flex-row gap-8">
-        <div class="flex-1 space-y-6">
+        <input type="hidden" id="stripeToken" name="stripeToken">
+        <input type="hidden" name="courseId" value="${course.courseId}">
+        <input type="hidden" id="amount-input" name="amount" value="0">
 
-            <div class="card bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="section-title text-xl font-bold text-gray-700 mb-4 border-b pb-2">
-                    <span class="badge bg-blue-600 text-white px-2 py-1 rounded text-sm mr-2">1</span>
-                    Registrant's Information
+        <c:set var="finalPrice" value="${course.salePrice != null && course.salePrice > 0 ? course.salePrice : course.listedPrice}" />
+        <input type="hidden" id="fixed-price" value="${finalPrice}">
+
+        <div class="lg:col-span-2 space-y-6">
+
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-user-circle text-blue-600 mr-2"></i> Personal Information
                 </h2>
-
-                <div class="user-badge mb-4 text-sm text-gray-600">
-                    <i class="fas fa-user-circle mr-2 text-lg"></i>
-                    Logged in as: <strong>user@example.com</strong>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="text" name="firstName" class="input-field" placeholder="First Name *" required>
-                    <input type="text" name="lastName" class="input-field" placeholder="Last Name *" required>
-                </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="email" name="email" class="input-field" placeholder="Email *" required>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                            <i class="fas fa-phone"></i>
-                        </span>
-                        <input type="tel" name="phone" class="input-field pl-10" placeholder="Phone Number *" required>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                        <input type="text" name="fullName" required class="input-field" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                        <input type="email" name="email" required class="input-field" placeholder="john@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Phone Number</label>
+                        <input type="tel" name="phone" required class="input-field" placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Date of Birth</label>
+                        <input type="date" name="dob" required class="input-field">
                     </div>
                 </div>
             </div>
 
-            <div class="card bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="section-title text-xl font-bold text-gray-700 mb-4 border-b pb-2">
-                    <span class="badge bg-blue-600 text-white px-2 py-1 rounded text-sm mr-2">2</span>
-                    Enroll Information
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-book-open text-blue-600 mr-2"></i> Selected Course
+                </h2>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Course Name</label>
+                    <div class="input-field readonly-field flex items-center justify-between">
+                        <span>${course.courseName}</span>
+                        <span class="text-green-600 font-bold">
+                            <c:choose>
+                                <c:when test="${finalPrice == 0}">FREE</c:when>
+                                <c:otherwise>$${finalPrice}</c:otherwise>
+                            </c:choose>
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        *If you want to choose a different course, please return to the course list.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-credit-card text-blue-600 mr-2"></i> Payment Method
                 </h2>
 
-                <label class="block font-semibold text-gray-700 mb-2 text-sm">Select Course</label>
-                <select id="courseSelect" name="course" class="input-field mb-4 cursor-pointer">
-                    <option value="web-dev" data-price="299">Web Development ($299)</option>
-                    <option value="data-sci" data-price="249">Data Science ($249)</option>
-                    <option value="ml-ai" data-price="299">Machine Learning ($299)</option>
-                    <option value="app-dev" data-price="249">Mobile App Development ($249)</option>
-                    <option value="python" data-price="99">Python Programming ($99)</option>
-                    <option value="ui-ux" data-price="149">UI/UX Design ($149)</option>
-                    <option value="cybersec" data-price="299">Cybersecurity ($299)</option>
-                    <option value="cloud" data-price="249">Cloud Computing ($249)</option>
-                    <option value="devops" data-price="279">DevOps Engineering ($279)</option>
-                    <option value="blockchain" data-price="199">Blockchain Fundamentals ($199)</option>
-                </select>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-blue-50 transition-colors has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                        <input type="radio" name="pm" value="card" checked class="hidden">
+                        <i class="fab fa-cc-stripe text-blue-600 text-2xl mb-1 block"></i>
+                        <span class="text-xs font-bold">Card</span>
+                    </label>
+                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-blue-50 transition-colors has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                        <input type="radio" name="pm" value="vnpay" class="hidden">
+                        <i class="fas fa-globe-asia text-blue-600 text-2xl mb-1 block"></i>
+                        <span class="text-xs font-bold">VNPay</span>
+                    </label>
+                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-blue-50 transition-colors has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                        <input type="radio" name="pm" value="momo" class="hidden">
+                        <i class="fas fa-wallet text-pink-600 text-2xl mb-1 block"></i>
+                        <span class="text-xs font-bold">MoMo</span>
+                    </label>
+                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-blue-50 transition-colors has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                        <input type="radio" name="pm" value="bank" class="hidden">
+                        <i class="fas fa-university text-gray-600 text-2xl mb-1 block"></i>
+                        <span class="text-xs font-bold">Transfer</span>
+                    </label>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="date" id="startDate" name="startDate" class="input-field" required>
-
-                    <div>
-                        <input type="date" id="endDate" name="endDate" class="input-field" required>
-                        <p id="date-error" class="text-xs text-red-500 mt-1 hidden">
-                            <i class="fas fa-exclamation-circle"></i> Invalid End Date
-                        </p>
-                    </div>
+                <div id="card-element-container" class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Card Details</label>
+                    <div id="card-element" class="p-3 border rounded-md"></div>
+                    <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
                 </div>
             </div>
         </div>
 
-        <div class="w-full lg:w-1/3">
+        <div class="lg:col-span-1">
             <div class="card sticky top-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Summary</h3>
+                <h2 class="text-xl font-bold mb-6">Order Summary</h2>
 
-                <div class="border-b pb-4 mb-4 text-sm">
+                <div class="space-y-3 mb-6 border-b pb-6">
                     <div class="flex justify-between text-gray-600">
-                        <span>Fee</span>
-                        <span>$<span id="fee-amt">299</span>.00</span>
+                        <span>Course Fee</span>
+                        <span id="course-fee">$0.00</span>
                     </div>
-
-                    <div class="flex justify-between text-red-600 text-xl font-bold mt-2">
+                    <div class="flex justify-between font-bold text-xl text-gray-800 pt-3">
                         <span>Total</span>
-                        <span>$<span id="total-amt">299</span>.00</span>
+                        <span id="total-amt">$0.00</span>
                     </div>
                 </div>
 
-                <h4 class="font-bold text-gray-700 mb-3">Payment Method</h4>
-
-                <div class="grid grid-cols-2 gap-3 mb-5">
-                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-blue-50">
-                        <input type="radio" name="pm" value="card" class="hidden" checked>
-                        <i class="fas fa-credit-card text-blue-600 text-xl mb-1"></i>
-                        <span class="text-xs font-bold">Card</span>
-                    </label>
-
-                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-pink-50">
-                        <input type="radio" name="pm" value="momo" class="hidden">
-                        <i class="fas fa-wallet text-pink-600 text-xl mb-1"></i>
-                        <span class="text-xs font-bold">MoMo</span>
-                    </label>
-
-                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-blue-50">
-                        <input type="radio" name="pm" value="zalopay" class="hidden">
-                        <i class="fas fa-mobile-alt text-blue-400 text-xl mb-1"></i>
-                        <span class="text-xs font-bold">ZaloPay</span>
-                    </label>
-
-                    <label class="cursor-pointer border rounded p-3 text-center hover:bg-green-50">
-                        <input type="radio" name="pm" value="bank" class="hidden">
-                        <i class="fas fa-university text-green-700 text-xl mb-1"></i>
-                        <span class="text-xs font-bold">Bank</span>
-                    </label>
-                </div>
-
-                <div id="stripe-box" class="mb-4">
-                    <div id="card-element" class="p-3 border rounded bg-white"></div>
-                    <div id="card-errors" class="text-red-500 text-xs mt-1"></div>
-                </div>
-
-                <div id="manual-box" class="hidden mb-4 p-3 bg-gray-50 border rounded text-sm text-gray-600"></div>
-
-                <label class="flex items-start gap-2 mb-6 text-xs text-gray-500 cursor-pointer">
-                    <input type="checkbox" required class="mt-1">
-                    I agree to Terms & Conditions.
-                </label>
-
-                <input type="hidden" id="stripeToken" name="stripeToken">
-
-                <button type="submit" id="btn"
-                        class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg shadow flex justify-center items-center gap-2 transition-colors">
-                    <i class="fas fa-lock"></i>
-                    <span id="btn-text">Pay $299.00</span>
+                <button type="button" id="enroll-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition duration-300 shadow-lg flex justify-center items-center">
+                    <span id="btn-text">Pay & Enroll</span>
                 </button>
             </div>
         </div>
     </form>
-</main>
+</div>
 
 <script>
-    // 1. Configuration
-    const stripeKey = 'pk_test_TYooMQauvdEDq54NiTphI7jx';
-    const methodNames = {
-        'momo': 'MoMo App',
-        'zalopay': 'ZaloPay App',
-        'bank': 'Bank Transfer Portal'
-    };
-
-    let stripe, elements, card;
+    // --- Stripe Setup ---
+    const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+    const elements = stripe.elements();
+    const style = { base: { fontSize: '16px' } };
+    const card = elements.create('card', { style: style });
+    card.mount('#card-element');
 
     document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
-
-        const requiredInputs = document.querySelectorAll('input[required], select[required]');
-        requiredInputs.forEach(function(input) {
-            input.addEventListener('invalid', function(e) { e.target.setCustomValidity('Please fill this box'); });
-            input.addEventListener('input', function(e) { e.target.setCustomValidity(''); });
-        });
-
-        try {
-            if (typeof Stripe !== 'undefined') {
-                stripe = Stripe(stripeKey);
-                elements = stripe.elements();
-                card = elements.create("card", {
-                    style: { base: { fontSize: "16px", color: "#32325d" } }
-                });
-                card.mount("#card-element");
-            }
-        } catch (error) {
-            console.error("Stripe init failed:", error);
-        }
+        calculateTotal(); // Calculate immediately on load
     });
 
-    const getDOM = function() {
+    function getDOM() {
         return {
             form: document.getElementById('registration-form'),
-            courseSelect: document.getElementById('courseSelect'),
-            startDate: document.getElementById('startDate'),
-            endDate: document.getElementById('endDate'),
-            errorMsg: document.getElementById('date-error'),
-            stripeBox: document.getElementById('stripe-box'),
-            manualBox: document.getElementById('manual-box'),
-            btn: document.getElementById('btn'),
-            btnText: document.getElementById('btn-text'),
-            fee: document.getElementById('fee-amt'),
+            fee: document.getElementById('course-fee'),
             total: document.getElementById('total-amt'),
-            pmInputs: document.querySelectorAll('input[name="pm"]'),
-            stripeTokenInput: document.getElementById('stripeToken')
+            amountInput: document.getElementById('amount-input'),
+            btn: document.getElementById('enroll-btn'),
+            btnText: document.getElementById('btn-text'),
+            stripeInput: document.getElementById('stripeToken'),
+            cardContainer: document.getElementById('card-element-container'),
+            paymentRadios: document.querySelectorAll('input[name="pm"]'),
+            fixedPrice: document.getElementById('fixed-price')
         };
-    };
+    }
 
     function setupEventListeners() {
         const DOM = getDOM();
-        if (DOM.courseSelect) {
-            DOM.courseSelect.addEventListener('change', updatePrice);
-        }
-        if (DOM.pmInputs) {
-            DOM.pmInputs.forEach(function(input) {
-                input.addEventListener('change', function(e) { togglePm(e.target.value); });
+
+        // Toggle Stripe UI
+        DOM.paymentRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                DOM.cardContainer.style.display = (e.target.value === 'card') ? 'block' : 'none';
             });
-        }
-        if (DOM.form) {
-            DOM.form.addEventListener('submit', handleFormSubmit);
-        }
+        });
+
+        // Submit Handler
+        DOM.btn.addEventListener('click', handleFormSubmit);
     }
 
-    function updatePrice() {
+    // Simplified calculation: just reads the hidden input
+    function calculateTotal() {
         const DOM = getDOM();
-        const selectedOption = DOM.courseSelect.options[DOM.courseSelect.selectedIndex];
-        const price = selectedOption.getAttribute('data-price');
+        const price = parseFloat(DOM.fixedPrice.value || 0);
 
-        DOM.fee.textContent = price;
-        DOM.total.textContent = price;
+        DOM.fee.textContent = '$' + price.toFixed(2);
 
-        // FIXED: Used string concatenation (+) instead of backticks
-        DOM.btnText.textContent = 'Pay $' + price + '.00';
-    }
-
-    function togglePm(method) {
-        const DOM = getDOM();
-        const isCard = method === 'card';
-
-        if(isCard) {
-            DOM.stripeBox.classList.remove('hidden');
-            DOM.manualBox.classList.add('hidden');
-        } else {
-            DOM.stripeBox.classList.add('hidden');
-            DOM.manualBox.classList.remove('hidden');
-
-            // FIXED: Used string concatenation (+) to avoid JSP EL conflict
-            DOM.manualBox.innerHTML =
-                '<div class="flex items-center gap-2">' +
-                '<i class="fas fa-info-circle text-blue-500"></i>' +
-                '<span>Redirecting to <strong>' + methodNames[method] + '</strong>...</span>' +
-                '</div>';
-        }
-    }
-
-    function validateDates() {
-        const DOM = getDOM();
-        if (DOM.startDate.value && DOM.endDate.value) {
-            const start = new Date(DOM.startDate.value);
-            const end = new Date(DOM.endDate.value);
-            if (end < start) {
-                DOM.errorMsg.classList.remove('hidden');
-                return false;
-            }
-        }
-        DOM.errorMsg.classList.add('hidden');
-        return true;
+        const total = price ;
+        DOM.total.textContent = '$' + total.toFixed(2);
+        DOM.amountInput.value = total.toFixed(2);
     }
 
     async function handleFormSubmit(e) {
         e.preventDefault();
         const DOM = getDOM();
-        if (!validateDates()) return;
-        setLoading(true);
 
-        const method = document.querySelector('input[name="pm"]:checked').value;
-
-        if (method === 'card') {
-            await processStripePayment();
-        } else {
-            await simulateManualPayment();
-        }
-    }
-
-    async function processStripePayment() {
-        const DOM = getDOM();
-        if (!stripe || !card) {
-            alert("Stripe is not loaded.");
-            setLoading(false);
+        if (!DOM.form.checkValidity()) {
+            DOM.form.reportValidity();
             return;
         }
-        const result = await stripe.createToken(card);
-        if (result.error) {
-            document.getElementById('card-errors').textContent = result.error.message;
-            setLoading(false);
-        } else {
-            DOM.stripeTokenInput.value = result.token.id;
-            DOM.form.submit();
-        }
-    }
 
-    function simulateManualPayment() {
-        const DOM = getDOM();
-        return new Promise(function(resolve) {
-            setTimeout(function() {
+        setLoading(true);
+        const method = document.querySelector('input[name="pm"]:checked').value;
+
+        try {
+            if (method === 'card') {
+                const result = await stripe.createToken(card);
+                if (result.error) {
+                    document.getElementById('card-errors').textContent = result.error.message;
+                    setLoading(false);
+                } else {
+                    DOM.stripeInput.value = result.token.id;
+                    DOM.form.action = 'register';
+                    DOM.form.submit();
+                }
+            } else if (method === 'vnpay') {
+                DOM.form.action = 'vnpay-payment';
                 DOM.form.submit();
-                resolve();
-            }, 1000);
-        });
+            } else {
+                // Simulate other methods
+                setTimeout(() => {
+                    DOM.form.action = 'register';
+                    DOM.form.submit();
+                }, 1000);
+            }
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
     }
 
     function setLoading(isLoading) {
         const DOM = getDOM();
         DOM.btn.disabled = isLoading;
-        if (isLoading) {
-            DOM.btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        } else {
-            const currentPrice = DOM.fee.textContent;
-            // FIXED: Concatenation
-            DOM.btnText.textContent = 'Pay $' + currentPrice + '.00';
-        }
+        DOM.btnText.innerHTML = isLoading ? '<i class="fas fa-spinner fa-spin"></i> Processing...' : 'Pay & Enroll';
     }
 </script>
-
 </body>
 </html>
