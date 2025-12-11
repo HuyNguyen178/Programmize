@@ -197,7 +197,7 @@ public class ClassDAO {
 
     public Class getClassById(int id) {
         try (Connection connection = DBUtil.getConnection()) {
-            String sql = "SELECT class_id, class_name, thumbnail_url, number_of_students, status, description, start_date, end_date FROM class WHERE class_id = ?";
+            String sql = "SELECT * FROM class WHERE class_id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
@@ -211,6 +211,8 @@ public class ClassDAO {
                 c.setDescription(rs.getString("description"));
                 c.setStartDate(rs.getDate("start_date"));
                 c.setEndDate(rs.getDate("end_date"));
+                c.setListedPrice(rs.getBigDecimal("listed_price"));
+                c.setSalePrice(rs.getBigDecimal("sale_price"));
                 return c;
             }
         } catch (Exception e) {

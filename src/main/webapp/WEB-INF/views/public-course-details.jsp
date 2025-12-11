@@ -502,7 +502,7 @@
                         <c:when test="${empty sessionScope.loginUser}">
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this course</p>
-                                <a href="${pageContext.request.contextPath}/login?redirect=public-course-details%3Fid%3D${course.courseId}">
+                                <a href="${pageContext.request.contextPath}/login?redirect=public-course-details?id=${course.courseId}">
                                     Login to Continue
                                 </a>
                             </div>

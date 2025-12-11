@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page import="model.Class" %>
 
@@ -144,6 +146,13 @@
             font-size: 13px;
             color: #555;
         }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -230,9 +239,25 @@
                 <div class="video-label">Preview this class</div>
             </div>
 
-            <!-- Price / actions (vì bảng class chưa có giá, tạm coi là Free) -->
             <div class="price-box mb-3">
-                <div class="price-value">$0.00</div>
+                <div class="price-value">
+                    <c:choose>
+                        <c:when test="${clazz.salePrice != null}">
+                            <c:if test="${clazz.listedPrice > clazz.salePrice}">
+                                    <span class="original-price">
+                                        $<fmt:formatNumber value="${clazz.listedPrice}" pattern="#,##0.00"/>
+                                    </span>
+                            </c:if>
+                            $<fmt:formatNumber value="${clazz.salePrice}" pattern="#,##0.00"/>
+                        </c:when>
+                        <c:when test="${clazz.listedPrice != null}">
+                            $<fmt:formatNumber value="${clazz.listedPrice}" pattern="#,##0.00"/>
+                        </c:when>
+                        <c:otherwise>
+                            FREE
+                        </c:otherwise>
+                    </c:choose>
+                </div>
                 <button class="btn btn-danger btn-buy">
                     Join This Class
                 </button>
