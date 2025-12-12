@@ -88,8 +88,8 @@
                         <select class="form-select" name="category">
                             <option value="">All Categories</option>
                             <c:forEach items="${categories}" var="cat">
-                                <option value="${cat}" ${selectedCategory == cat ? 'selected' : ''}>
-                                        ${cat}
+                                <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
+                                        ${cat[1]}
                                 </option>
                             </c:forEach>
                         </select>
@@ -185,8 +185,10 @@
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${not empty course.courseCategory}">
-                                                    <span class="badge bg-secondary">${course.courseCategory}</span>
+                                                <c:when test="${not empty course.courseCategories}">
+                                                    <c:forEach items="${course.courseCategories}" var="catName">
+                                                        <span class="badge bg-secondary">${catName}</span>
+                                                    </c:forEach>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <em>No category</em>
@@ -215,14 +217,11 @@
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${course.status == '1' || course.status == 'Active'}">
-                                                    <span class="badge bg-success status-active">Active</span> <%-- Sử dụng badge bg-success --%>
-                                                </c:when>
-                                                <c:when test="${course.status == '0' || course.status == 'Inactive'}">
-                                                    <span class="badge bg-danger status-inactive">Inactive</span> <%-- Sử dụng badge bg-danger --%>
+                                                <c:when test="${course.status}">
+                                                    <span class="badge bg-success status-active">Active</span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="badge bg-warning">${course.status}</span>
+                                                    <span class="badge bg-danger status-inactive">Inactive</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
@@ -236,7 +235,7 @@
                                                 </a>
                                                     <%-- NÚT BẬT/TẮT TRẠNG THÁI (Giữ nguyên logic JSTL) --%>
                                                 <c:choose>
-                                                    <c:when test="${course.status == '1' || course.status == 'Active'}">
+                                                    <c:when test="${course.status}">
                                                         <a href="${pageContext.request.contextPath}/course-list?action=toggleStatus&id=${course.courseId}&newStatus=0"
                                                            class="btn btn-sm btn-outline-warning"
                                                            title="Set Inactive"

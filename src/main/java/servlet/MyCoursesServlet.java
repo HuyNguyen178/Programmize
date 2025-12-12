@@ -54,7 +54,7 @@ public class MyCoursesServlet extends HttpServlet {
         int totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
         int totalPages = (int) Math.ceil((double) totalCourses / PAGE_SIZE);
 
-        List<String> allCategories = courseDAO.getAllCategoriesFromSettings();
+        List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();
 
         request.setAttribute("allCategories", allCategories);
         request.setAttribute("courses", courses);

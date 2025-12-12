@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -126,45 +127,43 @@
             padding: 10px 0;
         }
         #content {
-            margin-left: 260px; /* Default position when Sidebar is open [cite: 89] */
-            transition: margin-left 0.25s ease; /* [cite: 90] */
+            margin-left: 260px; /* Default position when Sidebar is open */
+            transition: margin-left 0.25s ease;
             min-height: 100vh;
             padding: 20px;
         }
         #content.expanded {
-            margin-left: 72px; /* Position when Sidebar is closed [cite: 91] */
+            margin-left: 72px; /* Position when Sidebar is closed */
         }
-        /* Topbar Shift Configuration (Copied from account-list.jsp) */
+        /* Topbar Shift Configuration */
         #topbar {
-            margin-left: 260px; /* [cite: 4] */
-            transition: margin-left 0.25s ease; /* [cite: 4] */
+            margin-left: 260px;
+            transition: margin-left 0.25s ease;
             width: calc(100% - 260px);
         }
         #topbar.expanded {
-            margin-left: 72px; /* [cite: 5] */
-            width: calc(100% - 72px); /* [cite: 5] */
+            margin-left: 72px;
+            width: calc(100% - 72px);
         }
 
-        /* Table alignment (Copied from account-list.jsp) */
+        /* Table alignment */
         .table th, .table td {
-            vertical-align: middle; /* [cite: 6] */
-            text-align: center; /* [cite: 6] */
+            vertical-align: middle;
+            text-align: center;
         }
         /* Course Name (2nd column) left-aligned */
         .table td:nth-child(2) {
-            text-align: left; /* Tương tự cột Full Name ở account-list.jsp [cite: 7] */
+            text-align: left;
         }
 
-        /* Thumbnail style (Giữ nguyên kích thước 50px như ban đầu để tránh làm thay đổi cấu trúc dữ liệu nếu có) */
+        /* Thumbnail style */
         .thumbnail {
-            width: 50px; /* [cite: 83] */
-            height: 50px; /* [cite: 83] */
+            width: 50px;
+            height: 50px;
             object-fit: cover;
         }
 
-        /* Loại bỏ các style cũ của course-list.jsp không cần thiết */
-
-        /* Đảm bảo các trạng thái status dùng lớp badge của Bootstrap */
+        /* Status badge styles */
         .status-active {
             font-weight: bold;
         }
@@ -264,8 +263,9 @@
                             <!-- Course Header - Clickable -->
                             <div class="course-header" onclick="toggleCourse(${loop.index})">
                                 <div>
+                                        <%-- SỬA: Dùng boolean trực tiếp thay vì so sánh String --%>
                                     <c:choose>
-                                        <c:when test="${course.status == '1' || course.status == 1}">
+                                        <c:when test="${course.status}">
                                             <span class="badge bg-success me-2">Active</span>
                                         </c:when>
                                         <c:otherwise>
@@ -287,7 +287,15 @@
                                             <c:out value="${course.courseInstructor}" default="No instructor"/>
                                             <span class="mx-2">|</span>
                                             <i class="bi bi-tag me-1"></i>
-                                            <c:out value="${course.courseCategory}" default="No category"/>
+                                                <%-- SỬA: Dùng courseCategories (mảng) thay vì courseCategory (String) --%>
+                                            <c:choose>
+                                                <c:when test="${not empty course.courseCategories}">
+                                                    ${fn:join(course.courseCategories, ', ')}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    No category
+                                                </c:otherwise>
+                                            </c:choose>
                                         </small>
                                     </div>
                                     <div>

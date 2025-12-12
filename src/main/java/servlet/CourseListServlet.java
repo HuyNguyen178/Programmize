@@ -60,7 +60,7 @@ public class CourseListServlet extends HttpServlet {
                 sortColumn, sortOrder);
 
         // Get filter options - now returns List<String[]> with [id, name]
-        List<String> categories = publicCourseDAO.getAllCategoriesFromSettings(); // Get all categories from settings
+        List<String[]> categories = publicCourseDAO.getAllCategoriesFromSettings(); // Get all categories from settings
         List<String[]> instructors = publicCourseDAO.getAllInstructors();
 
         // Set attributes for JSP

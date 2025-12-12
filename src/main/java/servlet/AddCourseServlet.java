@@ -25,7 +25,7 @@ public class AddCourseServlet extends HttpServlet {
 
         try {
             // Lấy danh sách categories và instructors cho dropdown
-            List<String> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
+            List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
             List<String[]> allInstructors = publicCourseDAO.getAllUsersAsInstructors();
 
             // Set attributes cho JSP

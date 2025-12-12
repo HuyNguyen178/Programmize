@@ -45,7 +45,7 @@ public class CourseDAO {
             sql.append(" AND c.instructor_id = ?");
         }
 
-        // Filter by status
+        // Filter by status - SỬA: so sánh với boolean (0 hoặc 1)
         if (status != null && !status.isEmpty() && !status.equals("All Statuses") && !status.equals("")) {
             sql.append(" AND c.status = ?");
         }
@@ -111,9 +111,9 @@ public class CourseDAO {
                 System.out.println("Setting instructor parameter: " + instructor);
             }
 
-            // Set status parameter
+            // Set status parameter - SỬA: dùng setInt cho boolean trong MySQL
             if (status != null && !status.isEmpty() && !status.equals("All Statuses") && !status.equals("")) {
-                stmt.setString(paramIndex++, status);
+                stmt.setInt(paramIndex++, Integer.parseInt(status));
                 System.out.println("Setting status parameter: " + status);
             }
 
@@ -140,6 +140,16 @@ public class CourseDAO {
                 course.setStatus(rs.getBoolean("status"));
                 course.setDuration(rs.getInt("duration"));
                 course.setInstructorId(rs.getInt("instructor_id"));
+
+                // ===== SỬA: THÊM ĐOẠN NÀY ĐỂ SET courseCategories =====
+                String categoryNames = rs.getString("category_names");
+                if (categoryNames != null && !categoryNames.isEmpty()) {
+                    course.setCourseCategories(categoryNames.split(", "));
+                } else {
+                    course.setCourseCategories(new String[0]);
+                }
+                // ========================================================
+
                 courses.add(course);
             }
 
@@ -165,21 +175,22 @@ public class CourseDAO {
 
     // Get all categories from setting table (all active categories)
     // Returns List<String[]> where each String[] = {setting_id, setting_name}
-    public List<String> getAllCategoriesFromSettings() {
-        List<String> categories = new ArrayList<>();
-        String sql = "SELECT DISTINCT s.setting_name " +
-                "FROM setting s " +
-                "INNER JOIN course_category cc ON s.setting_id = cc.category_id " +
-                "WHERE s.status = 1 " +
-                "ORDER BY s.setting_name";
+    public List<String[]> getAllCategoriesFromSettings() {
+        List<String[]> categories = new ArrayList<>();
+        String sql = "SELECT setting_id, setting_name FROM setting WHERE status = 1 AND type_id = 5 ORDER BY setting_name";
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                categories.add(rs.getString("setting_name"));
+                String[] category = new String[2];
+                category[0] = String.valueOf(rs.getInt("setting_id"));
+                category[1] = rs.getString("setting_name");
+                categories.add(category);
             }
+            System.out.println("Retrieved " + categories.size() + " categories from settings");
         } catch (SQLException e) {
-            System.err.println("Error getting category names: " + e.getMessage());
+            System.err.println("Error getting categories from settings: " + e.getMessage());
             e.printStackTrace();
         }
         return categories;
@@ -439,7 +450,7 @@ public class CourseDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            // Update course info
+            // Update course info - SỬA: dùng boolean cho status
             String updateSql = "UPDATE course SET course_name = ?, listed_price = ?, sale_price = ?, " +
                     "thumbnail_url = ?, description = ?, status = ?, duration = ?, instructor_id = ? " +
                     "WHERE course_id = ?";
@@ -449,7 +460,7 @@ public class CourseDAO {
                 stmt.setBigDecimal(3, course.getSalePrice());
                 stmt.setString(4, course.getThumbnailUrl());
                 stmt.setString(5, course.getDescription());
-                stmt.setBoolean(6, course.getStatus());
+                stmt.setBoolean(6, course.getStatus()); // SỬA: dùng boolean
                 stmt.setInt(7, course.getDuration() != null ? course.getDuration() : 0);
                 stmt.setInt(8, course.getInstructorId() != null ? course.getInstructorId() : 0);
                 stmt.setInt(9, course.getCourseId());
@@ -480,7 +491,7 @@ public class CourseDAO {
             return true;
 
         } catch (SQLException e) {
-            System.err.println("Error updating course with categories: " + e.getMessage());
+            System.err.println("Error updating course: " + e.getMessage());
             e.printStackTrace();
             if (conn != null) {
                 try {
@@ -502,73 +513,39 @@ public class CourseDAO {
         }
     }
 
-    // Add new course
-    public int addCourse(Course course) {
-        String sql = "INSERT INTO course (course_name, listed_price, sale_price, thumbnail_url, " +
-                "description, status, duration, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setString(1, course.getCourseName());
-            stmt.setBigDecimal(2, course.getListedPrice());
-            stmt.setBigDecimal(3, course.getSalePrice());
-            stmt.setString(4, course.getThumbnailUrl());
-            stmt.setString(5, course.getDescription());
-            stmt.setBoolean(6, course.getStatus());
-            stmt.setInt(7, course.getDuration() != null ? course.getDuration() : 0);
-            stmt.setInt(8, course.getInstructorId() != null ? course.getInstructorId() : 0);
-
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int newId = generatedKeys.getInt(1);
-                    System.out.println("Added new course with ID: " + newId);
-                    return newId;
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error adding course: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
     // Add new course with categories
     public int addCourseWithCategories(Course course, int[] categoryIds) {
         Connection conn = null;
+        int courseId = -1;
+
         try {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            // Insert course
-            String insertCourseSql = "INSERT INTO course (course_name, listed_price, sale_price, thumbnail_url, " +
+            // Insert course - SỬA: dùng boolean cho status
+            String insertSql = "INSERT INTO course (course_name, listed_price, sale_price, thumbnail_url, " +
                     "description, status, duration, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            int courseId = -1;
-            try (PreparedStatement stmt = conn.prepareStatement(insertCourseSql, Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement stmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, course.getCourseName());
                 stmt.setBigDecimal(2, course.getListedPrice());
                 stmt.setBigDecimal(3, course.getSalePrice());
                 stmt.setString(4, course.getThumbnailUrl());
                 stmt.setString(5, course.getDescription());
-                stmt.setBoolean(6, course.getStatus());
+                stmt.setBoolean(6, course.getStatus()); // SỬA: dùng boolean
                 stmt.setInt(7, course.getDuration() != null ? course.getDuration() : 0);
                 stmt.setInt(8, course.getInstructorId() != null ? course.getInstructorId() : 0);
                 stmt.executeUpdate();
 
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    courseId = generatedKeys.getInt(1);
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    courseId = rs.getInt(1);
                 }
             }
 
             // Insert categories
             if (courseId > 0 && categoryIds != null && categoryIds.length > 0) {
-                String insertCategorySql = "INSERT INTO course_category (course_id, category_id) VALUES (?, ?)";
-                try (PreparedStatement stmt = conn.prepareStatement(insertCategorySql)) {
+                String insertCatSql = "INSERT INTO course_category (course_id, category_id) VALUES (?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(insertCatSql)) {
                     for (int categoryId : categoryIds) {
                         stmt.setInt(1, courseId);
                         stmt.setInt(2, categoryId);
@@ -579,10 +556,10 @@ public class CourseDAO {
             }
 
             conn.commit();
-            return courseId;
+            System.out.println("Added new course with ID: " + courseId);
 
         } catch (SQLException e) {
-            System.err.println("Error adding course with categories: " + e.getMessage());
+            System.err.println("Error adding course: " + e.getMessage());
             e.printStackTrace();
             if (conn != null) {
                 try {
@@ -602,251 +579,8 @@ public class CourseDAO {
                 }
             }
         }
-    }
 
-    // ==================== PUBLIC COURSE METHODS ====================
-    // Used by: PublicCourseServlet, PublicCourseDetailsServlet
-
-    // Get public courses (active status) with filters
-    // categoryIds can be setting_id values or category names
-    public List<Course> getPublicCourses(String category, String keyword, String priceSort, int offset, int limit) {
-        List<Course> courses = new ArrayList<>();
-
-        try (Connection connection = DBUtil.getConnection()) {
-            StringBuilder sql = new StringBuilder("SELECT" +
-                    "    c.course_id," +
-                    "    c.course_name," +
-                    "    c.thumbnail_url," +
-                    "    c.listed_price," +
-                    "    c.sale_price," +
-                    "    c.status," +
-                    "    c.description," +
-                    "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
-                    "    u.user_id as instructor_id," +
-                    "    u.fullname AS instructor_name" +
-                    " FROM course c" +
-                    " LEFT JOIN course_user cu ON cu.course_id = c.course_id" +
-                    " LEFT JOIN course_category cc ON c.course_id = cc.course_id" +
-                    " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
-                    " LEFT JOIN user u ON c.instructor_id = u.user_id" +
-                    " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
-                    " WHERE c.status = 1");
-
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                sql.append(" AND (c.course_name LIKE ? OR u.fullname LIKE ?) ");
-            }
-
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ?");
-            }
-
-            sql.append(" GROUP BY " +
-                    "    c.course_id, c.course_name, c.thumbnail_url, c.listed_price, " +
-                    "    c.sale_price, c.status, c.description," +
-                    "    u.user_id, u.fullname");
-
-            if ("low".equalsIgnoreCase(priceSort)) {
-                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
-            } else if ("high".equalsIgnoreCase(priceSort)) {
-                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
-            } else {
-                sql.append(" ORDER BY c.course_id ASC");
-            }
-
-            sql.append(" LIMIT ? OFFSET ?");
-
-            PreparedStatement statement = connection.prepareStatement(sql.toString());
-            int index = 1;
-
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                statement.setString(index++, "%" + keyword + "%");
-                statement.setString(index++, "%" + keyword + "%");
-            }
-
-            if (category != null && !category.trim().isEmpty()) {
-                statement.setString(index++, category);
-            }
-
-            statement.setInt(index++, limit);
-            statement.setInt(index, offset);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Course c = new Course();
-                c.setId(resultSet.getInt("course_id"));
-                c.setCourseName(resultSet.getString("course_name"));
-                c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
-                c.setStatus(resultSet.getBoolean("status"));
-                c.setListedPrice(resultSet.getBigDecimal("listed_price"));
-                c.setSalePrice(resultSet.getBigDecimal("sale_price"));
-                c.setDescription(resultSet.getString("description"));
-                c.setInstructorId(resultSet.getInt("instructor_id"));
-                c.setCourseInstructor(resultSet.getString("instructor_name"));
-                courses.add(c);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return courses;
-    }
-
-    // Helper method to check if "All Categories" is selected
-    private boolean isAllCategoriesSelected(String[] categories) {
-        if (categories == null) return false;
-        for (String cat : categories) {
-            if ("all".equals(cat) || cat == null || cat.isEmpty()) return true;
-        }
-        return false;
-    }
-
-    // ==================== ENROLLMENT METHODS ====================
-
-    // Get course enrollment count
-    public int getCourseEnrollmentCount(int courseId) {
-        String sql = "SELECT COUNT(*) as enrollment_count FROM course_enrollment WHERE course_id = ?";
-        int count = 0;
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, courseId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                count = rs.getInt("enrollment_count");
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error getting enrollment count: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return count;
-    }
-
-    /**
-     * Returns all courses a user has enrolled/bought.
-     */
-    public List<Course> getEnrolledCoursesByUser(int userId, String category, String keyword, int offset, int limit) {
-        List<Course> courses = new ArrayList<>();
-
-        try (Connection connection = DBUtil.getConnection()) {
-            StringBuilder sql = new StringBuilder("SELECT" +
-                    "    c.course_id," +
-                    "    c.course_name," +
-                    "    c.thumbnail_url," +
-                    "    c.listed_price," +
-                    "    c.sale_price," +
-                    "    c.status," +
-                    "    c.description," +
-                    "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
-                    "    u.user_id as instructor_id," +
-                    "    u.fullname AS instructor_name" +
-                    " FROM course c" +
-                    " LEFT JOIN course_user cu ON cu.course_id = c.course_id" +
-                    " LEFT JOIN course_category cc ON c.course_id = cc.course_id" +
-                    " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
-                    " LEFT JOIN user u ON c.instructor_id = u.user_id" +
-                    " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
-                    " WHERE c.status = 1 AND cu.user_id = ?");
-
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                sql.append(" AND (c.course_name LIKE ? OR u.fullname LIKE ?) ");
-            }
-
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ?");
-            }
-
-            sql.append(" GROUP BY " +
-                    "    c.course_id, c.course_name, c.thumbnail_url, c.listed_price, " +
-                    "    c.sale_price, c.status, c.description," +
-                    "    u.user_id, u.fullname");
-
-            sql.append(" LIMIT ? OFFSET ?");
-
-            PreparedStatement statement = connection.prepareStatement(sql.toString());
-            int index = 1;
-            statement.setInt(index++, userId);
-
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                statement.setString(index++, "%" + keyword + "%");
-                statement.setString(index++, "%" + keyword + "%");
-            }
-
-            if (category != null && !category.trim().isEmpty()) {
-                statement.setString(index++, category);
-            }
-
-            statement.setInt(index++, limit);
-            statement.setInt(index, offset);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Course c = new Course();
-                c.setId(resultSet.getInt("course_id"));
-                c.setCourseName(resultSet.getString("course_name"));
-                c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
-                c.setStatus(resultSet.getBoolean("status"));
-                c.setDescription(resultSet.getString("description"));
-                c.setInstructorId(resultSet.getInt("instructor_id"));
-                c.setCourseInstructor(resultSet.getString("instructor_name"));
-                courses.add(c);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return courses;
-    }
-
-    // Check if user is enrolled in a course
-    public boolean isUserEnrolled(int userId, int courseId) {
-        String sql = "SELECT COUNT(*) FROM course_enrollment WHERE user_id = ? AND course_id = ?";
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, userId);
-            stmt.setInt(2, courseId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error checking enrollment: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    // Enroll user in a course
-    public boolean enrollUser(int userId, int courseId) {
-        String sql = "INSERT INTO course_enrollment (user_id, course_id, enrolled_at) VALUES (?, ?, NOW())";
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, userId);
-            stmt.setInt(2, courseId);
-            int rowsAffected = stmt.executeUpdate();
-
-            System.out.println("Enrolled user " + userId + " in course " + courseId + ": " + rowsAffected + " rows affected");
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error enrolling user: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+        return courseId;
     }
 
     public int getTotalCourses() {
@@ -912,12 +646,14 @@ public class CourseDAO {
 
     public List<Course> getHighlightedCourses() {
         List<Course> list = new ArrayList<>();
-        String sql = "SELECT c.*, u.fullname AS instructor_name, s.value AS category_name " +
+        String sql = "SELECT c.*, u.fullname AS instructor_name, " +
+                "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
                 "FROM course c " +
                 "JOIN user u ON c.instructor_id = u.user_id " +
                 "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
-                "LEFT JOIN setting s ON cc.category_id = s.setting_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
                 "WHERE c.status = 1 " +
+                "GROUP BY c.course_id " +
                 "ORDER BY c.course_id DESC LIMIT 8";
 
         try (Connection conn = DBUtil.getConnection();
@@ -935,8 +671,15 @@ public class CourseDAO {
                 c.setDuration(rs.getInt("duration"));
                 c.setInstructorId(rs.getInt("instructor_id"));
                 c.setStatus(rs.getBoolean("status"));
-
                 c.setCourseInstructor(rs.getString("instructor_name"));
+
+                // SỬA: Set courseCategories thay vì courseCategory
+                String cats = rs.getString("category_names");
+                if (cats != null && !cats.isEmpty()) {
+                    c.setCourseCategories(cats.split(", "));
+                } else {
+                    c.setCourseCategories(new String[0]);
+                }
 
                 list.add(c);
             }
@@ -1030,5 +773,248 @@ public class CourseDAO {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    // Add new course
+    public int addCourse(Course course) {
+        String sql = "INSERT INTO course (course_name, listed_price, sale_price, thumbnail_url, " +
+                "description, status, duration, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, course.getCourseName());
+            stmt.setBigDecimal(2, course.getListedPrice());
+            stmt.setBigDecimal(3, course.getSalePrice());
+            stmt.setString(4, course.getThumbnailUrl());
+            stmt.setString(5, course.getDescription());
+            stmt.setBoolean(6, course.getStatus());
+            stmt.setInt(7, course.getDuration() != null ? course.getDuration() : 0);
+            stmt.setInt(8, course.getInstructorId() != null ? course.getInstructorId() : 0);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int newId = generatedKeys.getInt(1);
+                    System.out.println("Added new course with ID: " + newId);
+                    return newId;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error adding course: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    // ==================== PUBLIC COURSE METHODS ====================
+    // Used by: PublicCourseServlet, PublicCourseDetailsServlet
+    // Get public courses (active status) with filters
+    // categoryIds can be setting_id values or category names
+    public List<Course> getPublicCourses(String category, String keyword, String priceSort, int offset, int limit) {
+        List<Course> courses = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder("SELECT" +
+                    "    c.course_id," +
+                    "    c.course_name," +
+                    "    c.thumbnail_url," +
+                    "    c.listed_price," +
+                    "    c.sale_price," +
+                    "    c.status," +
+                    "    c.description," +
+                    "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
+                    "    u.user_id as instructor_id," +
+                    "    u.fullname AS instructor_name" +
+                    " FROM course c" +
+                    " LEFT JOIN course_user cu ON cu.course_id = c.course_id" +
+                    " LEFT JOIN course_category cc ON c.course_id = cc.course_id" +
+                    " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
+                    " LEFT JOIN user u ON c.instructor_id = u.user_id" +
+                    " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
+                    " WHERE c.status = 1");
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (c.course_name LIKE ? OR u.fullname LIKE ?) ");
+            }
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ?");
+            }
+            sql.append(" GROUP BY " +
+                    "    c.course_id, c.course_name, c.thumbnail_url, c.listed_price, " +
+                    "    c.sale_price, c.status, c.description," +
+                    "    u.user_id, u.fullname");
+            if ("low".equalsIgnoreCase(priceSort)) {
+                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) ASC");
+            } else if ("high".equalsIgnoreCase(priceSort)) {
+                sql.append(" ORDER BY COALESCE(c.sale_price, c.listed_price) DESC");
+            } else {
+                sql.append(" ORDER BY c.course_id ASC");
+            }
+            sql.append(" LIMIT ? OFFSET ?");
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            int index = 1;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                statement.setString(index++, "%" + keyword + "%");
+                statement.setString(index++, "%" + keyword + "%");
+            }
+            if (category != null && !category.trim().isEmpty()) {
+                statement.setString(index++, category);
+            }
+            statement.setInt(index++, limit);
+            statement.setInt(index, offset);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Course c = new Course();
+                c.setId(resultSet.getInt("course_id"));
+                c.setCourseName(resultSet.getString("course_name"));
+                c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                c.setStatus(resultSet.getBoolean("status"));
+                c.setListedPrice(resultSet.getBigDecimal("listed_price"));
+                c.setSalePrice(resultSet.getBigDecimal("sale_price"));
+                c.setDescription(resultSet.getString("description"));
+                c.setInstructorId(resultSet.getInt("instructor_id"));
+                c.setCourseInstructor(resultSet.getString("instructor_name"));
+
+                String cats = resultSet.getString("categories");
+                if (cats != null && !cats.isEmpty()) {
+                    c.setCourseCategories(cats.split(", "));
+                } else {
+                    c.setCourseCategories(new String[0]);
+                }
+
+                courses.add(c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+    // Helper method to check if "All Categories" is selected
+    private boolean isAllCategoriesSelected(String[] categories) {
+        if (categories == null) return false;
+        for (String cat : categories) {
+            if ("all".equals(cat) || cat == null || cat.isEmpty()) return true;
+        }
+        return false;
+    }
+    // ==================== ENROLLMENT METHODS ====================
+    // Get course enrollment count
+    public int getCourseEnrollmentCount(int courseId) {
+        String sql = "SELECT COUNT(*) as enrollment_count FROM course_enrollment WHERE course_id = ?";
+        int count = 0;
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, courseId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("enrollment_count");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting enrollment count: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return count;
+    }
+    /**
+     * Returns all courses a user has enrolled/bought.
+     */
+    public List<Course> getEnrolledCoursesByUser(int userId, String category, String keyword, int offset, int limit) {
+        List<Course> courses = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder("SELECT" +
+                    "    c.course_id," +
+                    "    c.course_name," +
+                    "    c.thumbnail_url," +
+                    "    c.listed_price," +
+                    "    c.sale_price," +
+                    "    c.status," +
+                    "    c.description," +
+                    "    GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories," +
+                    "    u.user_id as instructor_id," +
+                    "    u.fullname AS instructor_name" +
+                    " FROM course c" +
+                    " LEFT JOIN course_user cu ON cu.course_id = c.course_id" +
+                    " LEFT JOIN course_category cc ON c.course_id = cc.course_id" +
+                    " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
+                    " LEFT JOIN user u ON c.instructor_id = u.user_id" +
+                    " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
+                    " WHERE c.status = 1 AND cu.user_id = ?");
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append(" AND (c.course_name LIKE ? OR u.fullname LIKE ?) ");
+            }
+            if (category != null && !category.trim().isEmpty()) {
+                sql.append(" AND cat.setting_name = ?");
+            }
+            sql.append(" GROUP BY " +
+                    "    c.course_id, c.course_name, c.thumbnail_url, c.listed_price, " +
+                    "    c.sale_price, c.status, c.description," +
+                    "    u.user_id, u.fullname");
+            sql.append(" LIMIT ? OFFSET ?");
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            int index = 1;
+            statement.setInt(index++, userId);
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                statement.setString(index++, "%" + keyword + "%");
+                statement.setString(index++, "%" + keyword + "%");
+            }
+            if (category != null && !category.trim().isEmpty()) {
+                statement.setString(index++, category);
+            }
+            statement.setInt(index++, limit);
+            statement.setInt(index, offset);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Course c = new Course();
+                c.setId(resultSet.getInt("course_id"));
+                c.setCourseName(resultSet.getString("course_name"));
+                c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                c.setStatus(resultSet.getBoolean("status"));
+                c.setDescription(resultSet.getString("description"));
+                c.setInstructorId(resultSet.getInt("instructor_id"));
+                c.setCourseInstructor(resultSet.getString("instructor_name"));
+
+                String cats = resultSet.getString("categories");
+                if (cats != null && !cats.isEmpty()) {
+                    c.setCourseCategories(cats.split(", "));
+                } else {
+                    c.setCourseCategories(new String[0]);
+                }
+                
+                courses.add(c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+    // Check if user is enrolled in a course
+    public boolean isUserEnrolled(int userId, int courseId) {
+        String sql = "SELECT COUNT(*) FROM course_enrollment WHERE user_id = ? AND course_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking enrollment: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+    // Enroll user in a course
+    public boolean enrollUser(int userId, int courseId) {
+        String sql = "INSERT INTO course_enrollment (user_id, course_id, enrolled_at) VALUES (?, ?, NOW())";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Enrolled user " + userId + " in course " + courseId + ": " + rowsAffected + " rows affected");
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error enrolling user: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }
