@@ -415,4 +415,75 @@ public class ClassDAO {
         }
         return 0;
     }
+// ==================== INSTRUCTOR SPECIFIC METHODS (Added) ====================
+
+    public List<Class> getClassesByInstructor(int instructorId, String category, String keyword, int offset, int limit) {
+        List<Class> classes = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT c.*, u.fullname AS instructor_name " +
+                        "FROM class c " +
+                        "JOIN user u ON c.instructor_id = u.user_id " +
+                        "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                        "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
+                        "WHERE c.instructor_id = ? ");
+
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
+        if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? "); // Hoặc setting_id tùy dữ liệu input
+
+        sql.append(" GROUP BY c.class_id ORDER BY c.class_id DESC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
+            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+            ps.setInt(idx++, limit);
+            ps.setInt(idx++, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Class c = new Class();
+                c.setId(rs.getInt("class_id"));
+                c.setName(rs.getString("class_name"));
+                c.setThumbnailUrl(rs.getString("thumbnail_url"));
+                c.setStartDate(rs.getDate("start_date"));
+                c.setEndDate(rs.getDate("end_date"));
+                c.setStatus(rs.getBoolean("status"));
+                c.setListedPrice(rs.getBigDecimal("listed_price"));
+                c.setSalePrice(rs.getBigDecimal("sale_price"));
+                c.setDescription(rs.getString("description"));
+
+                User u = new User();
+                u.setFullname(rs.getString("instructor_name"));
+                c.setInstructor(u);
+
+                classes.add(c);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return classes;
+    }
+
+    public int countClassesByInstructor(int instructorId, String category, String keyword) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(DISTINCT c.class_id) FROM class c " +
+                        "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                        "LEFT JOIN setting cat ON cc.category_id = cat.setting_id " +
+                        "WHERE c.instructor_id = ? ");
+
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
+        if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? ");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
+            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) { e.printStackTrace(); }
+        return 0;
+    }
 }

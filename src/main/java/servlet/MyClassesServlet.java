@@ -36,7 +36,6 @@ public class MyClassesServlet extends HttpServlet {
 
         int userId = user.getId();
 
-        // Lấy parameter
         String keyword = request.getParameter("search");
         String category = request.getParameter("category");
         String pageParam = request.getParameter("page");
@@ -44,7 +43,6 @@ public class MyClassesServlet extends HttpServlet {
         if (keyword == null) keyword = "";
         if (category == null) category = "";
 
-        // Page handling
         int page = 1;
         if (pageParam != null && !pageParam.isEmpty()) {
             try {
@@ -54,9 +52,22 @@ public class MyClassesServlet extends HttpServlet {
 
         int offset = (page - 1) * PAGE_SIZE;
 
-        List<Class> classes = classDAO.getClassesByUserId(userId, category, keyword, offset, PAGE_SIZE);
+        List<Class> classes;
+        int totalClasses;
+        String roleName = user.getRoleName();
 
-        int totalClasses = classDAO.countClassesByUserId(userId, category, keyword);
+        // --- LOGIC PHÂN QUYỀN MỚI ---
+        if ("Instructor".equalsIgnoreCase(roleName)) {
+            // Giảng viên: Xem lớp mình dạy
+            classes = classDAO.getClassesByInstructor(userId, category, keyword, offset, PAGE_SIZE);
+            totalClasses = classDAO.countClassesByInstructor(userId, category, keyword);
+        } else {
+            // Học viên: Xem lớp đã ghi danh
+            classes = classDAO.getClassesByUserId(userId, category, keyword, offset, PAGE_SIZE);
+            totalClasses = classDAO.countClassesByUserId(userId, category, keyword);
+        }
+        // ----------------------------
+
         int totalPages = (int) Math.ceil((double) totalClasses / PAGE_SIZE);
 
         List<String> allCategories = classDAO.getAllCategories();

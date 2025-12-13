@@ -49,9 +49,22 @@ public class MyCoursesServlet extends HttpServlet {
 
         int offset = (page - 1) * PAGE_SIZE;
 
-        List<Course> courses = courseDAO.getEnrolledCoursesByUser(userId, category, keyword, offset, PAGE_SIZE);
+        List<Course> courses;
+        int totalCourses;
+        String roleName = user.getRoleName(); // Cần đảm bảo UserDAO đã set roleName khi login
 
-        int totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
+        // --- LOGIC PHÂN QUYỀN MỚI ---
+        if ("Instructor".equalsIgnoreCase(roleName)) {
+            // Nếu là Giảng viên: Lấy khóa học do họ dạy
+            courses = courseDAO.getCoursesByInstructor(userId, category, keyword, offset, PAGE_SIZE);
+            totalCourses = courseDAO.countCoursesByInstructor(userId, category, keyword);
+        } else {
+            // Mặc định (Student): Lấy khóa học đã đăng ký
+            courses = courseDAO.getEnrolledCoursesByUser(userId, category, keyword, offset, PAGE_SIZE);
+            totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
+        }
+        // ----------------------------
+
         int totalPages = (int) Math.ceil((double) totalCourses / PAGE_SIZE);
 
         List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();

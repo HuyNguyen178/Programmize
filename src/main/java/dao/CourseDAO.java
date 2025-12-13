@@ -1017,4 +1017,85 @@ public class CourseDAO {
             return false;
         }
     }
+// ==================== INSTRUCTOR SPECIFIC METHODS (Added) ====================
+
+    public List<Course> getCoursesByInstructor(int instructorId, String category, String keyword, int offset, int limit) {
+        List<Course> courses = new ArrayList<>();
+        // Query lấy khóa học do instructorId dạy
+        StringBuilder sql = new StringBuilder(
+                "SELECT c.*, u.fullname AS instructor_name, " +
+                        "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
+                        "FROM course c " +
+                        "JOIN user u ON c.instructor_id = u.user_id " +
+                        "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
+                        "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
+                        "WHERE c.instructor_id = ? ");
+
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND c.course_name LIKE ? ");
+        }
+        if (category != null && !category.isEmpty()) {
+            sql.append(" AND EXISTS (SELECT 1 FROM course_category cc2 WHERE cc2.course_id = c.course_id AND cc2.category_id = ?) ");
+        }
+
+        sql.append(" GROUP BY c.course_id ORDER BY c.course_id DESC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+
+            if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
+            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+
+            ps.setInt(idx++, limit);
+            ps.setInt(idx++, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Course c = new Course();
+                c.setCourseId(rs.getInt("course_id"));
+                c.setCourseName(rs.getString("course_name"));
+                c.setThumbnailUrl(rs.getString("thumbnail_url"));
+                c.setListedPrice(rs.getBigDecimal("listed_price"));
+                c.setSalePrice(rs.getBigDecimal("sale_price"));
+                c.setStatus(rs.getBoolean("status"));
+                c.setCourseInstructor(rs.getString("instructor_name"));
+                c.setDescription(rs.getString("description"));
+
+                String cats = rs.getString("category_names");
+                if (cats != null && !cats.isEmpty()) {
+                    c.setCourseCategories(cats.split(", "));
+                } else {
+                    c.setCourseCategories(new String[0]);
+                }
+
+                courses.add(c);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return courses;
+    }
+
+    public int countCoursesByInstructor(int instructorId, String category, String keyword) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(DISTINCT c.course_id) FROM course c " +
+                        "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
+                        "WHERE c.instructor_id = ? ");
+
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.course_name LIKE ? ");
+        if (category != null && !category.isEmpty()) sql.append(" AND cc.category_id = ? ");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
+            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) { e.printStackTrace(); }
+        return 0;
+    }
 }
