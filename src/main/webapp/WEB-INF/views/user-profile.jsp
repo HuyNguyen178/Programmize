@@ -125,7 +125,7 @@
                                     <%-- 2. Avatar URL Input  --%>
                                     <div class="mt-4 w-100">
                                         <label for="avatarUrl" class="form-label">Avatar URL</label>
-                                        <input type="url" class="form-control" id="avatarUrl" name="avatarUrl"
+                                        <input type="text" class="form-control" id="avatarUrl" name="avatarUrl"
                                                value="${user.avatarUrl}" placeholder="Enter image URL">
                                     </div>
 
@@ -149,14 +149,14 @@
                                 <div class="mb-3">
                                     <label for="fullname" class="form-label">Full Name</label>
                                     <input type="text" class="form-control" id="fullname" name="fullname"
-                                           value="${user.fullname}" required>
+                                           value="${user.fullname}" >
                                 </div>
 
                                 <%-- 3. Email --%>
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="email" name="email"
-                                           value="${user.email}" required>
+                                           value="${user.email}" >
                                 </div>
 
                                 <%-- 4. Change Password Link --%>
@@ -168,6 +168,11 @@
                                         </a>
                                     </div>
                                 </div>
+                                <c:if test="${not empty message}">
+                                    <div class="alert ${success ? 'alert-success' : 'alert-danger'}">
+                                            ${message}
+                                    </div>
+                                </c:if>
 
                             </div>
 
@@ -186,6 +191,14 @@
         </div>
     </div>
 </main>
+
+<c:if test="${success}">
+    <script>
+        setTimeout(() => {
+            window.location.href = "home";
+        }, 2000);
+    </script>
+</c:if>
 
 <jsp:include page="../views/include/footer.jsp" />
 
