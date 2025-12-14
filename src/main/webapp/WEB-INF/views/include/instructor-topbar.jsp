@@ -2,7 +2,6 @@
 <%@ page session="true" %>
 <%
     User loginUser = (User) session.getAttribute("loginUser");
-    System.out.println(loginUser);
     if (loginUser != null) {
         if(loginUser.getRoleName().equals("Student")) response.sendRedirect("home");
     }else {

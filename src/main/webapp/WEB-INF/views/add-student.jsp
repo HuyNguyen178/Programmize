@@ -13,20 +13,44 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* Cấu hình Content Shift (Đồng bộ với JS) */
+        /* BASE STYLE: Body background */
+        body { margin: 0; background-color: #f8f9fa; }
+
         #content {
-            margin-left: 260px; /* Vị trí mặc định khi Sidebar mở */
+            margin-left: 260px;
             transition: margin-left 0.25s ease;
             min-height: 100vh;
             padding: 20px;
-            /* Giữ giới hạn chiều rộng cho form để dễ nhìn */
-            max-width: 850px;
-        }
-        #content.expanded {
-            margin-left: 72px; /* Vị trí khi Sidebar đóng */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - 260px);
+            box-sizing: border-box;
         }
 
-        /* Cấu hình Topbar Shift (Đồng bộ với JS) */
+        #content.expanded {
+            margin-left: 72px;
+            width: calc(100% - 72px);
+        }
+
+        .container-fluid {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        /* NEW: Header Styling */
+        .page-header {
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+            width: 100%;
+        }
+        .page-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0;
+        }
+
+        /* Cấu hình Topbar Shift  */
         #topbar {
             margin-left: 260px;
             transition: margin-left 0.25s ease;
@@ -44,58 +68,75 @@
 <%@ include file="include/instructor-sidebar.jsp" %>
 <%@ include file="include/instructor-topbar.jsp" %>
 
-<div id="content" class="content-wrapper">
-    <div class="container-fluid">
+<div id="content" class="p-4">
+    <div class="container-fluid p-0">
 
-        <h2 class="fw-bold mb-4 text-primary">➕ Add Student to Class</h2>
+        <%-- HEADER SECTION --%>
+        <div class="d-flex justify-content-between align-items-center page-header">
+            <h2 class="text-primary fw-bold"><i class="fas fa-user-plus me-2"></i> Add Student to Class</h2>
+        </div>
 
-        <div class="card shadow-sm">
+
+
+        <%
+            String message = (String) request.getAttribute("message");
+            if (message != null) {
+                boolean isSuccess = message.toLowerCase().contains("successfully") || message.toLowerCase().contains("Success");
+        %>
+        <div class="alert alert-<%= isSuccess ? "success" : "danger" %> alert-dismissible fade show shadow-sm" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <%
+            }
+            List<String> classNamesList = (List<String>) request.getAttribute("classNamesList");
+        %>
+
+        <%-- MAIN FORM CARD --%>
+        <div class="card shadow-lg">
             <div class="card-body p-4">
 
-                <%
-                    // Lấy thông báo lỗi/thành công từ Servlet (nếu có)
-                    String message = (String) request.getAttribute("message");
-                    if (message != null) {
-                %>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <%= message %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <%
-                    }
-                    List<String> classNames = (List<String>) request.getAttribute("classNames");
-                %>
+                <form method="post" action="add-student" class="row g-3">
 
-                <form method="post" action="add-student">
-
-                    <div class="mb-3">
-                        <label for="identifier" class="form-label fw-bold">Username or Email</label>
-                        <input type="text" class="form-control" id="identifier" name="identifier"
-                               placeholder="Enter student username or email" required>
+                    <%-- COLUMN 1: Student Identifier --%>
+                    <div class="col-md-6 border-end pe-4">
+                        <h5 class="text-secondary mb-3"><i class="fas fa-id-card"></i> Student Identity</h5>
+                        <div class="mb-3">
+                            <label for="identifier" class="form-label fw-bold">Username or Email</label>
+                            <input type="text" class="form-control" id="identifier" name="identifier"
+                                   placeholder="Enter student username or email" required>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="className" class="form-label fw-bold">Class Name</label>
-                        <select class="form-select" id="className" name="class" required>
-                            <option value="" selected disabled>Select a class</option>
-                            <%
-                                if (classNames != null && !classNames.isEmpty()) {
-                                    for (String name : classNames) { %>
-                            <option value="<%= name %>"><%= name %></option>
-                            <%  }
-                            } else { %>
-                            <option value="" disabled>No active classes found</option>
-                            <% } %>
-                        </select>
+                    <%-- COLUMN 2: Class Selection --%>
+                    <div class="col-md-6 ps-4">
+                        <h5 class="text-secondary mb-3"><i class="fas fa-graduation-cap"></i> Enrollment Details</h5>
+                        <div class="mb-3">
+                            <label for="className" class="form-label fw-bold">Class Name</label>
+                            <select class="form-select" id="className" name="class" required>
+                                <option value="" selected disabled>Select a class</option>
+                                <%
+                                    if (classNamesList != null && !classNamesList.isEmpty()) {
+                                        for (String name : classNamesList) { %>
+                                <option value="<%= name %>"><%= name %></option>
+                                <%  }
+                                } else { %>
+                                <option value="" disabled>No active classes found</option>
+                                <% } %>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-between pt-2">
-                        <a href="student-list" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to List
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-user-plus"></i> Add Student
-                        </button>
+                    <%-- ACTIONS --%>
+                    <div class="col-12 pt-3 border-top">
+                        <div class="d-flex justify-content-between">
+                            <a href="student-list" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

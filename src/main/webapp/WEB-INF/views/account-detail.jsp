@@ -206,7 +206,7 @@
                             <%= !isEditMode ? "required" : "" %>>
                         <div class="form-text <%= isEditMode ? "text-warning" : "text-danger" %>">
                             <%--chưa làm nút showpass--%>
-                            <%= isEditMode ? "Only fill in if you want to change the password." : "" %>
+                            <%= isEditMode ? " Leave blank to keep current password. Minimum 8 characters if changed." : "Minimum 8 characters" %>
                         </div>
                     </div>
                 </div>
@@ -297,6 +297,7 @@
 
 <%-- JavaScript for UX --%>
 <script>
+    const placeholderAvatar = "<%= placeholderAvatar %>";
     function updateAvatarPreview(url) {
         const img = document.getElementById('avatarPreviewImg');
         const defaultUrl = placeholderAvatar;
@@ -325,20 +326,6 @@
             updateAvatarPreview(avatarUrlInput.value);
         }
     });
-    <%-- Xử lý thông báo --%>
-    <% Boolean updateSuccess = (Boolean) request.getAttribute("updateSuccess"); %>
-    <% Boolean addSuccess = (Boolean) request.getAttribute("addSuccess"); %>
-    <% if (updateSuccess != null) { %>
-    alert("<%= updateSuccess ? "Update successful!" : "Update failed! Please review the form data." %>");
-    <% if (updateSuccess) { %>
-    window.location.href = window.location.href;
-    <% } %>
-    <% } else if (addSuccess != null) { %>
-    alert("<%= addSuccess ? "New account added successfully!" : "Failed to add new account! Username or Email may already exist." %>");
-    <% if (addSuccess) { %>
-    window.location.href = "account-list";
-    <% } %>
-    <% } %>
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../assets/js/admin_scripts.js"></script>

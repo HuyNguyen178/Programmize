@@ -28,9 +28,8 @@ public class AddStudentServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User loginUser = (User) session.getAttribute("loginUser");
-        List<String> classNames = studentDAO.getAllClassNames(loginUser.getId());
-        request.setAttribute("classNames", classNames);
-        // Hiển thị form thêm sinh viên (cần tạo file JSP mới: add-student.jsp)
+        List<String> classNamesList = studentDAO.getAllClassNames(loginUser.getId());
+        request.setAttribute("classNamesList", classNamesList);
         request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
     }
 
@@ -38,32 +37,27 @@ public class AddStudentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String identifier = request.getParameter("identifier"); // Có thể là email hoặc username
-        String className = request.getParameter("class"); // Tên lớp
+        String identifier = request.getParameter("identifier");
+        String className = request.getParameter("class");
 
         if (identifier == null || identifier.trim().isEmpty() || className == null || className.trim().isEmpty()) {
-            request.setAttribute("message", "Username/Email và Class Name không được để trống.");
+            request.setAttribute("message", "Username/Email and Class Name can't be empty.");
             request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
             return;
         }
-
-        // Giả định: Kiểm tra nếu có '@' thì là email
         boolean isEmail = identifier.contains("@");
 
         try {
             boolean success = studentDAO.addStudentToClass(identifier.trim(), isEmail, className.trim());
 
             if (success) {
-                // Thêm thành công, redirect về trang danh sách
-                response.sendRedirect(request.getContextPath() + "/student-list?message=Thêm sinh viên vào lớp thành công!");
+                response.sendRedirect(request.getContextPath() + "/student-list?message=Add Success!");
             } else {
-                // Không tìm thấy User hoặc Class
-                request.setAttribute("message", "Lỗi: Không tìm thấy User hoặc Class với thông tin đã nhập.");
+                request.setAttribute("message", "Error: Can't find user or class.");
                 request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("message", "Lỗi database khi thêm sinh viên: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
         }
     }

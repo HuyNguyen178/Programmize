@@ -37,18 +37,22 @@ public class AuthorizationFilter implements Filter {
     private static final List<String> ADMIN_URLS = Arrays.asList(
             "/dashboard",
             "/account-list",
+            "/account-detail",
+            "/add-account",
             "/setting-list",
-            "/add-setting",
             "/setting-detail",
-            "/add-student"
+            "/add-setting",
+            "/course-list",
+            "/course-details",
+            "/add-course"
     );
 
     // Danh sách các URL CHỈ DÀNH CHO Instructor (Admin cũng có thể vào)
-    // Đã xóa "/my-courses" và "/my-classes" để Student cũng có thể vào xem bài của mình
     private static final List<String> INSTRUCTOR_URLS = Arrays.asList(
-            "/add-course",
-            "/edit-course",
-            "/student-list" // Danh sách học viên trong lớp (Chỉ giáo viên mới cần xem)
+            "/course-content",
+            "/student-list",
+            "/student-detail",
+            "/add-student"
     );
 
     @Override

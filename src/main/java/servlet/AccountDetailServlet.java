@@ -2,7 +2,6 @@ package servlet;
 
 import dao.SettingDAO;
 import dao.UserDAO;
-import model.Setting;
 import model.User;
 
 import jakarta.servlet.ServletException;
@@ -10,11 +9,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList; // Cần import nếu dùng List trống
 
 @WebServlet("/account-detail")
 public class AccountDetailServlet extends HttpServlet {
@@ -24,9 +21,8 @@ public class AccountDetailServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        super.init();
-        settingDAO = new SettingDAO();
         userDAO = new UserDAO();
+        settingDAO = new SettingDAO();
     }
 
     @Override
@@ -38,7 +34,7 @@ public class AccountDetailServlet extends HttpServlet {
         List<String> roles = settingDAO.getRoleNames();
         request.setAttribute("roles", roles);
 
-        if (userIdParam != null && !userIdParam.isEmpty()) {
+        if (userIdParam != null && !userIdParam.isBlank()) {
             try {
                 int userId = Integer.parseInt(userIdParam);
                 User user = userDAO.getUserById(userId);
@@ -48,8 +44,7 @@ public class AccountDetailServlet extends HttpServlet {
                     request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
                     return;
                 }
-            } catch (NumberFormatException e) {
-            }
+            } catch (NumberFormatException ignored) {}
         }
 
         response.sendRedirect("account-list");
@@ -62,53 +57,72 @@ public class AccountDetailServlet extends HttpServlet {
         int userId = Integer.parseInt(request.getParameter("userId"));
         String fullname = request.getParameter("fullname");
         String email = request.getParameter("email");
-        String newRoleName = request.getParameter("roleName");
+        String roleName = request.getParameter("roleName");
         String password = request.getParameter("password");
         boolean status = "1".equals(request.getParameter("status"));
         String avatarUrl = request.getParameter("avatarUrl");
+
+        if (fullname == null || fullname.isBlank()
+                || email == null || email.isBlank()
+                || roleName == null || roleName.isBlank()) {
+
+            forwardWithError(request, response, userId,
+                    "Required fields must not be empty.");
+            return;
+        }
+
+        if (password != null && !password.isBlank() && password.length() < 8) {
+            forwardWithError(request, response, userId,
+                    "Password must be at least 8 characters.");
+            return;
+        }
 
         User user = new User();
         user.setId(userId);
         user.setFullname(fullname);
         user.setEmail(email);
+        user.setRoleName(roleName);
         user.setStatus(status);
         user.setAvatarUrl(avatarUrl);
-        user.setRoleName(newRoleName);
 
-        if (password != null && !password.isEmpty()) {
+        if (password != null && !password.isBlank()) {
             user.setPassword(password);
         }
 
-        if (userDAO.updateUser(user)) {
-            request.setAttribute("updateSuccess", true);
+        boolean success = userDAO.updateUser(user);
 
-            User updatedUser = userDAO.getUserById(userId);
-            List<String> roles = settingDAO.getRoleNames();
-
-            request.setAttribute("user", updatedUser);
-            request.setAttribute("roles", roles);
-
-            request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
-
+        if (success) {
+            response.sendRedirect("account-list?updated=true");
         } else {
-            request.setAttribute("errorMsg", "Update failed! Please check your input and try again.");
+            forwardWithError(request, response, userId,
+                    "Update failed! Email may already exist.");
+        }
+    }
 
-            request.setAttribute("fullnameValue", fullname);
-            request.setAttribute("emailValue", email);
-            request.setAttribute("roleValue", newRoleName);
-            request.setAttribute("statusValue", status ? "1" : "0");
-            request.setAttribute("avatarUrlValue", avatarUrl);
+    private void forwardWithError(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  int userId,
+                                  String errorMsg)
+            throws ServletException, IOException {
 
-            User originalUser = userDAO.getUserById(userId);
-            List<String> roles = settingDAO.getRoleNames();
+        request.setAttribute("errorMsg", errorMsg);
 
-            if(originalUser != null) {
-                request.setAttribute("user", originalUser);
-                request.setAttribute("roles", roles);
-                request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
-            } else {
-                response.sendRedirect("account-list?error=notfound");
-            }
+        request.setAttribute("fullnameValue", request.getParameter("fullname"));
+        request.setAttribute("emailValue", request.getParameter("email"));
+        request.setAttribute("roleValue", request.getParameter("roleName"));
+        request.setAttribute("statusValue", request.getParameter("status"));
+        request.setAttribute("avatarUrlValue", request.getParameter("avatarUrl"));
+
+        User user = userDAO.getUserById(userId);
+        List<String> roles = settingDAO.getRoleNames();
+
+        if (user != null) {
+            request.setAttribute("user", user);
+            request.setAttribute("roles", roles);
+            request.getRequestDispatcher("WEB-INF/views/account-detail.jsp")
+                    .forward(request, response);
+        } else {
+            response.sendRedirect("account-list?error=notfound");
         }
     }
 }

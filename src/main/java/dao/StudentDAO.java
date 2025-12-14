@@ -37,7 +37,6 @@ public class StudentDAO {
     private List<Object> getSearchParams(String keyword, String status, String className) {
         List<Object> params = new ArrayList<>();
 
-        // ... (logic cho status và className)
 
         if (status != null && !status.isEmpty()) {
             params.add(Integer.parseInt(status));
@@ -47,13 +46,11 @@ public class StudentDAO {
             params.add(className);
         }
 
-        // >> LỖI TÌM KIẾM: PHẢI THÊM KÝ TỰ ĐẠI DIỆN (%) VÀO KEYWORD <<
         if (keyword != null && !keyword.isEmpty()) {
             String keywordWithWildcards = "%" + keyword + "%";
 
-            // Vì SQL dùng 'OR u.fullname LIKE ? OR u.email LIKE ?', nên cần thêm 2 lần
-            params.add(keywordWithWildcards); // Tham số 1 cho fullname
-            params.add(keywordWithWildcards); // Tham số 2 cho email
+            params.add(keywordWithWildcards);
+            params.add(keywordWithWildcards);
         }
 
         return params;
@@ -65,7 +62,7 @@ public class StudentDAO {
         String sql = "SELECT COUNT(DISTINCT u.user_id) " + baseSql;
 
         List<Object> params = getSearchParams(keyword, status, className);
-        params.add(instructorId); // thêm instructorId vào cuối
+        params.add(instructorId);
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -91,18 +88,15 @@ public class StudentDAO {
                                         int pageIndex, int pageSize, int instructorId) {
         List<Student> students = new ArrayList<>();
 
-        // 1. Xây dựng mệnh đề FROM...WHERE
         StringBuilder baseSql = buildBaseSql(keyword, status, className);
 
-        // 2. Xây dựng câu SELECT hoàn chỉnh và phân trang (LIMIT/OFFSET)
         String finalSql = "SELECT u.user_id, u.fullname, u.email, u.status, u.avatar_url, "
                 + "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
                 + baseSql.toString()
                 + "GROUP BY u.user_id, u.fullname, u.email, u.status, u.avatar_url "
-                + "ORDER BY u.user_id DESC " // Sắp xếp theo ID mới nhất
-                + "LIMIT ? OFFSET ?"; // Tham số cuối cùng: limit và offset
+                + "ORDER BY u.fullname ASC "
+                + "LIMIT ? OFFSET ?";
 
-        // 3. Lấy danh sách tham số (trừ instructorId)
         List<Object> params = getSearchParams(keyword, status, className);
 
         int offset = (pageIndex - 1) * pageSize;

@@ -47,13 +47,12 @@
 </head>
 <body>
 
-<%-- Giả định các include này tồn tại --%>
+
 <%@ include file="include/instructor-topbar.jsp" %>
 <%@ include file="include/instructor-sidebar.jsp" %>
 
 
 <%
-    // Lấy thuộc tính Lọc
     String currentKeyword = (String) request.getAttribute("search");
     String currentStatus = (String) request.getAttribute("status");
     String currentClassName = (String) request.getAttribute("className");
@@ -64,13 +63,10 @@
     int pageIndex = (Integer) request.getAttribute("pageIndex");
     int totalPage = (Integer) request.getAttribute("totalPage");
 
-    // Thông báo hành động
     String actionMessage = (String) request.getAttribute("actionMessage");
 
-    // Khởi tạo các biến cho logic phân trang JSP
-    int numPagesToShow = 5; // Số lượng nút số trang tối đa hiển thị (ví dụ: 1 2 3 4 5)
+    int numPagesToShow = 5;
 
-    // Xây dựng chuỗi truy vấn (query string) để giữ lại các bộ lọc khi chuyển trang
     String filterQuery = "";
     if (currentKeyword != null && !currentKeyword.isEmpty()) {
         filterQuery += "&search=" + java.net.URLEncoder.encode(currentKeyword, "UTF-8");
@@ -158,11 +154,13 @@
                         </thead>
                         <tbody>
                         <%
+                            int count = 1;
                             if (students != null && !students.isEmpty()) {
                                 for (Student student : students) {
                         %>
                         <tr>
-                            <td><%= student.getId() %></td>
+                            <td><%= count %></td>
+                            <%count++;%>
                             <td style="text-align: left;"><%= student.getFullname() %></td>
                             <td><%= student.getEmail() %></td>
                             <td>
