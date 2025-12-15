@@ -112,6 +112,9 @@
 
         <form action="${pageContext.request.contextPath}/add-lesson" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <div class="row g-4">
 
                 <%-- COLUMN 1: Basic Info --%>

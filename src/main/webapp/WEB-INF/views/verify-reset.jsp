@@ -65,6 +65,10 @@
     <p>We've sent a 6-digit verification code to your email.</p>
 
     <form action="forgot-password" method="post">
+
+        <%--            add csrftoken--%>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
         <input type="hidden" name="step" value="verify">
 
         <div class="mb-3">

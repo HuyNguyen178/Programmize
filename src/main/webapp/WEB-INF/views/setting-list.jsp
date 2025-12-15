@@ -240,6 +240,10 @@
                                     </a>
                                     <%-- Nút Toggle Status --%>
                                     <form action="setting-list" method="post" style="display: inline;">
+
+                                        <%--            add csrftoken--%>
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                                         <input type="hidden" name="id" value="<%= s.getId() %>">
                                         <input type="hidden" name="type" value="<%= typeParam %>">
                                         <input type="hidden" name="status" value="<%= statusParam %>">

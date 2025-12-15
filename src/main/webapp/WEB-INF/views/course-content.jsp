@@ -396,6 +396,10 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form id="deleteChapterForm" action="${pageContext.request.contextPath}/course-content"
                       method="post" style="display:inline;">
+
+                    <%--            add csrftoken--%>
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                     <input type="hidden" name="action" value="deleteChapter">
                     <input type="hidden" name="chapterId" id="deleteChapterId">
                     <button type="submit" class="btn btn-danger">

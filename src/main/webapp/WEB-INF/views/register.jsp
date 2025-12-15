@@ -47,6 +47,9 @@
     </div>
 
     <form action="register" method="post">
+
+        <%--            add csrftoken--%>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
         <input type="hidden" name="csrfToken" value="<%= CSRFUtil.getToken(session) %>">
 
         <div class="mb-3">

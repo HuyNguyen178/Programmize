@@ -124,6 +124,9 @@
 
         <form action="${pageContext.request.contextPath}/edit-chapter" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <%-- Hidden field for chapter ID --%>
             <input type="hidden" name="chapterId" value="${chapter.chapterId}">
 

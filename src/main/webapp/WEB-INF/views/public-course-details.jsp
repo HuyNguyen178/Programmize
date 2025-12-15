@@ -514,6 +514,9 @@
                             <!-- User is logged in -->
                             <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
 
+                                    <%--            add csrftoken--%>
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                                 <input type="hidden" name="courseId" value="${course.courseId}">
                                 <button type="submit" class="btn btn-success btn-lg btn-buy">
                                     <i class="fas fa-shopping-cart me-2"></i>

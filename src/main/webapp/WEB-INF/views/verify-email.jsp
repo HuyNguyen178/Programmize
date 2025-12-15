@@ -65,6 +65,10 @@
     <p>We've sent a 6-digit verification code to your email.</p>
 
     <form action="verify" method="post">
+
+        <%--            add csrftoken--%>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
         <div class="mb-3">
             <label class="form-label">Verification Code</label>
             <input type="text" name="code" class="form-control code-input"

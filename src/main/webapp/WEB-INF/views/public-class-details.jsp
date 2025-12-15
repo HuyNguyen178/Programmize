@@ -299,6 +299,9 @@
                             <!-- User is logged in -->
                             <form action="${pageContext.request.contextPath}/enrollCourse" method="post">
 
+                                    <%--            add csrftoken--%>
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                                 <input type="hidden" name="classId" value="${clazz.id}">
                                 <c:choose>
                                     <c:when test="${clazz.salePrice == 0}">

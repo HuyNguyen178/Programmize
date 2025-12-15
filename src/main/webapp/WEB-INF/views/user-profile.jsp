@@ -105,6 +105,10 @@
                     </div>
 
                     <form action="profile-update" method="POST">
+
+                        <%--            add csrftoken--%>
+                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                         <div class="row">
 
                             <div class="col-md-4">

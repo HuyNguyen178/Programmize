@@ -44,6 +44,9 @@
 
         <form action="new-setting" method="post" class="bg-white p-4 rounded shadow-sm">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <div class="row g-4">
                 <div class="col-md-6">
                     <div class="mb-3">

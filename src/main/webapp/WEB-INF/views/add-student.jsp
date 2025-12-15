@@ -98,6 +98,9 @@
 
                 <form method="post" action="add-student" class="row g-3">
 
+                    <%--            add csrftoken--%>
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                     <%-- COLUMN 1: Student Identifier --%>
                     <div class="col-md-6 border-end pe-4">
                         <h5 class="text-secondary mb-3"><i class="fas fa-id-card"></i> Student Identity</h5>

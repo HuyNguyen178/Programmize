@@ -112,6 +112,9 @@
 
         <form action="${pageContext.request.contextPath}/edit-lesson" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <%-- Hidden field for lesson ID --%>
             <input type="hidden" name="lessonId" value="${lesson.lessonId}">
 

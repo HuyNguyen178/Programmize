@@ -94,6 +94,9 @@
         <%-- FORM CHÍNH --%>
         <form action="setting-detail" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <input type="hidden" name="settingId" value="<%= setting.getId() %>">
 
             <div class="row g-4">

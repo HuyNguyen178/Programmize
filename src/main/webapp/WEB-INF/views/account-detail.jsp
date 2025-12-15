@@ -157,6 +157,9 @@
 
         <form action="<%= formAction %>" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <%-- USER ID  --%>
             <% if (isEditMode) { %>
             <input type="hidden" name="userId" value="<%= user.getId() %>">

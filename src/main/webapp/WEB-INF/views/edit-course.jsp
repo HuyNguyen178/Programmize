@@ -99,6 +99,9 @@
 
         <form action="${pageContext.request.contextPath}/edit-course" method="post" class="p-4 bg-white rounded shadow-lg">
 
+            <%--            add csrftoken--%>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
             <input type="hidden" name="courseId" value="${course.courseId}">
 
             <div class="row g-4">

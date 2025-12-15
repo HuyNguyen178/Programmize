@@ -519,6 +519,10 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form action="${pageContext.request.contextPath}/chapter-detail" method="post" style="display:inline;">
+
+                    <%--            add csrftoken--%>
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                     <input type="hidden" name="id" value="${chapter.chapterId}">
                     <input type="hidden" name="action" value="delete">
                     <button type="submit" class="btn btn-danger">
@@ -551,6 +555,10 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form action="${pageContext.request.contextPath}/chapter-detail" method="post" style="display:inline;">
+
+                    <%--            add csrftoken--%>
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
                     <input type="hidden" name="id" value="${chapter.chapterId}">
                     <input type="hidden" name="action" value="deleteLesson">
                     <input type="hidden" name="lessonId" id="deleteLessonId">

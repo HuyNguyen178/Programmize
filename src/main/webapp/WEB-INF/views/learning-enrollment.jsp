@@ -49,6 +49,9 @@
 
     <form id="registration-form" action="register" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
+        <%--            add csrftoken--%>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
         <input type="hidden" id="stripeToken" name="stripeToken">
         <input type="hidden" name="courseId" value="${course.courseId}">
         <input type="hidden" id="amount-input" name="amount" value="0">

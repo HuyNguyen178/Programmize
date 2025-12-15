@@ -40,6 +40,10 @@
 
 
     <form action="forgot-password" method="post">
+
+        <%--            add csrftoken--%>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+
         <input type="hidden" name="step" value="change">
         <input type="hidden" name="code" value="<%= request.getParameter("code") != null ? request.getParameter("code") : "" %>">
 
