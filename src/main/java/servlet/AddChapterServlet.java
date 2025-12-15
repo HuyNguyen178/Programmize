@@ -59,7 +59,7 @@ public class AddChapterServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.getSession().setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/chapter-list");
+            response.sendRedirect(request.getContextPath() + "/course-content");
         }
     }
 

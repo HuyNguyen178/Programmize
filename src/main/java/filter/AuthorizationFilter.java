@@ -53,7 +53,9 @@ public class AuthorizationFilter implements Filter {
             "/student-list",
             "/student-detail",
             "/add-student",
-            "/add-chapter"
+            "/add-chapter",
+            "/add-lesson",
+            "/edit-lesson"
     );
 
     @Override
