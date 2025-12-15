@@ -1,8 +1,10 @@
+<%@ page import="utils.CSRFUtil" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= CSRFUtil.getToken(session) %>">
     <title>Login | Programmize</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -42,9 +44,10 @@
         <h5 class="text-muted mt-2">Login</h5>
     </div>
 
-
     <form action="login" method="post">
+        <input type="hidden" name="csrfToken" value="<%= CSRFUtil.getToken(session) %>">
         <input type="hidden" name="redirect" value="<%= request.getParameter("redirect") != null ? request.getParameter("redirect") : "" %>">
+
         <div class="mb-3">
             <label class="form-label">Username or Email</label>
             <input type="text" name="userOrEmail" class="form-control" placeholder="Enter your username or email"
@@ -52,9 +55,9 @@
                    value="<%= request.getParameter("userOrEmail") != null ? request.getParameter("userOrEmail") : "" %>">
         </div>
         <% if (request.getAttribute("userOrEmailError") != null) { %>
-        <div class="text-danger mb-3"><%= request.getAttribute("userOrEmailError") %>
-        </div>
+        <div class="text-danger mb-3"><%= request.getAttribute("userOrEmailError") %></div>
         <% } %>
+
         <div class="mb-3">
             <label class="form-label">Password</label>
             <div class="d-flex align-items-center">
@@ -69,9 +72,9 @@
         </div>
 
         <% if (request.getAttribute("passError") != null) { %>
-        <div class="text-danger mb-3"><%= request.getAttribute("passError") %>
-        </div>
+        <div class="text-danger mb-3"><%= request.getAttribute("passError") %></div>
         <% } %>
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <input type="checkbox" id="remember" name="rememberMe">

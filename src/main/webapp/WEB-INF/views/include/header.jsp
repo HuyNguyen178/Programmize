@@ -1,4 +1,5 @@
 <%@ page import="model.User" %>
+<%@ page import="utils.CSRFUtil" %>
 <%@ page session="true" %>
 <%
     User user = (User) session.getAttribute("loginUser");
@@ -11,6 +12,10 @@
         if (user.getAvatarUrl() != null) avtUrl = user.getAvatarUrl();
     }
 %>
+
+
+<meta name="csrf-token" content="<%= CSRFUtil.getToken(session) %>">
+<script src="<%=request.getContextPath()%>/assets/js/csrf.js"></script>
 
 <style>
     /* Navbar */
