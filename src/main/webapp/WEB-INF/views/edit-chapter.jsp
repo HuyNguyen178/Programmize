@@ -10,6 +10,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/admin.css" rel="stylesheet">
+
     <style>
         /* Layout and styling fixes */
         body { margin: 0; background-color: #f8f9fa; }
@@ -61,33 +63,36 @@
         }
 
         /* Form styling */
+        .form-group {
+            margin-bottom: 1rem;
+        }
         .form-group label {
             font-weight: 500;
         }
-        
+
         .info-card {
             background: #f8f9fa;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
         }
-        
+
         .info-card .info-item {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px solid #e9ecef;
         }
-        
+
         .info-card .info-item:last-child {
             border-bottom: none;
         }
-        
+
         .info-label {
             color: #6c757d;
             font-weight: 500;
         }
-        
+
         .info-value {
             color: #212529;
         }
@@ -95,8 +100,8 @@
 </head>
 <body>
 
-<%--<%@ include file="include/admin-sidebar.jsp" %>--%>
-<%--<%@ include file="include/admin-topbar.jsp" %>--%>
+<%@ include file="include/instructor-topbar.jsp" %>
+<%@ include file="include/instructor-sidebar.jsp" %>
 
 <div id="content" class="content-wrapper">
     <div class="container-fluid-custom p-0">
@@ -239,5 +244,25 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/admin_scripts.js"></script>
+
+<script>
+    // Auto-update order index when course is selected (optional AJAX enhancement)
+    function updateOrderIndex() {
+        var courseId = document.getElementById('courseId').value;
+        if (courseId) {
+            // You can implement AJAX call here to get next order index
+            // For now, it uses the default value from server
+            fetch('${pageContext.request.contextPath}/add-chapter?action=getNextOrder&courseId=' + courseId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.nextOrderIndex) {
+                        document.getElementById('orderIndex').value = data.nextOrderIndex;
+                    }
+                })
+                .catch(error => console.log('Could not fetch next order index'));
+        }
+    }
+</script>
 </body>
 </html>
