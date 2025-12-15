@@ -332,7 +332,7 @@
                 </div>
 
                 <div class="col-md-2 text-end">
-                    <a href="${pageContext.request.contextPath}/lesson-add?chapterId=${chapter.chapterId}"
+                    <a href="${pageContext.request.contextPath}/add-lesson?chapterId=${chapter.chapterId}"
                        class="btn btn-primary w-100">
                         <i class="bi bi-plus-circle me-1"></i> Add Lesson
                     </a>
@@ -449,7 +449,7 @@
                                            class="btn btn-sm btn-outline-primary action-btn" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="${pageContext.request.contextPath}/lesson-edit?id=${lesson.lessonId}"
+                                        <a href="${pageContext.request.contextPath}/edit-lesson?id=${lesson.lessonId}"
                                            class="btn btn-sm btn-outline-secondary action-btn" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
@@ -474,7 +474,7 @@
                                     <c:choose>
                                         <c:when test="${totalLessons == 0}">
                                             <p class="mb-2">No lessons in this chapter yet.</p>
-                                            <a href="${pageContext.request.contextPath}/lesson-add?chapterId=${chapter.chapterId}"
+                                            <a href="${pageContext.request.contextPath}/add-lesson?chapterId=${chapter.chapterId}"
                                                class="btn btn-primary btn-sm mt-2">
                                                 <i class="bi bi-plus-circle me-1"></i> Add First Lesson
                                             </a>
