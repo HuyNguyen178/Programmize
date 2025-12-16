@@ -21,7 +21,7 @@ public class LogoutServlet extends HttpServlet {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("rememberMe".equals(cookie.getName())) {
+                if ("rememberToken".equals(cookie.getName())) {
                     cookie.setMaxAge(0);
                     response.addCookie(cookie);
                 }
