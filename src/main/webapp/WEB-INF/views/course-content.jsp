@@ -182,7 +182,7 @@
 
     <div class="page-header">
         <h1 class="fw-bold mb-4 text-primary">
-            <i class="bi bi-journal-bookmark me-2"></i>Course Content
+            <i class="bi bi-journal-bookmark me-2"></i>Course List
         </h1>
     </div>
 

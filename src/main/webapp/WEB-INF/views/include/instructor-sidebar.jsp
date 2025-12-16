@@ -14,12 +14,12 @@
         </li>
         <li class="nav-item">
             <a href="course-content" class="nav-link text-white">
-                <i class="fa fa-book-open me-2"></i> <span class="label">Course Content</span>
+                <i class="fa fa-book-open me-2"></i> <span class="label">Course List</span>
             </a>
         </li>
         <li class="nav-item">
             <a href="#" class="nav-link text-white">
-                <i class="fa fa-chalkboard me-2"></i> <span class="label">Class Content</span>
+                <i class="fa fa-chalkboard me-2"></i> <span class="label">Class List</span>
             </a>
         </li>
     </ul>
