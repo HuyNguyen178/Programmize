@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -36,25 +37,29 @@ public class CourseContentServlet extends HttpServlet {
         String status = request.getParameter("status");
         String search = request.getParameter("search");
 
+        long startTime = System.currentTimeMillis();
         System.out.println("=== CourseContentServlet doGet ===");
-        System.out.println("Category: " + category);
-        System.out.println("Status: " + status);
-        System.out.println("Search: " + search);
 
+        // query 1: get all courses
         List<Course> courses = courseDAO.getAllCourses(category, null, status, search, null, null);
-        System.out.println("Number of courses loaded: " + courses.size());
-        
-        // Cmap stores chapters for course
-        Map<Integer, List<Chapter>> courseChaptersMap = new HashMap<>();
+        System.out.println("Query 1 - Courses loaded: " + courses.size() + " (" + (System.currentTimeMillis() - startTime) + "ms)");
 
-        // each course get chapters
-        for (Course course : courses) {
-            int courseId = course.getCourseId();
-            List<Chapter> chapters = chapterDAO.getChaptersByCourseId(course.getCourseId());
-            courseChaptersMap.put(course.getCourseId(), chapters);
-            System.out.println("Course ID " + courseId + " (" + course.getCourseName() + "): " + chapters.size() + " chapters");
+        // fixed: Get all chapters in 1 query instead of N
+        Map<Integer, List<Chapter>> courseChaptersMap;
+
+        if (!courses.isEmpty()) {
+            List<Integer> courseIds = courses.stream()
+                    .map(Course::getCourseId)
+                    .collect(Collectors.toList());
+
+            // query 2: Get all chapters for all courses in 1 query
+            courseChaptersMap = chapterDAO.getChaptersForCourses(courseIds);
+            System.out.println("Query 2 - All chapters loaded in ONE query (" + (System.currentTimeMillis() - startTime) + "ms)");
+        } else {
+            courseChaptersMap = new HashMap<>();
         }
 
+        // query 3: get categories for filter dropdown
         List<String[]> categories = courseDAO.getAllCategoriesFromSettings();
 
         request.setAttribute("courses", courses);
@@ -65,7 +70,8 @@ public class CourseContentServlet extends HttpServlet {
         request.setAttribute("selectedStatus", status);
         request.setAttribute("searchKeyword", search);
 
-        System.out.println("CourseContentServlet: Loaded " + courses.size() + " courses");
+        long totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("CourseContentServlet: Total load time: " + totalTime + "ms (was N+1 queries, now only 3 queries)");
 
         request.getRequestDispatcher("/WEB-INF/views/course-content.jsp").forward(request, response);
     }
@@ -95,6 +101,6 @@ public class CourseContentServlet extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/WEB-INF/views/course-content");
+        response.sendRedirect(request.getContextPath() + "/course-content");
     }
 }

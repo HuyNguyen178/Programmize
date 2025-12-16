@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Chapter;
+ import java.util.Collections;
+ import java.util.HashMap;
+ import java.util.Map;
 
 import static utils.DBUtil.getConnection;
 
@@ -259,6 +262,47 @@ public class ChapterDAO {
         }
         return 1;
     }
+
+    //added quick query with JOIN query
+    public Map<Integer, List<Chapter>> getChaptersForCourses(List<Integer> courseIds) {
+        Map<Integer, List<Chapter>> result = new HashMap<>();
+
+        if (courseIds == null || courseIds.isEmpty()) {
+            return result;
+        }
+
+        // Initialize empty lists for all courseIds
+        for (Integer courseId : courseIds) {
+            result.put(courseId, new ArrayList<>());
+        }
+
+        // Build IN clause with placeholders
+        String placeholders = String.join(",", Collections.nCopies(courseIds.size(), "?"));
+        String sql = "SELECT * FROM chapter WHERE course_id IN (" + placeholders + ") ORDER BY course_id, order_index ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Set parameters
+            for (int i = 0; i < courseIds.size(); i++) {
+                ps.setInt(i + 1, courseIds.get(i));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Chapter chapter = mapResultSetToChapter(rs);
+                    int courseId = chapter.getCourseId();
+                    result.get(courseId).add(chapter);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting chapters for courses: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
 
     // Main method for testing
     public static void main(String[] args) {
