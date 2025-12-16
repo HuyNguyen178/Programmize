@@ -105,8 +105,16 @@
 
 <body class="bg-light">
 
-<%@ include file="include/instructor-topbar.jsp" %>
-<%@ include file="include/instructor-sidebar.jsp" %>
+<c:choose>
+    <c:when test="${sessionScope.loginUser.roleName == 'Admin'}">
+        <jsp:include page="include/admin-topbar.jsp" />
+        <jsp:include page="include/admin-sidebar.jsp" />
+    </c:when>
+    <c:otherwise>
+        <jsp:include page="include/instructor-topbar.jsp" />
+        <jsp:include page="include/instructor-sidebar.jsp" />
+    </c:otherwise>
+</c:choose>
 
 <div id="content" class="py-4">
 
