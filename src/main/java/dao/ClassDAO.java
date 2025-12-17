@@ -429,16 +429,29 @@ public class ClassDAO {
                         "WHERE c.instructor_id = ? ");
 
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
-        if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? "); // Hoặc setting_id tùy dữ liệu input
+        if (category != null && !category.isEmpty()) {
+            sql.append(
+                    " AND EXISTS ( " +
+                            "   SELECT 1 FROM class_category cc2 " +
+                            "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
+                            "   WHERE cc2.class_id = c.class_id " +
+                            "     AND s2.setting_name = ? " +
+                            " ) "
+            );
+        }
 
-        sql.append(" GROUP BY c.class_id ORDER BY c.class_id ASC LIMIT ? OFFSET ?");
+        sql.append(" GROUP BY c.class_id ");
+        sql.append(" ORDER BY c.class_id ASC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int idx = 1;
             ps.setInt(idx++, instructorId);
             if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
-            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+            if (category != null && !category.isEmpty()) {
+                ps.setString(idx++, category);
+            }
+
             ps.setInt(idx++, limit);
             ps.setInt(idx++, offset);
 
@@ -457,7 +470,7 @@ public class ClassDAO {
 
                 String catStr = rs.getString("categories");
                 if (catStr != null) {
-                    c.setCategories(catStr.split(","));
+                    c.setCategories(catStr.split(",\\s*"));
                 } else {
                     c.setCategories(new String[0]);
                 }

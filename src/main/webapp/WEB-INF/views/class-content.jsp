@@ -165,7 +165,7 @@
             action="${pageContext.request.contextPath}/class-content">
 
         <div class="col-md-2">
-          <select class="form-select" id="filterCategory" name="category">
+          <select class="form-select" id="filterCategory" name="category" onchange="this.form.submit()">
             <option value="">All Categories</option>
             <c:forEach var="cat" items="${allCategories}">
               <option value="${cat}" ${category == cat ? 'selected' : ''}>
@@ -176,7 +176,7 @@
         </div>
 
         <div class="col-md-2">
-          <select class="form-select" id="filterStatus" name="status">
+          <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
             <option value="">All Statuses</option>
             <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
             <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Draft</option>
@@ -185,7 +185,7 @@
 
         <div class="col-md-4 d-flex">
           <input type="text" class="form-control me-2" name="search"
-                 placeholder="Search classes..." value="${searchKeyword}">
+                 placeholder="Search classes..." value="${searchKeyword}" onchange="this.form.submit()">
           <button type="submit" class="btn filter-search-btn">
             <i class="bi bi-search"></i>
           </button>
@@ -254,10 +254,10 @@
                                            class="btn btn-sm btn-outline-primary me-2">
                                             <i class="bi bi-pencil me-1"></i> Edit class
                                         </a>
-                                        <a href="${pageContext.request.contextPath}/remove-class?id=${clazz.id}"
-                                           class="btn btn-sm btn-primary btn-danger">
-                                            <i class="fa fa-plus me-1"></i> Remove Class
-                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                                onclick="event.stopPropagation(); confirmDeleteClass(${clazz.id}, '${clazz.name}')">
+                                            Remove Class
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +269,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="deleteChapterModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="deleteClassModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -280,16 +280,16 @@
       </div>
       <div class="modal-body">
         <p>Are you sure you want to delete this class? This action cannot be undone</p>
-        <p class="fw-bold text-danger" id="deleteChapterName"></p>
+        <p class="fw-bold text-danger" id="deleteClassName"></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form id="deleteChapterForm" action="${pageContext.request.contextPath}/class-content"
+        <form id="deleteClassForm" action="${pageContext.request.contextPath}/class-content"
               method="post" style="display:inline;">
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
-          <input type="hidden" name="action" value="deleteChapter">
-          <input type="hidden" name="chapterId" id="deleteChapterId">
+          <input type="hidden" name="action" value="deleteClass">
+          <input type="hidden" name="classId" id="deleteClassId">
           <button type="submit" class="btn btn-danger">
             <i class="bi bi-trash me-1"></i> Delete
           </button>
@@ -307,6 +307,13 @@
 
     header.classList.toggle('active');
     body.classList.toggle('show');
+  }
+
+  function confirmDeleteClass(classId, className) {
+      document.getElementById('deleteClassId').value = classId;
+      document.getElementById('deleteClassName').textContent = '"' + className + '"';
+      var modal = new bootstrap.Modal(document.getElementById('deleteClassModal'));
+      modal.show();
   }
 </script>
 </body>
