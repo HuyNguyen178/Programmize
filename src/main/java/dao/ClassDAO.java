@@ -420,7 +420,8 @@ public class ClassDAO {
     public List<Class> getClassesByInstructor(int instructorId, String category, String keyword, int offset, int limit) {
         List<Class> classes = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT c.*, u.fullname AS instructor_name " +
+                "SELECT c.*, u.fullname AS instructor_name, " +
+                        "GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories " +
                         "FROM class c " +
                         "JOIN user u ON c.instructor_id = u.user_id " +
                         "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
@@ -430,7 +431,7 @@ public class ClassDAO {
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
         if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? "); // Hoặc setting_id tùy dữ liệu input
 
-        sql.append(" GROUP BY c.class_id ORDER BY c.class_id DESC LIMIT ? OFFSET ?");
+        sql.append(" GROUP BY c.class_id ORDER BY c.class_id ASC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -453,6 +454,13 @@ public class ClassDAO {
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
                 c.setDescription(rs.getString("description"));
+
+                String catStr = rs.getString("categories");
+                if (catStr != null) {
+                    c.setCategories(catStr.split(","));
+                } else {
+                    c.setCategories(new String[0]);
+                }
 
                 User u = new User();
                 u.setFullname(rs.getString("instructor_name"));

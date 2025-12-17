@@ -18,7 +18,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link text-white">
+            <a href="class-content" class="nav-link text-white">
                 <i class="fa fa-chalkboard me-2"></i> <span class="label">Class List</span>
             </a>
         </li>

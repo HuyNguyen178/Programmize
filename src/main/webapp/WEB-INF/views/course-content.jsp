@@ -78,14 +78,24 @@
         }
 
         .course-body {
-            display: none;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition:
+                    max-height 0.45s ease,
+                    opacity 0.3s ease,
+                    transform 0.3s ease;
             background-color: white;
-            padding: 1rem;
             border-top: 1px solid #dee2e6;
+            padding: 0 1rem;
         }
 
         .course-body.show {
-            display: block;
+            max-height: 3000px; /* đủ lớn */
+            opacity: 1;
+            transform: translateY(0);
+            padding: 1rem;
         }
 
         .chapter-item {
@@ -245,7 +255,7 @@
 
                 <div class="col-md-2 ms-auto text-end">
                     <a href="${pageContext.request.contextPath}/add-course" class="btn btn-primary w-100">
-                        <i class="bi bi-plus-circle me-1"></i> Add New
+                        <i class="bi bi-plus-circle me-1"></i> Add New Course
                     </a>
                 </div>
             </form>
@@ -269,7 +279,7 @@
                     <c:forEach var="course" items="${courses}" varStatus="loop">
                         <div class="course-card">
                             <!-- Course Header - Clickable -->
-                            <div class="course-header" onclick="toggleCourse(${loop.index})">
+                            <div class="course-header" onclick="toggleCourse(this, ${loop.index})">
                                 <div>
                                         <%-- SỬA: Dùng boolean trực tiếp thay vì so sánh String --%>
                                     <c:choose>
@@ -422,14 +432,10 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../assets/js/admin_scripts.js"></script>
 <script>
-    function toggleCourse(index) {
-        var header = event.currentTarget;
-        var body = document.getElementById('courseBody' + index);
+    function toggleCourse(header, index) {
+        const body = document.getElementById('courseBody' + index);
 
-        // Toggle active class on header
         header.classList.toggle('active');
-
-        // Toggle show class on body
         body.classList.toggle('show');
     }
 
