@@ -56,9 +56,7 @@ public class MyClassesServlet extends HttpServlet {
         int totalClasses;
         String roleName = user.getRoleName();
 
-        // --- LOGIC PHÂN QUYỀN MỚI ---
         if ("Instructor".equalsIgnoreCase(roleName)) {
-            // Giảng viên: Xem lớp mình dạy
             classes = classDAO.getClassesByInstructor(userId, category, keyword, offset, PAGE_SIZE);
             totalClasses = classDAO.countClassesByInstructor(userId, category, keyword);
         } else {

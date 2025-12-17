@@ -430,7 +430,7 @@ public class ClassDAO {
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
         if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? "); // Hoặc setting_id tùy dữ liệu input
 
-        sql.append(" GROUP BY c.class_id ORDER BY c.class_id DESC LIMIT ? OFFSET ?");
+        sql.append(" GROUP BY c.class_id ORDER BY c.class_id ASC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
