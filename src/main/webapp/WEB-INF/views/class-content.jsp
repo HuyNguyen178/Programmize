@@ -247,6 +247,9 @@
                                                     No category
                                                 </c:otherwise>
                                             </c:choose>
+                                            <span class="mx-2">|</span>
+                                            <i class="bi bi-people"></i>
+                                            <c:out value="${clazz.numberOfStudents} student(s)"  default="No students"/>
                                         </small>
                                     </div>
                                     <div>

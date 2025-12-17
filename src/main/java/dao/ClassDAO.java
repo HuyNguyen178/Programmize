@@ -420,8 +420,7 @@ public class ClassDAO {
     public List<Class> getClassesByInstructor(int instructorId, String category, String keyword, int offset, int limit) {
         List<Class> classes = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT c.*, u.fullname AS instructor_name, " +
-                        "GROUP_CONCAT(cat.setting_name SEPARATOR ', ') AS categories " +
+                "SELECT c.*, u.fullname AS instructor_name " +
                         "FROM class c " +
                         "JOIN user u ON c.instructor_id = u.user_id " +
                         "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
@@ -429,29 +428,16 @@ public class ClassDAO {
                         "WHERE c.instructor_id = ? ");
 
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
-        if (category != null && !category.isEmpty()) {
-            sql.append(
-                    " AND EXISTS ( " +
-                            "   SELECT 1 FROM class_category cc2 " +
-                            "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
-                            "   WHERE cc2.class_id = c.class_id " +
-                            "     AND s2.setting_name = ? " +
-                            " ) "
-            );
-        }
+        if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? "); // Hoặc setting_id tùy dữ liệu input
 
-        sql.append(" GROUP BY c.class_id ");
-        sql.append(" ORDER BY c.class_id ASC LIMIT ? OFFSET ?");
+        sql.append(" GROUP BY c.class_id ORDER BY c.class_id DESC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int idx = 1;
             ps.setInt(idx++, instructorId);
             if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
-            if (category != null && !category.isEmpty()) {
-                ps.setString(idx++, category);
-            }
-
+            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
             ps.setInt(idx++, limit);
             ps.setInt(idx++, offset);
 
@@ -467,13 +453,6 @@ public class ClassDAO {
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
                 c.setDescription(rs.getString("description"));
-
-                String catStr = rs.getString("categories");
-                if (catStr != null) {
-                    c.setCategories(catStr.split(",\\s*"));
-                } else {
-                    c.setCategories(new String[0]);
-                }
 
                 User u = new User();
                 u.setFullname(rs.getString("instructor_name"));
@@ -506,5 +485,85 @@ public class ClassDAO {
             if (rs.next()) return rs.getInt(1);
         } catch (Exception e) { e.printStackTrace(); }
         return 0;
+    }
+
+    public List<Class> getClassContentByInstructor(int instructorId, String category, String keyword, Boolean status) {
+        List<Class> classes = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT c.*, u.fullname AS instructor_name, " +
+                        "GROUP_CONCAT(DISTINCT cat.setting_name SEPARATOR ', ') AS category_names " +
+                        "FROM class c " +
+                        "JOIN user u ON c.instructor_id = u.user_id " +
+                        "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                        "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
+                        "WHERE c.instructor_id = ? ");
+
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
+        if (category != null && !category.isEmpty()) {
+            sql.append(
+                    " AND EXISTS (" +
+                            "   SELECT 1 FROM class_category cc2 " +
+                            "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
+                            "   WHERE cc2.class_id = c.class_id " +
+                            "     AND s2.setting_name = ? " +
+                            "     AND s2.type_id = 5 " +
+                            " ) "
+            );
+        }
+        if (status != null) sql.append(" AND c.status = ? ");
+
+        sql.append(" GROUP BY c.class_id ORDER BY c.class_id ASC ");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
+            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+            if (status != null) ps.setBoolean(idx++, status);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Class c = new Class();
+                c.setId(rs.getInt("class_id"));
+                c.setName(rs.getString("class_name"));
+                c.setThumbnailUrl(rs.getString("thumbnail_url"));
+                String catStr = rs.getString("category_names");
+                if (catStr != null) {
+                    c.setCategories(catStr.split(",\\s*"));
+                } else {
+                    c.setCategories(new String[0]);
+                }
+                c.setStartDate(rs.getDate("start_date"));
+                c.setEndDate(rs.getDate("end_date"));
+                c.setStatus(rs.getBoolean("status"));
+                c.setNumberOfStudents(rs.getInt("number_of_students"));
+                c.setDescription(rs.getString("description"));
+
+                User u = new User();
+                u.setFullname(rs.getString("instructor_name"));
+                c.setInstructor(u);
+
+                classes.add(c);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return classes;
+    }
+
+    public boolean deleteClassByInstructor(int classId, int instructorId) {
+        String sql = "DELETE FROM class WHERE class_id = ? AND instructor_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, classId);
+            ps.setInt(2, instructorId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
