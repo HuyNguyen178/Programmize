@@ -89,9 +89,7 @@ public class AccountDetailServlet extends HttpServlet {
             user.setPassword(password);
         }
 
-        boolean success = userDAO.updateUser(user);
-
-        if (success) {
+        if (userDAO.updateUser(user, password)) {
             response.sendRedirect("account-list?updated=true");
         } else {
             forwardWithError(request, response, userId,

@@ -104,7 +104,7 @@
                         <p>Manage your account information and preferences.</p>
                     </div>
 
-                    <form action="profile-update" method="POST">
+                    <form action="profile" method="POST">
 
                         <%--            add csrftoken--%>
                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">

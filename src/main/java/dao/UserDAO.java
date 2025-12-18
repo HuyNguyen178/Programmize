@@ -305,6 +305,7 @@ public class UserDAO {
                     user.setStatus(rs.getBoolean("status"));
                     user.setAvatarUrl(rs.getString("avatar_url"));
                     user.setRoleName(rs.getString("role_name"));
+                    user.setPassword(rs.getString("password"));
                     return user;
                 }
             }
@@ -384,20 +385,25 @@ public class UserDAO {
         return roleId;
     }
 
-    public boolean updateUser(User user) {
+    public boolean updateUser(User user, String password) {
         String sql = "UPDATE user SET fullname = ?, email = ?, status = ?, avatar_url = ?, password = ?, role_id = ? " +
                 "WHERE user_id = ?";
         int roleId = getRoleIdByRoleName(user.getRoleName());
+        String newPassword ;
         try (Connection conn = dbUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+            if(password == null || password.isEmpty()) {
+                newPassword = user.getPassword();
+            }else {
+                newPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            }
 
             stmt.setString(1, user.getFullname());
             stmt.setString(2, user.getEmail());
             stmt.setBoolean(3, user.isStatus());
             stmt.setString(4, user.getAvatarUrl());
-            stmt.setString(5, hashed);
+            stmt.setString(5, newPassword);
             stmt.setInt(6, roleId);
             stmt.setInt(7, user.getId());
 
