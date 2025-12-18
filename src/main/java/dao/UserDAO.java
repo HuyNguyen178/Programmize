@@ -447,4 +447,47 @@ public class UserDAO {
         }
         return topStatsList;
     }
+
+    public List<User> getAllInstructors() {
+        List<User> instructors = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT u.*, s.setting_name AS role FROM user u " +
+                    "JOIN setting s ON u.role_id = s.setting_id " +
+                    "WHERE s.setting_name = 'Instructor'";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                User instructor = new User();
+                instructor.setId(resultSet.getInt("user_id"));
+                instructor.setFullname(resultSet.getString("fullname"));
+
+                instructors.add(instructor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return instructors;
+    }
+
+    public User findInstructorByName(String name) {
+        User user = null;
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM user WHERE fullname = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("user_id"));
+                user.setFullname(resultSet.getString("fullname"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
 }

@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course List</title>
+    <title>Class List</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -39,7 +39,7 @@
             vertical-align: middle; /* [cite: 6] */
             text-align: center; /* [cite: 6] */
         }
-        /* Course Name (2nd column) left-aligned */
+        /* class Name (2nd column) left-aligned */
         .table td:nth-child(2) {
             text-align: center; /* Tương tự cột Full Name ở account-list.jsp [cite: 7] */
         }
@@ -51,7 +51,7 @@
             object-fit: cover;
         }
 
-        /* Loại bỏ các style cũ của course-list.jsp không cần thiết */
+        /* Loại bỏ các style cũ của class-list.jsp không cần thiết */
 
         /* Đảm bảo các trạng thái status dùng lớp badge của Bootstrap */
         .status-active {
@@ -71,25 +71,25 @@
 <div id="content" class="content-wrapper">
     <div class="container-fluid">
         <%-- Thay đổi h1 thành h2 với class giống account-list.jsp --%>
-        <h2 class="fw-bold mb-4 text-primary">📚 Course List</h2>
+        <h2 class="fw-bold mb-4 text-primary">📚 Class List</h2>
 
         <%-- Sử dụng card shadow-sm giống account-list.jsp --%>
         <div class="card shadow-sm">
             <div class="card-body">
 
                 <%-- FILTER BAR - Chuyển sang cấu trúc row g-3 của Bootstrap --%>
-                <form class="row g-3 align-items-center mb-4" action="${pageContext.request.contextPath}/course-list" method="get">
+                <form class="row g-3 align-items-center mb-4" action="${pageContext.request.contextPath}/class-list" method="get">
 
                     <%-- Thêm input hidden cho pageIndex giống account-list.jsp [cite: 15] --%>
                     <input type="hidden" name="pageIndex" value="1">
 
                     <%-- 1. FILTER BY CATEGORY (col-md-3) --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="category">
+                        <select class="form-select" name="category" onchange="this.form.submit()">
                             <option value="">All Categories</option>
                             <c:forEach items="${categories}" var="cat">
-                                <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
-                                        ${cat[1]}
+                                <option value="${cat}" ${category == cat ? 'selected' : ''}>
+                                        ${cat}
                                 </option>
                             </c:forEach>
                         </select>
@@ -97,11 +97,11 @@
 
                     <%-- 2. FILTER BY INSTRUCTOR (col-md-3) --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="instructor">
+                        <select class="form-select" name="instructor" onchange="this.form.submit()">
                             <option value="">All Instructors</option>
                             <c:forEach items="${instructors}" var="inst">
-                                <option value="${inst[0]}" ${selectedInstructor == inst[0] ? 'selected' : ''}>
-                                        ${inst[1]}
+                                <option value="${inst.id}" ${selectedInstructorId == inst.id ? 'selected' : ''}>
+                                        ${inst.fullname}
                                 </option>
                             </c:forEach>
                         </select>
@@ -109,7 +109,7 @@
 
                     <%-- 3. FILTER BY STATUS (col-md-2) --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="status">
+                        <select class="form-select" name="status" onchange="this.form.submit()">
                             <option value="">All Statuses</option>
                             <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
                             <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Inactive</option>
@@ -119,8 +119,9 @@
                     <%-- 4. SEARCH KEYWORD & BUTTON (col-md-4) - SỬ DỤNG ms-auto ĐỂ CĂN PHẢI, nhưng cấu trúc 12 cột không cho phép 3 + 3 + 2 + 4. Giữ nguyên 3 + 3 + 2, và dùng col-md-4 còn lại cho search. --%>
                     <div class="col-md-3 d-flex">
                         <input type="text" name="search" class="form-control me-2"
-                               placeholder="Search courses..."
-                               value="${searchKeyword}">
+                               placeholder="Search classes..."
+                               value="${searchKeyword}"
+                               onchange="this.form.submit()">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-search"></i>
                         </button>
@@ -130,15 +131,15 @@
                     <div class="col-md-3 d-flex ms-md-auto justify-content-end">
                         <div class="d-flex justify-content-end">
                             <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
-                            <a href="${pageContext.request.contextPath}/add-course" class="btn btn-success">
-                                <i class="fas fa-plus-circle me-1"></i> Add New Course
+                            <a href="${pageContext.request.contextPath}/add-class" class="btn btn-success">
+                                <i class="fas fa-plus-circle me-1"></i> Add New Classes
                             </a>
                         </div>
                     </div>
                 </form>
 
-                <%-- Course Table --%>
-                <%-- Thay thế thẻ <p> Showing ${courses.size()} course(s)</p> bằng cấu trúc bảng --%>
+                <%-- class Table --%>
+                <%-- Thay thế thẻ <p> Showing ${classs.size()} class(s)</p> bằng cấu trúc bảng --%>
 
                 <div class="table-responsive">
                     <%-- Bảng sử dụng các class giống account-list.jsp [cite: 29] --%>
@@ -148,7 +149,7 @@
                             <th style="width: 5%;">ID</th>
                             <%-- Thêm cột Thumbnail/Image để tương đồng với Avatar trong account-list --%>
                             <th style="width: 8%;">Image</th>
-                            <th style="width: 20%;">Course Name</th>
+                            <th style="width: 20%;">Class Name</th>
                             <th style="width: 15%;">Category</th>
                             <th style="width: 15%;">Instructor</th>
                             <th style="width: 10%;">Listed Price</th>
@@ -159,34 +160,34 @@
                         </thead>
                         <tbody>
                         <c:choose>
-                            <c:when test="${empty courses}">
+                            <c:when test="${empty classes}">
                                 <tr>
                                         <%-- colspan = 9 (thêm cột Image) --%>
-                                    <td colspan="9" class="text-center text-muted">No courses found</td>
+                                    <td colspan="9" class="text-center text-muted">No classes found</td>
                                 </tr>
                             </c:when>
                             <c:otherwise>
-                                <c:forEach items="${courses}" var="course" varStatus="loop">
+                                <c:forEach items="${classes}" var="clazz" varStatus="loop">
                                     <tr>
-                                        <td>${course.courseId != null ? course.courseId : course.id}</td>
+                                        <td>${clazz.id != null ? clazz.id : clazz.id}</td>
 
                                             <%-- Cột Image/Thumbnail (mô phỏng cột Avatar) --%>
                                         <td>
-                                            <img src="${course.thumbnailUrl != null ?
-                                                        course.thumbnailUrl : 'https://via.placeholder.com/50'}"
+                                            <img src="${clazz.thumbnailUrl != null ?
+                                                        clazz.thumbnailUrl : 'https://via.placeholder.com/50'}"
                                                  alt="Thumbnail" class="thumbnail rounded">
                                         </td>
 
                                         <td style="text-align: center;">
-                                            <a href="${pageContext.request.contextPath}/course-content"
-                                               class="course-link">
-                                                <strong>${course.courseName}</strong>
+                                            <a href="${pageContext.request.contextPath}/class-content"
+                                               class="class-link">
+                                                <strong>${clazz.name}</strong>
                                             </a>
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${not empty course.courseCategories}">
-                                                    <c:forEach items="${course.courseCategories}" var="catName">
+                                                <c:when test="${not empty clazz.categories}">
+                                                    <c:forEach items="${clazz.categories}" var="catName">
                                                         <span class="badge bg-secondary">${catName}</span>
                                                     </c:forEach>
                                                 </c:when>
@@ -197,8 +198,8 @@
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${not empty course.courseInstructor}">
-                                                    <span class="badge bg-info">${course.courseInstructor}</span>
+                                                <c:when test="${not empty clazz.instructor.fullname}">
+                                                    <span class="badge bg-info">${clazz.instructor.fullname}</span>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <em>No instructor</em>
@@ -206,18 +207,18 @@
                                             </c:choose>
                                         </td>
                                         <td>
-                                            <fmt:formatNumber value="${course.listedPrice}"
+                                            <fmt:formatNumber value="${clazz.listedPrice}"
                                                               type="currency"
                                                               currencySymbol="$" />
                                         </td>
                                         <td>
-                                            <fmt:formatNumber value="${course.salePrice}"
+                                            <fmt:formatNumber value="${clazz.salePrice}"
                                                               type="currency"
                                                               currencySymbol="$" />
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${course.status}">
+                                                <c:when test="${clazz.status}">
                                                     <span class="badge bg-success status-active">Active</span>
                                                 </c:when>
                                                 <c:otherwise>
@@ -229,25 +230,25 @@
                                                 <%-- Nút Actions (giống account-list.jsp) --%>
                                             <div class="btn-group" role="group">
                                                     <%-- Nút Edit --%>
-                                                <a href="${pageContext.request.contextPath}/edit-course?id=${course.courseId}"
+                                                <a href="${pageContext.request.contextPath}/edit-class?id=${clazz.id}"
                                                    class="btn btn-sm btn-outline-primary" title="Edit">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </a>
                                                     <%-- NÚT BẬT/TẮT TRẠNG THÁI (Giữ nguyên logic JSTL) --%>
                                                 <c:choose>
-                                                    <c:when test="${course.status}">
-                                                        <a href="${pageContext.request.contextPath}/course-list?action=toggleStatus&id=${course.courseId}&newStatus=0"
+                                                    <c:when test="${clazz.status}">
+                                                        <a href="${pageContext.request.contextPath}/class-list?action=toggleStatus&id=${clazz.id}&newStatus=0"
                                                            class="btn btn-sm btn-outline-warning"
                                                            title="Set Inactive"
-                                                           onclick="return confirm('Are you sure you want to deactivate course ${course.courseName}?');">
+                                                           onclick="return confirm('Are you sure you want to deactivate class ${clazz.name}?');">
                                                             <i class="fas fa-ban"></i>
                                                         </a>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <a href="${pageContext.request.contextPath}/course-list?action=toggleStatus&id=${course.courseId}&newStatus=1"
+                                                        <a href="${pageContext.request.contextPath}/class-list?action=toggleStatus&id=${clazz.id}&newStatus=1"
                                                            class="btn btn-sm btn-outline-success"
                                                            title="Set Active"
-                                                           onclick="return confirm('Are you sure you want to activate course ${course.courseName}?');">
+                                                           onclick="return confirm('Are you sure you want to activate class ${clazz.name}?');">
                                                             <i class="fas fa-check-circle"></i>
                                                         </a>
                                                     </c:otherwise>

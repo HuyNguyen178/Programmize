@@ -23,6 +23,11 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href=<%=request.getContextPath()%>"/class-list" class="nav-link text-white">
+                <i class="fa fa-chalkboard me-2"></i> <span class="label">Classes</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="setting-list" class="nav-link text-white">
                 <i class="fa fa-tags me-2"></i> <span class="label">Setting</span>
             </a>

@@ -566,4 +566,101 @@ public class ClassDAO {
         }
         return false;
     }
+
+    public List<Class> getAllClasses(String category, Integer instructorId, Boolean status, String keyword) {
+        List<Class> classes = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder(
+                    "SELECT c.*, u.fullname AS instructor, " +
+                    "GROUP_CONCAT(DISTINCT cat.setting_name SEPARATOR ', ') AS category_names " +
+                    "FROM class c " +
+                    "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                    "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                    "LEFT JOIN setting cat ON cc.category_id = cat.setting_id " +
+                    "WHERE 1=1 ");
+            List<Object> params = new ArrayList<>();
+
+            if (category != null) {
+                sql.append(
+                        " AND EXISTS (" +
+                                "   SELECT 1 FROM class_category cc2 " +
+                                "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
+                                "   WHERE cc2.class_id = c.class_id " +
+                                "     AND s2.setting_name = ? " +
+                                "     AND s2.type_id = 5 " +
+                                " ) "
+                );
+                params.add(category);
+            }
+
+            if (instructorId != null) {
+                sql.append(" AND u.user_id = ?");
+                params.add(instructorId);
+            }
+
+            if (status != null) {
+                sql.append(" AND c.status = ?");
+                params.add(status);
+            }
+
+            if (keyword != null) {
+                sql.append(" AND c.class_name LIKE ?");
+                params.add("%" + keyword + "%");
+            }
+
+            sql.append(" GROUP BY c.class_id, c.class_name ");
+            sql.append(" ORDER BY c.class_id ASC");
+
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                statement.setObject(i + 1, params.get(i));
+            }
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Class c = new Class();
+
+                c.setId(resultSet.getInt("class_id"));
+                c.setName(resultSet.getString("class_name"));
+                c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                c.setNumberOfStudents(resultSet.getInt("number_of_students"));
+                c.setListedPrice(resultSet.getBigDecimal("listed_price"));
+                c.setSalePrice(resultSet.getBigDecimal("sale_price"));
+                c.setStatus(resultSet.getBoolean("status"));
+                c.setDescription(resultSet.getString("description"));
+                c.setStartDate(resultSet.getDate("start_date"));
+                c.setEndDate(resultSet.getDate("end_date"));
+
+                String catStr = resultSet.getString("category_names");
+                if (catStr != null) {
+                    c.setCategories(catStr.split(",\\s*"));
+                } else {
+                    c.setCategories(new String[0]);
+                }
+
+                User inst = new User();
+                inst.setId(resultSet.getInt("instructor_id"));
+                inst.setFullname(resultSet.getString("instructor"));
+                c.setInstructor(inst);
+
+                classes.add(c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return classes;
+    }
+
+    public void updateStatus(int classId, boolean newStatus) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "UPDATE class SET status = ? WHERE class_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setBoolean(1, newStatus);
+            statement.setInt(2, classId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
