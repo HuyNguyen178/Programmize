@@ -88,8 +88,8 @@
                         <select class="form-select" name="category" onchange="this.form.submit()">
                             <option value="">All Categories</option>
                             <c:forEach items="${categories}" var="cat">
-                                <option value="${cat}" ${category == cat ? 'selected' : ''}>
-                                        ${cat}
+                                <option value="${cat.id}" ${selectedCategoryId == cat.id ? 'selected' : ''}>
+                                        ${cat.name}
                                 </option>
                             </c:forEach>
                         </select>
@@ -132,7 +132,7 @@
                         <div class="d-flex justify-content-end">
                             <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
                             <a href="${pageContext.request.contextPath}/add-class" class="btn btn-success">
-                                <i class="fas fa-plus-circle me-1"></i> Add New Classes
+                                <i class="fas fa-plus-circle me-1"></i> Add New Class
                             </a>
                         </div>
                     </div>

@@ -1,24 +1,27 @@
 package servlet;
 
 import dao.ClassDAO;
+import dao.SettingDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
+import model.Setting;
 import model.User;
-
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/class-content")
 public class ClassContentServlet extends HttpServlet {
     private ClassDAO classDAO;
+    private SettingDAO settingDAO;
 
     @Override
     public void init() throws ServletException {
         classDAO = new ClassDAO();
+        settingDAO = new SettingDAO();
     }
 
     @Override
@@ -43,7 +46,7 @@ public class ClassContentServlet extends HttpServlet {
 
         User user = (User) request.getSession().getAttribute("loginUser");
         List<Class> classes = classDAO.getClassContentByInstructor(user.getId(), category, keyword, status);
-        List<String> allCategories = classDAO.getAllCategories();
+        List<Setting> allCategories = settingDAO.getAllCategories();
 
         request.setAttribute("classes", classes);
         request.setAttribute("allCategories", allCategories);

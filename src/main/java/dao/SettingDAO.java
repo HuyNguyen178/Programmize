@@ -297,4 +297,27 @@ public class SettingDAO {
         return roleNames;
     }
 
+    public List<Setting> getAllCategories() {
+        List<Setting> categories = new ArrayList<>();
+        String sql = "SELECT DISTINCT s.setting_id, s.setting_name " +
+                "FROM setting s " +
+                "WHERE s.status = 1 AND type_id = 5 " +
+                "ORDER BY s.setting_id";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Setting category = new Setting();
+                category.setId(rs.getInt("setting_id"));
+                category.setName(rs.getString("setting_name"));
+
+                categories.add(category);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting category names: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return categories;
+    }
+
 }

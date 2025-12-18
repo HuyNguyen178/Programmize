@@ -5,10 +5,7 @@ import model.User;
 import utils.DBUtil;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Class;
@@ -20,7 +17,7 @@ public class ClassDAO {
         userDAO = new UserDAO();
     }
 
-    public List<Class> getClassesByUserId(int userId, String category, String keyword, int offset, int limit) {
+    public List<Class> getClassesByUserId(int userId, Integer categoryId, String keyword, int offset, int limit) {
         List<Class> classes = new ArrayList<>();
 
         try (Connection connection = DBUtil.getConnection()) {
@@ -49,8 +46,8 @@ public class ClassDAO {
                 sql.append(" AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ?");
+            if (categoryId != null) {
+                sql.append(" AND cat.setting_id = ?");
             }
 
             sql.append(" GROUP BY " +
@@ -69,8 +66,8 @@ public class ClassDAO {
                 statement.setString(index++, "%" + keyword + "%");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                statement.setString(index++, category);
+            if (categoryId != null) {
+                statement.setInt(index++, categoryId);
             }
 
             statement.setInt(index++, limit);
@@ -85,8 +82,8 @@ public class ClassDAO {
                 c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
                 c.setStatus(resultSet.getBoolean("status"));
                 c.setDescription(resultSet.getString("description"));
-                c.setStartDate(resultSet.getDate("start_date"));
-                c.setEndDate(resultSet.getDate("end_date"));
+                c.setStartDate(resultSet.getDate("start_date").toLocalDate());
+                c.setEndDate(resultSet.getDate("end_date").toLocalDate());
 
                 User instructor = new User();
                 instructor.setId(resultSet.getInt("instructor_id"));
@@ -103,7 +100,7 @@ public class ClassDAO {
         return classes;
     }
 
-    public List<Class> getActiveClasses(String keyword, String category, String priceSort, int limit, int offset) {
+    public List<Class> getActiveClasses(String keyword, Integer categoryId, String priceSort, int limit, int offset) {
         List<Class> classes = new ArrayList<>();
 
         try (Connection conn = DBUtil.getConnection()) {
@@ -133,8 +130,8 @@ public class ClassDAO {
             }
 
 
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ?");
+            if (categoryId != null) {
+                sql.append(" AND cat.setting_id = ?");
             }
 
             sql.append(" GROUP BY " +
@@ -162,8 +159,8 @@ public class ClassDAO {
                 stmt.setString(paramIndex++, "%" + keyword + "%");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                stmt.setString(paramIndex++, category);
+            if (categoryId != null) {
+                stmt.setInt(paramIndex++, categoryId);
             }
 
             stmt.setInt(paramIndex++, limit);
@@ -179,8 +176,8 @@ public class ClassDAO {
                 cls.setSalePrice(rs.getBigDecimal("sale_price"));
                 cls.setDescription(rs.getString("description"));
                 cls.setStatus(rs.getBoolean("status"));
-                cls.setStartDate(rs.getDate("start_date"));
-                cls.setEndDate(rs.getDate("end_date"));
+                cls.setStartDate(rs.getDate("start_date").toLocalDate());
+                cls.setEndDate(rs.getDate("end_date").toLocalDate());
 
                 User instructor = new User();
                 instructor.setId(rs.getInt("instructor_id"));
@@ -223,8 +220,8 @@ public class ClassDAO {
                 instructor.setFullname(rs.getString("instructor_name"));
                 c.setInstructor(instructor);
 
-                c.setStartDate(rs.getDate("start_date"));
-                c.setEndDate(rs.getDate("end_date"));
+                c.setStartDate(rs.getDate("start_date").toLocalDate());
+                c.setEndDate(rs.getDate("end_date").toLocalDate());
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
 
@@ -247,27 +244,7 @@ public class ClassDAO {
         return null;
     }
 
-    public List<String> getAllCategories() {
-        List<String> categories = new ArrayList<>();
-        String sql = "SELECT DISTINCT s.setting_name " +
-                "FROM setting s " +
-                "INNER JOIN class_category cc ON s.setting_id = cc.category_id " +
-                "WHERE s.status = 1 " +
-                "ORDER BY s.setting_name";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                categories.add(rs.getString("setting_name"));
-            }
-        } catch (SQLException e) {
-            System.err.println("Error getting category names: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return categories;
-    }
-
-    public int countClassesByUserId(int userId, String category, String keyword) {
+    public int countClassesByUserId(int userId, Integer categoryId, String keyword) {
         try (Connection connection = DBUtil.getConnection()) {
 
             StringBuilder sql = new StringBuilder(
@@ -284,8 +261,8 @@ public class ClassDAO {
                 sql.append(" AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ? ");
+            if (categoryId != null) {
+                sql.append(" AND cat.setting_id = ? ");
             }
 
             PreparedStatement ps = connection.prepareStatement(sql.toString());
@@ -298,8 +275,8 @@ public class ClassDAO {
                 ps.setString(idx++, "%" + keyword + "%");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                ps.setString(idx++, category);
+            if (categoryId != null) {
+                ps.setInt(idx++, categoryId);
             }
 
             ResultSet rs = ps.executeQuery();
@@ -374,7 +351,7 @@ public class ClassDAO {
         return topStatsList;
     }
 
-    public int countActiveClasses(String keyword, String category) {
+    public int countActiveClasses(String keyword, Integer categoryId) {
         try (Connection connection = DBUtil.getConnection()) {
 
             StringBuilder sql = new StringBuilder(
@@ -391,8 +368,8 @@ public class ClassDAO {
                 sql.append(" AND (c.class_name LIKE ? OR u.fullname LIKE ?) ");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ? ");
+            if (categoryId != null) {
+                sql.append(" AND cat.setting_id= ? ");
             }
 
             PreparedStatement ps = connection.prepareStatement(sql.toString());
@@ -403,8 +380,8 @@ public class ClassDAO {
                 ps.setString(idx++, "%" + keyword + "%");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                ps.setString(idx++, category);
+            if (categoryId != null) {
+                ps.setInt(idx++, categoryId);
             }
 
             ResultSet rs = ps.executeQuery();
@@ -417,7 +394,7 @@ public class ClassDAO {
     }
 // ==================== INSTRUCTOR SPECIFIC METHODS (Added) ====================
 
-    public List<Class> getClassesByInstructor(int instructorId, String category, String keyword, int offset, int limit) {
+    public List<Class> getClassesByInstructor(int instructorId, Integer categoryId, String keyword, int offset, int limit) {
         List<Class> classes = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT c.*, u.fullname AS instructor_name " +
@@ -428,7 +405,7 @@ public class ClassDAO {
                         "WHERE c.instructor_id = ? ");
 
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
-        if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? "); // Hoặc setting_id tùy dữ liệu input
+        if (categoryId != null) sql.append(" AND cat.setting_id = ? ");
 
         sql.append(" GROUP BY c.class_id ORDER BY c.class_id ASC LIMIT ? OFFSET ?");
 
@@ -437,7 +414,7 @@ public class ClassDAO {
             int idx = 1;
             ps.setInt(idx++, instructorId);
             if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
-            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+            if (categoryId != null) ps.setInt(idx++, categoryId);
             ps.setInt(idx++, limit);
             ps.setInt(idx++, offset);
 
@@ -447,8 +424,8 @@ public class ClassDAO {
                 c.setId(rs.getInt("class_id"));
                 c.setName(rs.getString("class_name"));
                 c.setThumbnailUrl(rs.getString("thumbnail_url"));
-                c.setStartDate(rs.getDate("start_date"));
-                c.setEndDate(rs.getDate("end_date"));
+                c.setStartDate(rs.getDate("start_date").toLocalDate());
+                c.setEndDate(rs.getDate("end_date").toLocalDate());
                 c.setStatus(rs.getBoolean("status"));
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
@@ -464,7 +441,7 @@ public class ClassDAO {
         return classes;
     }
 
-    public int countClassesByInstructor(int instructorId, String category, String keyword) {
+    public int countClassesByInstructor(int instructorId, Integer categoryId, String keyword) {
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(DISTINCT c.class_id) FROM class c " +
                         "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
@@ -472,14 +449,14 @@ public class ClassDAO {
                         "WHERE c.instructor_id = ? ");
 
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
-        if (category != null && !category.isEmpty()) sql.append(" AND cat.setting_name = ? ");
+        if (categoryId != null) sql.append(" AND cat.setting_name = ? ");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int idx = 1;
             ps.setInt(idx++, instructorId);
             if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
-            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+            if (categoryId != null) ps.setInt(idx++, categoryId);
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -534,8 +511,8 @@ public class ClassDAO {
                 } else {
                     c.setCategories(new String[0]);
                 }
-                c.setStartDate(rs.getDate("start_date"));
-                c.setEndDate(rs.getDate("end_date"));
+                c.setStartDate(rs.getDate("start_date").toLocalDate());
+                c.setEndDate(rs.getDate("end_date").toLocalDate());
                 c.setStatus(rs.getBoolean("status"));
                 c.setNumberOfStudents(rs.getInt("number_of_students"));
                 c.setDescription(rs.getString("description"));
@@ -567,7 +544,7 @@ public class ClassDAO {
         return false;
     }
 
-    public List<Class> getAllClasses(String category, Integer instructorId, Boolean status, String keyword) {
+    public List<Class> getAllClasses(Integer categoryId, Integer instructorId, Boolean status, String keyword) {
         List<Class> classes = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder(
@@ -580,17 +557,17 @@ public class ClassDAO {
                     "WHERE 1=1 ");
             List<Object> params = new ArrayList<>();
 
-            if (category != null) {
+            if (categoryId != null) {
                 sql.append(
                         " AND EXISTS (" +
                                 "   SELECT 1 FROM class_category cc2 " +
                                 "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
                                 "   WHERE cc2.class_id = c.class_id " +
-                                "     AND s2.setting_name = ? " +
+                                "     AND s2.setting_id = ? " +
                                 "     AND s2.type_id = 5 " +
                                 " ) "
                 );
-                params.add(category);
+                params.add(categoryId);
             }
 
             if (instructorId != null) {
@@ -628,8 +605,8 @@ public class ClassDAO {
                 c.setSalePrice(resultSet.getBigDecimal("sale_price"));
                 c.setStatus(resultSet.getBoolean("status"));
                 c.setDescription(resultSet.getString("description"));
-                c.setStartDate(resultSet.getDate("start_date"));
-                c.setEndDate(resultSet.getDate("end_date"));
+                c.setStartDate(resultSet.getDate("start_date").toLocalDate());
+                c.setEndDate(resultSet.getDate("end_date").toLocalDate());
 
                 String catStr = resultSet.getString("category_names");
                 if (catStr != null) {
@@ -661,6 +638,52 @@ public class ClassDAO {
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void insertClass(Class clazz, String[] categoryIds) throws SQLException {
+        Connection con = DBUtil.getConnection();
+
+        String sql = "INSERT INTO class" +
+                "        (class_name, thumbnail_url, listed_price, sale_price," +
+                "         description, start_date, end_date, instructor_id, status)" +
+                "        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+        ps.setString(1, clazz.getName());
+        ps.setString(2, clazz.getThumbnailUrl());
+        ps.setBigDecimal(3, clazz.getListedPrice());
+
+        if (clazz.getSalePrice() != null) {
+            ps.setBigDecimal(4, clazz.getSalePrice());
+        } else {
+            ps.setNull(4, Types.DECIMAL);
+        }
+
+        ps.setString(5, clazz.getDescription());
+        ps.setObject(6, clazz.getStartDate());
+        ps.setObject(7, clazz.getEndDate());
+        ps.setInt(8, clazz.getInstructor().getId());
+        ps.setBoolean(9, clazz.isStatus());
+
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            int classId = rs.getInt(1);
+
+            if (categoryIds != null) {
+                String sqlCat = "INSERT INTO class_category (class_id, category_id) VALUES (?, ?)";
+                PreparedStatement psCat = con.prepareStatement(sqlCat);
+
+                for (String catId : categoryIds) {
+                    psCat.setInt(1, classId);
+                    psCat.setInt(2, Integer.parseInt(catId));
+                    psCat.addBatch();
+                }
+                psCat.executeBatch();
+            }
         }
     }
 }

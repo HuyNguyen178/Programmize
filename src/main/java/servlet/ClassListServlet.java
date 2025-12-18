@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.ClassDAO;
+import dao.SettingDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,8 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
+import model.Setting;
 import model.User;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -17,16 +18,18 @@ import java.util.List;
 public class ClassListServlet extends HttpServlet {
     private ClassDAO classDAO;
     private UserDAO userDAO;
+    private SettingDAO settingDAO;
 
     @Override
     public void init() throws ServletException {
         classDAO = new ClassDAO();
         userDAO = new UserDAO();
+        settingDAO = new SettingDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String category = request.getParameter("category");
+        String categoryIdStr= request.getParameter("category");
         String instructorIdStr = request.getParameter("instructor");
         String keyword = request.getParameter("search");
         String statusStr = request.getParameter("status");
@@ -35,13 +38,16 @@ public class ClassListServlet extends HttpServlet {
         String idStr = request.getParameter("id");
         String newStatusStr = request.getParameter("newStatus");
 
+        Integer categoryId = null;
         Integer instructorId = null;
         Boolean status = null;
         if (statusStr != null && !statusStr.isEmpty()) {
             status = statusStr.equals("1");
         }
 
-        if (category != null && category.trim().isEmpty()) category = null;
+        if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
+            categoryId = Integer.parseInt(categoryIdStr);
+        }
         if (instructorIdStr != null && !instructorIdStr.isEmpty()) {
             instructorId = Integer.parseInt(instructorIdStr);
         }
@@ -57,15 +63,16 @@ public class ClassListServlet extends HttpServlet {
             return;
         }
 
-        List<String> categories = classDAO.getAllCategories();
+        List<Setting> categories = settingDAO.getAllCategories();
+
         List<User> instructors = userDAO.getAllInstructors();
-        List<Class> classes = classDAO.getAllClasses(category, instructorId, status, keyword);
+        List<Class> classes = classDAO.getAllClasses(categoryId, instructorId, status, keyword);
 
         request.setAttribute("classes", classes);
 
         request.setAttribute("categories", categories);
         request.setAttribute("instructors", instructors);
-        request.setAttribute("category", category);
+        request.setAttribute("selectedCategoryId", categoryId);
         request.setAttribute("selectedInstructorId", instructorId);
         request.setAttribute("searchKeyword", keyword);
         request.setAttribute("selectedStatus", statusStr);
