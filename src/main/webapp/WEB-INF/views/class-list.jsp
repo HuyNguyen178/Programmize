@@ -73,6 +73,15 @@
         <%-- Thay đổi h1 thành h2 với class giống account-list.jsp --%>
         <h2 class="fw-bold mb-4 text-primary">📚 Class List</h2>
 
+            <c:if test="${not empty sessionScope.successMessage}">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                        ${sessionScope.successMessage}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <c:remove var="successMessage" scope="session"/>
+            </c:if>
+
         <%-- Sử dụng card shadow-sm giống account-list.jsp --%>
         <div class="card shadow-sm">
             <div class="card-body">

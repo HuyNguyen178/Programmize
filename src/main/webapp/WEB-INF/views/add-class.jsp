@@ -92,14 +92,6 @@
       <h2 class="text-primary fw-bold">📚 Add New Class</h2>
     </div>
 
-    <c:if test="${not empty sessionScope.successMessage}">
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      <c:remove var="successMessage" scope="session"/>
-    </c:if>
-
     <c:if test="${not empty sessionScope.errorMessage}">
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fas fa-exclamation-triangle"></i> ${sessionScope.errorMessage}
