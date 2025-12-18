@@ -168,8 +168,8 @@
           <select class="form-select" id="filterCategory" name="category" onchange="this.form.submit()">
             <option value="">All Categories</option>
             <c:forEach var="cat" items="${allCategories}">
-              <option value="${cat}" ${category == cat ? 'selected' : ''}>
-                  ${cat}
+              <option value="${cat.id}" ${selectedCategoryId == cat.id ? 'selected' : ''}>
+                  ${cat.name}
               </option>
             </c:forEach>
           </select>

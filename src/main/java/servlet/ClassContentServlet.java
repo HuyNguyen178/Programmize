@@ -26,12 +26,13 @@ public class ClassContentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String category = request.getParameter("category");
+        String categoryIdStr = request.getParameter("category");
         String keyword = request.getParameter("search");
         String statusStr = request.getParameter("status");
 
-        if (category != null && category.trim().isEmpty()) {
-            category = "";
+        Integer categoryId = null;
+        if (categoryIdStr != null && !categoryIdStr.trim().isEmpty()) {
+            categoryId = Integer.parseInt(categoryIdStr);
         }
         if (keyword != null && keyword.trim().isEmpty()) {
             keyword = "";
@@ -45,12 +46,12 @@ public class ClassContentServlet extends HttpServlet {
         }
 
         User user = (User) request.getSession().getAttribute("loginUser");
-        List<Class> classes = classDAO.getClassContentByInstructor(user.getId(), category, keyword, status);
+        List<Class> classes = classDAO.getClassContentByInstructor(user.getId(), categoryId, keyword, status);
         List<Setting> allCategories = settingDAO.getAllCategories();
 
         request.setAttribute("classes", classes);
         request.setAttribute("allCategories", allCategories);
-        request.setAttribute("category", category);
+        request.setAttribute("selectedCategoryId", categoryId);
         request.setAttribute("searchKeyword", keyword);
         request.setAttribute("selectedStatus", statusStr);
 

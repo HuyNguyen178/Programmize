@@ -464,7 +464,7 @@ public class ClassDAO {
         return 0;
     }
 
-    public List<Class> getClassContentByInstructor(int instructorId, String category, String keyword, Boolean status) {
+    public List<Class> getClassContentByInstructor(int instructorId, Integer categoryId, String keyword, Boolean status) {
         List<Class> classes = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT c.*, u.fullname AS instructor_name, " +
@@ -476,13 +476,13 @@ public class ClassDAO {
                         "WHERE c.instructor_id = ? ");
 
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND c.class_name LIKE ? ");
-        if (category != null && !category.isEmpty()) {
+        if (categoryId != null) {
             sql.append(
                     " AND EXISTS (" +
                             "   SELECT 1 FROM class_category cc2 " +
                             "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
                             "   WHERE cc2.class_id = c.class_id " +
-                            "     AND s2.setting_name = ? " +
+                            "     AND s2.setting_id = ? " +
                             "     AND s2.type_id = 5 " +
                             " ) "
             );
@@ -496,7 +496,7 @@ public class ClassDAO {
             int idx = 1;
             ps.setInt(idx++, instructorId);
             if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
-            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
+            if (categoryId != null) ps.setInt(idx++, categoryId);
             if (status != null) ps.setBoolean(idx++, status);
 
             ResultSet rs = ps.executeQuery();
