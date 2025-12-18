@@ -22,7 +22,10 @@ public class CSRFFilter implements Filter {
             "/check-otp",
             "/forgot-password",
             "/reset-password",
-            "/new-password"
+            "/new-password",
+            "/course-enrollment",
+            "/vnpay-return",
+            "/vnpay-payment-return"
     );
 
     @Override

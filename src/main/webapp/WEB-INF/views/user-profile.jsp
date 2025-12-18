@@ -167,7 +167,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Password</label>
                                     <div>
-                                        <a href="change-password" class="btn btn-outline-secondary btn-sm">
+                                        <a href="#" class="btn btn-outline-secondary btn-sm">
                                             <i class="fas fa-key me-2"></i>Change Password
                                         </a>
                                     </div>

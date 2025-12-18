@@ -153,10 +153,7 @@ public class CourseDAO {
                 courses.add(course);
             }
 
-            System.out.println("Number of courses retrieved: " + courses.size());
-
         } catch (SQLException e) {
-            System.err.println("SQL Error in getAllCourses: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
@@ -188,9 +185,7 @@ public class CourseDAO {
                 category[1] = rs.getString("setting_name");
                 categories.add(category);
             }
-            System.out.println("Retrieved " + categories.size() + " categories from settings");
         } catch (SQLException e) {
-            System.err.println("Error getting categories from settings: " + e.getMessage());
             e.printStackTrace();
         }
         return categories;
@@ -353,8 +348,6 @@ public class CourseDAO {
                 "GROUP BY c.course_id";
         Course course = null;
 
-        System.out.println("Getting course by ID: " + courseId);
-
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -381,12 +374,9 @@ public class CourseDAO {
                 course.setStatus(rs.getBoolean("status"));
                 course.setDuration(rs.getInt("duration"));
                 course.setInstructorId(rs.getInt("instructor_id"));
-
-                System.out.println("Found course: " + course.getCourseName());
             }
 
         } catch (SQLException e) {
-            System.err.println("Error getting course by ID: " + e.getMessage());
             e.printStackTrace();
         }
 
