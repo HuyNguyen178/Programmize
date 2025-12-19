@@ -1,6 +1,7 @@
 package dao;
 
 import model.Course;
+import model.Setting;
 import model.User;
 import utils.DBUtil;
 
@@ -686,4 +687,88 @@ public class ClassDAO {
             }
         }
     }
+
+    public List<Setting> getCategoriesByClassId(int classId) {
+        List<Setting> categories = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT cat.setting_id, cat.setting_name " +
+                    "FROM setting cat " +
+                    "LEFT JOIN class_category cc on cat.setting_id = cc.category_id " +
+                    "LEFT JOIN class c on cc.class_id = c.class_id " +
+                    "WHERE cat.type_id = 5 AND c.class_id = ? ";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, classId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Setting setting = new Setting();
+                setting.setId(resultSet.getInt("setting_id"));
+                setting.setName(resultSet.getString("setting_name"));
+
+                categories.add(setting);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return categories;
+    }
+
+    public void updateClass(Class c, String[] categoryIds) {
+
+        String updateClassSql = "UPDATE class" +
+                "        SET class_name = ?, thumbnail_url = ?, description = ?," +
+                "            listed_price = ?, sale_price = ?, start_date = ?, end_date = ?," +
+                "            status = ?, instructor_id = ?" +
+                "        WHERE class_id = ?";
+
+        String deleteCategorySql =
+                "DELETE FROM class_category WHERE class_id = ?";
+
+        String insertCategorySql =
+                "INSERT INTO class_category (class_id, category_id) VALUES (?, ?)";
+
+        try (Connection conn = DBUtil.getConnection()) {
+            conn.setAutoCommit(false);
+
+            // 1️⃣ Update class
+            try (PreparedStatement ps = conn.prepareStatement(updateClassSql)) {
+                ps.setString(1, c.getName());
+                ps.setString(2, c.getThumbnailUrl());
+                ps.setString(3, c.getDescription());
+                ps.setBigDecimal(4, c.getListedPrice());
+                ps.setBigDecimal(5, c.getSalePrice());
+                ps.setObject(6, c.getStartDate());
+                ps.setObject(7, c.getEndDate());
+                ps.setBoolean(8, c.isStatus());
+                ps.setInt(9, c.getInstructor().getId());
+                ps.setInt(10, c.getId());
+                ps.executeUpdate();
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(deleteCategorySql)) {
+                ps.setInt(1, c.getId());
+                ps.executeUpdate();
+            }
+
+            if (categoryIds != null) {
+                try (PreparedStatement ps = conn.prepareStatement(insertCategorySql)) {
+                    for (String catId : categoryIds) {
+                        ps.setInt(1, c.getId());
+                        ps.setInt(2, Integer.parseInt(catId));
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+            }
+
+            conn.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update class!");
+        }
+    }
+
 }
