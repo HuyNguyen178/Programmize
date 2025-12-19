@@ -1,11 +1,11 @@
 package servlet;
 
 import dao.UserDAO;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import model.User;
+import utils.SessionConfig;
 
 import java.io.IOException;
 
@@ -14,6 +14,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        String timeout = req.getParameter("timeout");
+        if ("true".equals(timeout)) {
+            req.setAttribute("timeoutMessage", "Your session has expired. Please login again.");
+        }
+
         req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
     }
 
@@ -37,15 +43,30 @@ public class LoginServlet extends HttpServlet {
         User user = dao.checkLogin(userOrEmail, password);
 
         if (user != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("loginUser", user);
+            // Tạo session mới với secure settings
+            HttpSession session = request.getSession(true);
+            session.setAttribute(SessionConfig.ATTR_LOGIN_USER, user);
+            session.setAttribute(SessionConfig.ATTR_CREATION_TIME, System.currentTimeMillis());
+            session.setAttribute(SessionConfig.ATTR_LAST_ROTATION, System.currentTimeMillis());
+            session.setMaxInactiveInterval(SessionConfig.SESSION_TIMEOUT_MINUTES * 60);
 
+            // Set secure session cookie
+            Cookie sessionCookie = new Cookie(SessionConfig.SESSION_COOKIE_NAME, session.getId());
+            sessionCookie.setHttpOnly(SessionConfig.COOKIE_HTTP_ONLY);
+            sessionCookie.setSecure(SessionConfig.COOKIE_SECURE);
+            sessionCookie.setPath(request.getContextPath());
+            sessionCookie.setMaxAge(SessionConfig.SESSION_TIMEOUT_MINUTES * 60);
+            response.addCookie(sessionCookie);
+
+            // Remember me functionality
             if (remember != null) {
                 String token = user.getId() + "-" + System.currentTimeMillis();
 
                 Cookie c = new Cookie("rememberToken", token);
                 c.setMaxAge(10 * 365 * 24 * 60 * 60);
                 c.setPath("/");
+                c.setHttpOnly(true);
+                c.setSecure(SessionConfig.COOKIE_SECURE);
                 response.addCookie(c);
 
                 dao.saveRememberToken(user.getId(), token);

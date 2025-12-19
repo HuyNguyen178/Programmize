@@ -24,11 +24,30 @@
         <param-name>hikari.maximumPoolSize</param-name>
         <param-value>10</param-value>
     </context-param>
-    <!-- src/main/webapp/WEB-INF/web.xml -->
     <context-param>
         <param-name>skip.db</param-name>
         <param-value>true</param-value>
     </context-param>
+
+    <!-- Session Configuration -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            <secure>false</secure>
+            <max-age>1800</max-age>
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <filter>
+        <filter-name>SessionSecurityFilter</filter-name>
+        <filter-class>filter.SessionSecurityFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SessionSecurityFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>AutoLoginFilter</filter-name>

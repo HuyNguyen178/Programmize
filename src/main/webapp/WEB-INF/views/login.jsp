@@ -44,11 +44,7 @@
         <h5 class="text-muted mt-2">Login</h5>
     </div>
 
-    <form action="login" method="post"
-
-    <%--            add csrftoken--%>
-        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-
+    <form action="login" method="post">
         <input type="hidden" name="csrfToken" value="<%= CSRFUtil.getToken(session) %>">
         <input type="hidden" name="redirect" value="<%= request.getParameter("redirect") != null ? request.getParameter("redirect") : "" %>">
 
