@@ -30,7 +30,8 @@ public class AuthorizationFilter implements Filter {
             "/check-otp",
             "/new-password",
             "/public-courses",
-            "/public-course-details"
+            "/public-course-details",
+            "/lesson-detail"
     );
 
     // Danh sách các URL dành riêng cho Admin
