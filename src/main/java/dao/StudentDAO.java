@@ -13,7 +13,7 @@ public class StudentDAO {
         StringBuilder sql = new StringBuilder(
                 "FROM user u " +
                         "JOIN setting s ON u.role_id = s.setting_id " +
-                        "LEFT JOIN class_user cu ON u.user_id = cu.user_id " +
+                        "LEFT JOIN class_enrollment cu ON u.user_id = cu.user_id " +
                         "LEFT JOIN class c ON cu.class_id = c.class_id " +
                         "WHERE s.setting_name = 'Student' " +
                         "AND c.instructor_id = ? "
@@ -148,7 +148,7 @@ public class StudentDAO {
 
         String sqlFindClass = "SELECT class_id FROM class WHERE class_name = ?";
         String sqlFindStudentRole = "SELECT setting_id FROM setting WHERE setting_name = 'Student'";
-        String sqlInsertClassUser = "INSERT IGNORE INTO class_user (user_id, class_id) VALUES (?, ?)";
+        String sqlInsertClassUser = "INSERT IGNORE INTO class_enrollment (user_id, class_id) VALUES (?, ?)";
         String sqlUpdateRole = "UPDATE user SET role_id = ? WHERE user_id = ?";
 
         Connection conn = null;
@@ -185,7 +185,7 @@ public class StudentDAO {
                 }
             }
 
-            // 3. Thêm class_user
+            // 3. Thêm class_enrollment
             try (PreparedStatement ps = conn.prepareStatement(sqlInsertClassUser)) {
                 ps.setInt(1, userId);
                 ps.setInt(2, classId);
@@ -233,7 +233,7 @@ public class StudentDAO {
                         "IFNULL(GROUP_CONCAT(DISTINCT c.class_name SEPARATOR ', '), '') AS class_names " +
                         "FROM user u " +
                         "JOIN setting s ON u.role_id = s.setting_id " +
-                        "LEFT JOIN class_user cu ON u.user_id = cu.user_id " +
+                        "LEFT JOIN class_enrollment cu ON u.user_id = cu.user_id " +
                         "LEFT JOIN class c ON cu.class_id = c.class_id " +
                         "WHERE u.user_id = ? AND s.setting_name = 'Student' " +
                         "GROUP BY u.user_id";

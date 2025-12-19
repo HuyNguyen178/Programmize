@@ -599,7 +599,7 @@ public class CourseDAO {
                         "FROM " +
                         "   course c " +
                         "LEFT JOIN " +
-                        "   course_user cu ON c.course_id = cu.course_id " +
+                        "   course_enrollment cu ON c.course_id = cu.course_id " +
                         "GROUP BY " +
                         "   c.course_id, c.course_name, c.listed_price, c.sale_price " +
                         "ORDER BY " +
@@ -685,7 +685,7 @@ public class CourseDAO {
             StringBuilder sql = new StringBuilder(
                     "SELECT COUNT(DISTINCT c.course_id) " +
                             "FROM course c " +
-                            "LEFT JOIN course_user cu ON cu.course_id = c.course_id " +
+                            "LEFT JOIN course_enrollment cu ON cu.course_id = c.course_id " +
                             "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
                             "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
                             "LEFT JOIN user u ON c.instructor_id = u.user_id " +
@@ -729,7 +729,7 @@ public class CourseDAO {
             StringBuilder sql = new StringBuilder(
                     "SELECT COUNT(DISTINCT c.course_id) " +
                             "FROM course c " +
-                            "LEFT JOIN course_user cu ON cu.course_id = c.course_id " +
+                            "LEFT JOIN course_enrollment cu ON cu.course_id = c.course_id " +
                             "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
                             "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
                             "LEFT JOIN user u ON c.instructor_id = u.user_id " +
@@ -814,7 +814,7 @@ public class CourseDAO {
                     "    u.user_id as instructor_id," +
                     "    u.fullname AS instructor_name" +
                     " FROM course c" +
-                    " LEFT JOIN course_user cu ON cu.course_id = c.course_id" +
+                    " LEFT JOIN course_enrollment cu ON cu.course_id = c.course_id" +
                     " LEFT JOIN course_category cc ON c.course_id = cc.course_id" +
                     " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
                     " LEFT JOIN user u ON c.instructor_id = u.user_id" +
@@ -920,7 +920,7 @@ public class CourseDAO {
                     "    u.user_id as instructor_id," +
                     "    u.fullname AS instructor_name" +
                     " FROM course c" +
-                    " LEFT JOIN course_user cu ON cu.course_id = c.course_id" +
+                    " LEFT JOIN course_enrollment cu ON cu.course_id = c.course_id" +
                     " LEFT JOIN course_category cc ON c.course_id = cc.course_id" +
                     " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
                     " LEFT JOIN user u ON c.instructor_id = u.user_id" +

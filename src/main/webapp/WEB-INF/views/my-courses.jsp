@@ -271,8 +271,16 @@
                                     </c:if>
                                 </div>
                             </div>
-                            <a href="${pageContext.request.contextPath}/my-course-details?id=${course.id}"
-                               class="btn-details">VIEW DETAILS</a>
+                            <c:choose>
+                                <c:when test="${not empty firstLessonMap[course.courseId]}">
+                                    <a href="${pageContext.request.contextPath}/lesson-detail?id=${firstLessonMap[course.courseId]}"
+                                       class="btn-details">VIEW DETAILS</a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${pageContext.request.contextPath}/public-course-details?id=${course.courseId}"
+                                       class="btn-details">VIEW DETAILS</a>
+                                </c:otherwise>
+                            </c:choose>
                         </article>
                     </c:forEach>
                 </div>

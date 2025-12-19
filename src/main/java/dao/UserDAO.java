@@ -138,7 +138,7 @@ public class UserDAO {
         String sql =
                 "SELECT u.user_id, u.fullname, u.avatar_url " +
                         "FROM user u " +
-                        "JOIN class_user cu ON cu.user_id = u.user_id " +
+                        "JOIN class_enrollment cu ON cu.user_id = u.user_id " +
                         "JOIN setting s ON s.setting_id = u.role_id " +
                         "WHERE cu.class_id = ? AND s.setting_name = 'Instructor'";
 
@@ -422,7 +422,7 @@ public class UserDAO {
                 "COUNT(cl_u.user_id) AS enrollments_count " +
                 "FROM user u " +
                 "JOIN class cl ON u.user_id = cl.instructor_id " +
-                "LEFT JOIN class_user cl_u ON cl.class_id = cl_u.class_id " +
+                "LEFT JOIN class_enrollment cl_u ON cl.class_id = cl_u.class_id " +
                 "WHERE u.role_id = (SELECT setting_id FROM setting WHERE setting_name = 'Instructor') " +
                 "GROUP BY u.user_id, u.fullname " +
                 "ORDER BY enrollments_count DESC " +

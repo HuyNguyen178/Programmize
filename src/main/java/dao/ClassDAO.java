@@ -36,7 +36,7 @@ public class ClassDAO {
                     "    u.user_id as instructor_id," +
                     "    u.fullname AS instructor_name" +
                     " FROM class c" +
-                    " LEFT JOIN class_user cu ON cu.class_id = c.class_id" +
+                    " LEFT JOIN class_enrollment cu ON cu.class_id = c.class_id" +
                     " LEFT JOIN class_category cc ON c.class_id = cc.class_id" +
                     " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
                     " LEFT JOIN user u ON c.instructor_id = u.user_id" +
@@ -251,7 +251,7 @@ public class ClassDAO {
             StringBuilder sql = new StringBuilder(
                     "SELECT COUNT(DISTINCT c.class_id) " +
                             "FROM class c " +
-                            "LEFT JOIN class_user cu ON cu.class_id = c.class_id " +
+                            "LEFT JOIN class_enrollment cu ON cu.class_id = c.class_id " +
                             "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
                             "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
                             "LEFT JOIN user u ON c.instructor_id = u.user_id " +
@@ -317,7 +317,7 @@ public class ClassDAO {
                         "FROM " +
                         "   class cl " +
                         "LEFT JOIN " +
-                        "   class_user cl_u ON cl.class_id = cl_u.class_id " +
+                        "   class_enrollment cl_u ON cl.class_id = cl_u.class_id " +
                         "GROUP BY " +
                         "   cl.class_id, cl.class_name, cl.listed_price, cl.sale_price " +
                         "ORDER BY " +
@@ -358,7 +358,7 @@ public class ClassDAO {
             StringBuilder sql = new StringBuilder(
                     "SELECT COUNT(DISTINCT c.class_id) " +
                             "FROM class c " +
-                            "LEFT JOIN class_user cu ON cu.class_id = c.class_id " +
+                            "LEFT JOIN class_enrollment cu ON cu.class_id = c.class_id " +
                             "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
                             "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
                             "LEFT JOIN user u ON c.instructor_id = u.user_id " +

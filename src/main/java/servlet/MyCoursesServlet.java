@@ -9,6 +9,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Course;
 import model.User;
+import dao.ChapterDAO;
+import dao.LessonDAO;
+import model.Chapter;
+import model.Lesson;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,11 +23,15 @@ import java.util.List;
 public class MyCoursesServlet extends HttpServlet {
 
     private CourseDAO courseDAO;
+    private ChapterDAO chapterDAO;
+    private LessonDAO lessonDAO;
     private static final int PAGE_SIZE = 12;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         courseDAO = new CourseDAO();
+        chapterDAO = new ChapterDAO();
+        lessonDAO = new LessonDAO();
     }
 
     @Override
@@ -63,7 +73,24 @@ public class MyCoursesServlet extends HttpServlet {
             courses = courseDAO.getEnrolledCoursesByUser(userId, category, keyword, offset, PAGE_SIZE);
             totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
         }
-        // ----------------------------
+
+        // after fetch course líst courses
+        Map<Integer, Integer> firstLessonMap = new HashMap<>();
+
+        for (Course course : courses) {
+            // fetch chapters of course
+            List<Chapter> chapters = chapterDAO.getChaptersByCourseId(course.getCourseId());
+            if (!chapters.isEmpty()) {
+                // fetch lessons of first chapter
+                List<Lesson> lessons = lessonDAO.getActiveLessonsByChapterId(chapters.get(0).getChapterId());
+                if (!lessons.isEmpty()) {
+                    // save first lessonId
+                    firstLessonMap.put(course.getCourseId(), lessons.get(0).getLessonId());
+                }
+            }
+        }
+
+        request.setAttribute("firstLessonMap", firstLessonMap);
 
         int totalPages = (int) Math.ceil((double) totalCourses / PAGE_SIZE);
 
