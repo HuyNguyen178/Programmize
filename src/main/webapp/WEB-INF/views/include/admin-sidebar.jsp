@@ -1,6 +1,6 @@
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h3 class="sidebar-title label mb-0">Programmize</h3>
+        <h3 class="sidebar-title label mb-0"><a href="<%=request.getContextPath()%>/dashboard">Programmize</a></h3>
         <button id="toggleSidebar" class="btn">
             <i class="fa fa-bars" id="toggleIcon"></i>
         </button>

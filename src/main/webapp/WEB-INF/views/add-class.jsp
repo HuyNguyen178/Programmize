@@ -72,7 +72,7 @@
 
     /* Checkbox group styling */
     .checkbox-group {
-      max-height: 150px;
+      max-height: 110px;
       overflow-y: auto;
       border: 1px solid #ddd;
       padding: 10px;
@@ -116,12 +116,6 @@
           </div>
 
           <div class="form-group">
-            <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-            <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control"
-                   placeholder="Enter thumbnail image URL">
-          </div>
-
-          <div class="form-group">
             <label for="listedPrice" class="form-label">Listed Price <span class="text-danger">*</span></label>
             <input type="number" id="listedPrice" name="listedPrice" class="form-control"
                    step="0.01" min="0" placeholder="0.00" required>
@@ -131,11 +125,6 @@
             <label for="salePrice" class="form-label">Sale Price</label>
             <input type="number" id="salePrice" name="salePrice" class="form-control"
                    step="0.01" min="0" placeholder="0.00">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Number of Students</label>
-            <input type="number" class="form-control" value="0" disabled>
           </div>
 
           <div class="form-group">
@@ -166,6 +155,11 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Number of Students</label>
+            <input type="number" class="form-control" value="0" disabled>
+          </div>
+
+          <div class="form-group">
             <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
             <select id="status" name="status" class="form-select" required>
               <option value="1" selected>Active</option>
@@ -192,6 +186,13 @@
         </div>
 
         <div class="col-12">
+
+          <div class="form-group">
+            <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
+            <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control"
+                   placeholder="Enter thumbnail image URL">
+          </div>
+
           <div class="form-group">
             <label for="description" class="form-label">Description</label>
             <textarea id="description" name="description" class="form-control" rows="4"
