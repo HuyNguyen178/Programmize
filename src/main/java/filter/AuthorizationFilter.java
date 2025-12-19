@@ -30,6 +30,8 @@ public class AuthorizationFilter implements Filter {
             "/check-otp",
             "/new-password",
             "/public-courses",
+            "/public-classes",
+            "/public-class-details",
             "/public-course-details",
             "/lesson-detail"
     );
