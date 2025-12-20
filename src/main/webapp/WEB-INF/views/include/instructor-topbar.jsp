@@ -55,7 +55,7 @@
             </button>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#"><i class="fa fa-user me-2"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile?id=<%=loginUser.getId()%>"><i class="fa fa-user me-2"></i> Profile</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
