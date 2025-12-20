@@ -111,30 +111,30 @@
 
           <div class="form-group">
             <label for="className" class="form-label">Class Name <span class="text-danger">*</span></label>
-            <input type="text" id="className" name="className" class="form-control"
+            <input type="text" id="className" name="className" class="form-control" value="${clazz.name}"
                    placeholder="Enter class name" required>
           </div>
 
           <div class="form-group">
             <label for="listedPrice" class="form-label">Listed Price <span class="text-danger">*</span></label>
-            <input type="number" id="listedPrice" name="listedPrice" class="form-control"
+            <input type="number" id="listedPrice" name="listedPrice" class="form-control" value="${clazz.listedPrice}"
                    step="0.01" min="0" placeholder="0.00" required>
           </div>
 
           <div class="form-group">
             <label for="salePrice" class="form-label">Sale Price</label>
-            <input type="number" id="salePrice" name="salePrice" class="form-control"
+            <input type="number" id="salePrice" name="salePrice" class="form-control" value="${clazz.salePrice}"
                    step="0.01" min="0" placeholder="0.00">
           </div>
 
           <div class="form-group">
             <label for="startDate" class="form-label">Start Date</label>
-            <input type="text" id="startDate" name="startDate" class="form-control"
+            <input type="text" id="startDate" name="startDate" class="form-control" value="${clazz.startDate}"
                    min="0" placeholder="yyyy-MM-dd" pattern="\d{4}-\d{2}-\d{2}">
           </div>
           <div class="form-group">
             <label for="endDate" class="form-label">End Date</label>
-            <input type="text" id="endDate" name="endDate" class="form-control"
+            <input type="text" id="endDate" name="endDate" class="form-control" value="${clazz.endDate}"
                    min="0" placeholder="yyyy-MM-dd" pattern="\d{4}-\d{2}-\d{2}">
           </div>
 
@@ -149,7 +149,7 @@
             <select id="instructorId" name="instructorId" class="form-select" required>
               <option value="">-- Select Instructor --</option>
               <c:forEach items="${instructors}" var="inst">
-                <option value="${inst.id}">${inst.fullname}</option>
+                <option value="${inst.id}" ${inst.id == clazz.instructor.id ? 'selected' : ''}>${inst.fullname}</option>
               </c:forEach>
             </select>
           </div>
@@ -189,14 +189,14 @@
 
           <div class="form-group">
             <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-            <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control"
+            <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control" value="${clazz.thumbnailUrl}"
                    placeholder="Enter thumbnail image URL">
           </div>
 
           <div class="form-group">
             <label for="description" class="form-label">Description</label>
             <textarea id="description" name="description" class="form-control" rows="4"
-                      placeholder="Enter class description"></textarea>
+                      placeholder="Enter class description">${clazz.description}</textarea>
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 public class Class {
-    private int id;
+    private Integer id;
     private String name;
     private String thumbnailUrl;
     private int numberOfStudents;
@@ -130,5 +130,20 @@ public class Class {
                 ", endDate=" + endDate +
                 ", instructor=" + instructor.getFullname() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (getClass() != o.getClass()) return false;
+
+        Class other = (Class) o;
+        return this.id != null && this.id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

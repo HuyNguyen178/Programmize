@@ -161,8 +161,8 @@
                             <th style="width: 20%;">Class Name</th>
                             <th style="width: 15%;">Category</th>
                             <th style="width: 15%;">Instructor</th>
-                            <th style="width: 10%;">Listed Price</th>
-                            <th style="width: 10%;">Sale Price</th>
+                            <th style="width: 10%;">Start Date</th>
+                            <th style="width: 10%;">End Date</th>
                             <th style="width: 7%;">Status</th>
                             <th style="width: 10%;">Actions</th>
                         </tr>
@@ -216,14 +216,24 @@
                                             </c:choose>
                                         </td>
                                         <td>
-                                            <fmt:formatNumber value="${clazz.listedPrice}"
-                                                              type="currency"
-                                                              currencySymbol="$" />
+                                            <c:choose>
+                                                <c:when test="${not empty clazz.startDate}">
+                                                    <span>${clazz.startDate}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <em>No start date</em>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </td>
                                         <td>
-                                            <fmt:formatNumber value="${clazz.salePrice}"
-                                                              type="currency"
-                                                              currencySymbol="$" />
+                                            <c:choose>
+                                                <c:when test="${not empty clazz.endDate}">
+                                                    <span>${clazz.endDate}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <em>No end date</em>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </td>
                                         <td>
                                             <c:choose>

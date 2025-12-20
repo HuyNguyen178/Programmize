@@ -771,4 +771,37 @@ public class ClassDAO {
         }
     }
 
+    public boolean doesClassNameExist(String className) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM class WHERE class_name = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, className);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean existsByNameAndNotId(String className, int classId) {
+        try (Connection con = DBUtil.getConnection()) {
+            String sql = "SELECT 1 FROM class WHERE LOWER(class_name) = LOWER(?) AND class_id <> ?";
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, className);
+            statement.setInt(2, classId);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
