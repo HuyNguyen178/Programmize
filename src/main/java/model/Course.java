@@ -20,7 +20,7 @@ public class Course {
     public Course() {}
 
 
-    // Parameterized constructor
+    // parameterized constructor
     public Course(String courseName,String[] courseCategories, String courseInstructor, String thumbnailUrl, String description,
                   BigDecimal listedPrice, BigDecimal salePrice, boolean status, Integer duration,  Integer instructorId) {
         this.courseName = courseName;
