@@ -11,6 +11,13 @@ import java.io.IOException;
 
 @WebServlet("/public-class-details")
 public class PublicClassDetailsServlet extends HttpServlet {
+    private ClassDAO classDAO;
+
+    @Override
+    public void init() throws ServletException {
+        classDAO = new ClassDAO();
+    }
+
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -24,8 +31,7 @@ public class PublicClassDetailsServlet extends HttpServlet {
         }
 
         int classId = Integer.parseInt(idParam);
-        ClassDAO dao = new ClassDAO();
-        Class clazz = dao.getClassById(classId);
+        Class clazz = classDAO.getClassById(classId);
 
         if (clazz == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
