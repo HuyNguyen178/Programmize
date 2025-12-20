@@ -525,13 +525,13 @@
                         <c:otherwise>
 
                             <!-- User is logged in -->
-                            <form action="${pageContext.request.contextPath}/course-enrollment" method="get">
-
-                                    <%--            add csrftoken--%>
+                            <form action="${pageContext.request.contextPath}/enrollment" method="get">
                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
-                                <input type="hidden" name="courseId" value="${course.courseId}">
-                                <button type="submit" class="btn btn-success btn-lg btn-buy">
+                                <input type="hidden" name="type" value="course">
+                                <input type="hidden" name="id" value="${course.courseId}">
+
+                                <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
                                     <i class="fas fa-shopping-cart me-2"></i>
                                     <c:choose>
                                         <c:when test="${priceDisplay == 'FREE'}">
@@ -543,7 +543,7 @@
                                     </c:choose>
                                 </button>
                             </form>
-                            <a href="#" class="btn btn-outline-secondary btn-lg btn-enroll">
+                            <a href="#" class="btn btn-outline-secondary btn-lg btn-enroll w-100">
                                 <i class="fas fa-bookmark me-2"></i> Add to Wishlist
                             </a>
                         </c:otherwise>

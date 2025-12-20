@@ -23,7 +23,7 @@ public class CSRFFilter implements Filter {
             "/forgot-password",
             "/reset-password",
             "/new-password",
-            "/course-enrollment",
+            "/enrollment",
             "/vnpay-return",
             "/vnpay-payment-return"
     );

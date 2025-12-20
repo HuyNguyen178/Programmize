@@ -1,12 +1,14 @@
 package servlet;
 
+import dao.ClassDAO;
 import dao.CourseDAO;
-import dao.CourseEnrollmentDAO;
+import dao.EnrollmentDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.ClassEnrollment;
 import model.CourseEnrollment;
 import model.User;
 import utils.VNPayUtil;
@@ -19,28 +21,35 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-@WebServlet("/course-enrollment")
-public class CourseEnrollmentServlet extends HttpServlet {
-    private CourseEnrollmentDAO enrollmentDAO;
+@WebServlet("/enrollment")
+public class EnrollmentServlet extends HttpServlet {
+    private EnrollmentDAO enrollmentDAO;
 
     public void init() {
-        this.enrollmentDAO = new CourseEnrollmentDAO();
+        this.enrollmentDAO = new EnrollmentDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String type = request.getParameter("type");
         try {
-            String idParam = request.getParameter("courseId");
+            String idParam = request.getParameter("id");
 
-            if (idParam != null && !idParam.isEmpty()) {
-                int courseId = Integer.parseInt(idParam);
+            if (idParam != null && !idParam.isEmpty() && type != null && !type.isEmpty()) {
+                int id = Integer.parseInt(idParam);
+                Object item = null;
+                if(type.equals("course")){
+                    CourseDAO courseDAO = new CourseDAO();
+                    item = courseDAO.getCourseById(id);
+                } else if (type.equals("class")) {
+                    ClassDAO classDAO = new ClassDAO();
+                    item = classDAO.getClassById(id);
+                }
 
-                CourseDAO courseDAO = new CourseDAO();
-                model.Course course = courseDAO.getCourseById(courseId);
-
-                if (course != null) {
-                    request.setAttribute("course", course);
-                    request.getRequestDispatcher("/WEB-INF/views/course-enrollment.jsp").forward(request, response);
+                if (item != null) {
+                    request.setAttribute("item", item);
+                    request.setAttribute("type", type);
+                    request.getRequestDispatcher("/WEB-INF/views/enrollment.jsp").forward(request, response);
                 }
             }
 
@@ -51,7 +60,6 @@ public class CourseEnrollmentServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         User user = (User) request.getSession().getAttribute("loginUser");
         if (user == null) {
             response.sendRedirect("login.jsp");
@@ -59,14 +67,14 @@ public class CourseEnrollmentServlet extends HttpServlet {
         }
 
         try {
-            int courseId = Integer.parseInt(request.getParameter("courseId"));
+            String type = request.getParameter("type");
+            int id = Integer.parseInt(request.getParameter("id"));
             BigDecimal pricePaid = new BigDecimal(request.getParameter("pricePaid"));
             String paymentMethod = request.getParameter("paymentMethod");
 
             if ("VNPAY".equals(paymentMethod)) {
                 String vnp_TmnCode = "IOGQJ94Z";
                 String vnp_HashSecret = "GBJNFFG0MPLVPW5X2H892AO0WHLQUMGZ";
-                String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
                 String vnp_Returnurl = "http://localhost:8080/vnpay-payment-return";
 
                 Map<String, String> vnp_Params = new HashMap<>();
@@ -74,29 +82,27 @@ public class CourseEnrollmentServlet extends HttpServlet {
                 vnp_Params.put("vnp_Command", "pay");
                 vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
 
-                // Số tiền: VNPay yêu cầu VNĐ và nhân 100. Ví dụ: 100$ * 25000 * 100
                 long amount = pricePaid.multiply(new BigDecimal(2500000)).longValue();
                 vnp_Params.put("vnp_Amount", String.valueOf(amount));
                 vnp_Params.put("vnp_CurrCode", "VND");
                 vnp_Params.put("vnp_TxnRef", String.valueOf(System.currentTimeMillis()));
-                vnp_Params.put("vnp_OrderInfo", "Thanh toan khoa hoc:" + courseId);
+                vnp_Params.put("vnp_OrderInfo", "Thanh toan " + type + ":" + id);
                 vnp_Params.put("vnp_OrderType", "other");
                 vnp_Params.put("vnp_Locale", "vn");
                 vnp_Params.put("vnp_ReturnUrl", vnp_Returnurl);
                 vnp_Params.put("vnp_IpAddr", request.getRemoteAddr());
 
-                Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-                vnp_Params.put("vnp_CreateDate", formatter.format(cld.getTime()));
+                vnp_Params.put("vnp_CreateDate", formatter.format(Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7")).getTime()));
 
-                // Tạo URL và redirect
-                String paymentUrl = VNPayUtil.getPaymentURL(vnp_Params, vnp_HashSecret);
+                if ("class".equals(type)) {
+                    request.getSession().setAttribute("pendingEnrollment", new ClassEnrollment(0, user.getId(), id, pricePaid, "VNPAY", null, false));
+                } else if("course".equals(type)) {
+                    request.getSession().setAttribute("pendingEnrollment", new CourseEnrollment(0, user.getId(), id, pricePaid, "VNPAY", null, false));
+                }
+                request.getSession().setAttribute("enrollmentType", type);
 
-
-                request.getSession().setAttribute("pendingEnrollment",
-                        new CourseEnrollment(0, user.getId(), courseId, pricePaid, "VNPAY", null, false));
-
-                response.sendRedirect(paymentUrl);
+                response.sendRedirect(VNPayUtil.getPaymentURL(vnp_Params, vnp_HashSecret));
             }
         } catch (Exception e) {
             e.printStackTrace();

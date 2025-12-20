@@ -390,14 +390,22 @@
                         </c:when>
                         <c:otherwise>
 
-                            <form action="${pageContext.request.contextPath}/class-enrollment" method="get">
-
+                            <form action="${pageContext.request.contextPath}/enrollment" method="get">
                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
-                                <input type="hidden" name="classId" value="${clazz.id}">
-                                <button type="submit" class="btn btn-success btn-lg btn-buy">
+                                <input type="hidden" name="type" value="class">
+                                <input type="hidden" name="id" value="${clazz.id}">
+
+                                <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
                                     <i class="fas fa-shopping-cart me-2"></i>
-                                    Enroll Class Now
+                                    <c:choose>
+                                        <c:when test="${priceDisplay == 'FREE'}">
+                                            Enroll for Free
+                                        </c:when>
+                                        <c:otherwise>
+                                            Buy Class Now
+                                        </c:otherwise>
+                                    </c:choose>
                                 </button>
                             </form>
                             <a href="#" class="btn btn-outline-secondary btn-lg btn-enroll">
