@@ -73,7 +73,7 @@
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-courses?id=${sessionScope.loginUser.id}">My Courses</a></li>
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-classes?id=${sessionScope.loginUser.id}">My Classes</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/logout">Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href=<%=request.getContextPath()%>"/logout"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </li>
             </ul>
