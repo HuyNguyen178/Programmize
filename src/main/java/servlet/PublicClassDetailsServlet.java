@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
 import java.io.IOException;
+import java.util.Date;
 
 @WebServlet("/public-class-details")
 public class PublicClassDetailsServlet extends HttpServlet {
@@ -37,6 +38,18 @@ public class PublicClassDetailsServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+
+        Date startDate = null;
+        Date endDate = null;
+        if (clazz.getStartDate() != null) {
+            startDate = java.sql.Date.valueOf(clazz.getStartDate());
+        }
+        request.setAttribute("startDate", startDate);
+
+        if (clazz.getEndDate() != null) {
+            endDate = java.sql.Date.valueOf(clazz.getEndDate());
+        }
+        request.setAttribute("endDate", endDate);
 
         request.setAttribute("clazz", clazz);
         request.getRequestDispatcher("/WEB-INF/views/public-class-details.jsp")

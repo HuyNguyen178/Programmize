@@ -52,6 +52,36 @@
             padding: 25px;
         }
 
+        /* Accordion Styles */
+        .accordion-button {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #007bff;
+            background-color: #e9f5ff;
+        }
+
+        .accordion-button:not(.collapsed) {
+            color: #fff;
+            background-color: #007bff;
+        }
+
+        /* Lesson Item Styles */
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-item:hover {
+            background-color: #f8f9fa;
+        }
+
         .lesson-item i.lesson-icon {
             width: 24px;
             text-align: center;
@@ -65,6 +95,44 @@
 
         .lesson-item i.lesson-icon.fa-file-alt {
             color: #17a2b8;
+        }
+
+        .lesson-item i.lesson-icon.fa-question-circle {
+            color: #ffc107;
+        }
+
+        .lesson-item i.lesson-icon.fa-laptop-code {
+            color: #28a745;
+        }
+
+        .lesson-title {
+            flex-grow: 1;
+            font-size: 0.95rem;
+        }
+
+        .lesson-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .lesson-duration {
+            white-space: nowrap;
+        }
+
+        .lesson-preview-badge {
+            background-color: #28a745;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .lesson-locked {
+            color: #adb5bd;
         }
 
         /* Enrollment Card */
@@ -168,19 +236,47 @@
             font-weight: bold;
         }
 
+        /* class Content Summary */
+        .class-content-summary {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        /* Chapter description */
+        .chapter-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* No content message */
+        .no-content-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
         .no-content-message i {
             font-size: 3rem;
             margin-bottom: 15px;
             color: #dee2e6;
         }
 
+        /* Chapter lesson count badge */
+        .chapter-lesson-badge {
+            font-size: 0.75rem;
+            font-weight: normal;
+            margin-left: 10px;
+        }
     </style>
 </head>
 
 <body>
 <jsp:include page="include/header.jsp"/>
 
-<!-- Header Section -->
 <section class="header-section">
     <div class="container">
         <c:if test="${not empty clazz.categories}">
@@ -199,10 +295,8 @@
 
 <section class="container content-area">
     <div class="row">
-        <!-- Main Content Area -->
         <div class="col-lg-8">
 
-            <!-- What You Will Learn -->
             <div class="card-custom">
                 <h3 class="fw-bold mb-4 text-primary">What You Will Learn</h3>
                 <div class="row">
@@ -230,13 +324,12 @@
                         <p>${clazz.description}</p>
                     </c:when>
                     <c:otherwise>
-                        <p>This comprehensive course is designed to help you master the essential concepts and practical skills needed to succeed in modern software development.</p>
+                        <p>This comprehensive class is designed to help you master the essential concepts and practical skills needed to succeed in modern software development.</p>
                         <p>Through a combination of video lectures, hands-on exercises, and real-world projects, you'll gain the confidence and expertise needed to tackle complex challenges in your career.</p>
                     </c:otherwise>
                 </c:choose>
             </div>
 
-            <!-- About the Instructor -->
             <h3 class="fw-bold mb-3 text-primary">About the Instructor</h3>
             <div class="card-custom d-flex align-items-center">
                 <img src="https://placehold.co/100x100/eeeeee/333333?text=${fn:substring(clazz.instructor.fullname, 0, 2)}"
@@ -251,6 +344,7 @@
 
         </div>
 
+        <!-- Sidebar - Enrollment Card -->
         <div class="col-lg-4">
             <div class="enroll-card">
                 <div class="media-placeholder">
@@ -296,25 +390,15 @@
                         </c:when>
                         <c:otherwise>
 
-                            <!-- User is logged in -->
-                            <form action="${pageContext.request.contextPath}/enrollClass" method="post">
+                            <form action="${pageContext.request.contextPath}/class-enrollment" method="get">
 
-                                    <%--            add csrftoken--%>
                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
                                 <input type="hidden" name="classId" value="${clazz.id}">
-                                <c:choose>
-                                    <c:when test="${clazz.salePrice == 0}">
-                                        <button type="submit" class="btn btn-success btn-lg btn-buy">
-                                            <i class="fas fa-shopping-cart me-2"></i> Enroll For Free
-                                        </button>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <button type="submit" class="btn btn-success btn-lg btn-buy">
-                                            <i class="fas fa-shopping-cart me-2"></i> Enroll in Class Now
-                                        </button>
-                                    </c:otherwise>
-                                </c:choose>
+                                <button type="submit" class="btn btn-success btn-lg btn-buy">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    Enroll Class Now
+                                </button>
                             </form>
                             <a href="#" class="btn btn-outline-secondary btn-lg btn-enroll">
                                 <i class="fas fa-bookmark me-2"></i> Add to Wishlist
@@ -322,7 +406,6 @@
                         </c:otherwise>
                     </c:choose>
 
-                    <!-- Course Features -->
                     <h5 class="fw-bold mt-4 mb-3">This class includes:</h5>
                     <ul class="features-list">
                         <li><i class="fas fa-check-circle"></i> Lectures Record</li>
@@ -330,16 +413,16 @@
                         <li><i class="fas fa-check-circle"></i> Certificate of Completion</li>
                         <li><i class="fas fa-check-circle"></i> Offline and Online (through Zoom Workplace) participant</li>
 
-                        <c:if test="${clazz.startDate != null}">
+                        <c:if test="${startDate != null}">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                Begin in <fmt:formatDate value="${clazz.startDate}" pattern="dd/MM/yyyy"/>
+                                Begin in <fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd"/>
                             </li>
                         </c:if>
-                        <c:if test="${clazz.endDate != null}">
+                        <c:if test="${endDate != null}">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                End in <fmt:formatDate value="${clazz.endDate}" pattern="dd/MM/yyyy"/>
+                                End in <fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd"/>
                             </li>
                         </c:if>
                     </ul>

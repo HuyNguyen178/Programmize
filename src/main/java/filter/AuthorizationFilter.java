@@ -33,7 +33,8 @@ public class AuthorizationFilter implements Filter {
             "/public-classes",
             "/public-class-details",
             "/public-course-details",
-            "/lesson-detail"
+            "/lesson-detail",
+            "/verify"
     );
 
     // Danh sách các URL dành riêng cho Admin
