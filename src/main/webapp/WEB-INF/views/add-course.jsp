@@ -169,11 +169,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                        <select id="status" name="status" class="form-select" required>
-                            <option value="1" selected>Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
+                        <label class="form-label">Status <span class="text-danger">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="1" checked>
+                                <label class="form-check-label" for="statusActive">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="0">
+                                <label class="form-check-label" for="statusInactive">Inactive</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">

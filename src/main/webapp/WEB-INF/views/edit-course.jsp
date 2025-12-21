@@ -158,12 +158,18 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="status" class="form-label">Status *</label>
-                        <select id="status" name="status" class="form-select" required>
-                            <option value="1" ${course.status == '1' ? 'selected' : ''}>Active</option>
-                            <option value="0" ${course.status == '0' ? 'selected' : ''}>Inactive</option>
-                        </select>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Status *</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="1" ${course.status == '1' ? 'checked' : ''}>
+                                <label class="form-check-label" for="statusActive">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="0" ${course.status == '0' ? 'checked' : ''}>
+                                <label class="form-check-label" for="statusInactive">Inactive</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">

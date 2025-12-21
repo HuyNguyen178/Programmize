@@ -183,12 +183,18 @@
                         <small class="text-muted">Position of this lesson within the chapter</small>
                     </div>
 
-                    <div class="form-group">
-                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                        <select id="status" name="status" class="form-select" required>
-                            <option value="true" ${lesson.status == true ? 'selected' : ''}>Active</option>
-                            <option value="false" ${lesson.status == false ? 'selected' : ''}>Inactive</option>
-                        </select>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Status *</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="true" ${lesson.status == true ? 'checked' : ''}>
+                                <label class="form-check-label" for="statusActive">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="false" ${lesson.status == false ? 'checked' : ''}>
+                                <label class="form-check-label" for="statusInactive">Inactive</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
