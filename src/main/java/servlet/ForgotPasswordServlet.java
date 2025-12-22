@@ -87,7 +87,6 @@ public class ForgotPasswordServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/views/verify-reset.jsp").forward(request, response);
                 }
 
-                return;
             }
 
             else if ("change".equals(step)) {

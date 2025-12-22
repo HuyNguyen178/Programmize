@@ -227,7 +227,7 @@
                   action="${pageContext.request.contextPath}/course-content">
 
                 <div class="col-md-2">
-                    <select class="form-select" id="filterCategory" name="category">
+                    <select class="form-select" id="filterCategory" name="category" onchange="this.form.submit()">
                         <option value="">All Categories</option>
                         <c:forEach var="cat" items="${categories}">
                             <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
@@ -238,7 +238,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    <select class="form-select" id="filterStatus" name="status">
+                    <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
                         <option value="">All Statuses</option>
                         <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
                         <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Draft</option>
@@ -247,16 +247,10 @@
 
                 <div class="col-md-4 d-flex">
                     <input type="text" class="form-control me-2" name="search"
-                           placeholder="Search course or chapter..." value="${searchKeyword}">
+                           placeholder="Search course or chapter..." value="${searchKeyword}" onchange="this.form.submit()">
                     <button type="submit" class="btn filter-search-btn">
                         <i class="bi bi-search"></i>
                     </button>
-                </div>
-
-                <div class="col-md-2 ms-auto text-end">
-                    <a href="${pageContext.request.contextPath}/add-course" class="btn btn-primary w-100">
-                        <i class="bi bi-plus-circle me-1"></i> Add New Course
-                    </a>
                 </div>
             </form>
         </div>

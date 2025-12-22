@@ -190,12 +190,6 @@
             <i class="bi bi-search"></i>
           </button>
         </div>
-
-        <div class="col-md-2 ms-auto text-end">
-          <a href="${pageContext.request.contextPath}/add-class" class="btn btn-primary w-100">
-            <i class="bi bi-plus-circle me-1"></i> Add New Class
-          </a>
-        </div>
       </form>
     </div>
   </div>

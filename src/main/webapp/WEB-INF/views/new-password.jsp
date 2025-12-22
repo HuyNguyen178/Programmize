@@ -60,6 +60,22 @@
             </div>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <div class="d-flex align-items-center position-relative">
+                <input type="password" id="confirmPassword" name="confirmPassword"
+                       class="form-control me-2"
+                       placeholder="Confirm new password" required>
+
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        style="width:45px;height:38px"
+                        onclick="togglePassword('confirmPassword','eyeConfirm')">
+                <i id="eyeConfirm" class="fa fa-eye-slash"></i>
+                </button>
+            </div>
+        </div>
+
         <% if (request.getAttribute("error") != null) { %>
         <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
         <% } %>
@@ -69,21 +85,20 @@
 </div>
 
 <script>
-    function togglePassword() {
-        const passwordInput = document.getElementById("newPassword");
-        const eyeIcon = document.getElementById("eyeIcon");
+    function togglePassword(inputId, eyeId) {
+        const input = document.getElementById(inputId);
+        const eye = document.getElementById(eyeId);
 
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
+        if (input.type === "password") {
+            input.type = "text";
+            eye.classList.remove("fa-eye-slash");
+            eye.classList.add("fa-eye");
         } else {
-            passwordInput.type = "password";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
+            input.type = "password";
+            eye.classList.remove("fa-eye");
+            eye.classList.add("fa-eye-slash");
         }
     }
-
 </script>
 </body>
 </html>

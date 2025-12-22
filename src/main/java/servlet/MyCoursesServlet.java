@@ -61,18 +61,9 @@ public class MyCoursesServlet extends HttpServlet {
 
         List<Course> courses;
         int totalCourses;
-        String roleName = user.getRoleName(); // Cần đảm bảo UserDAO đã set roleName khi login
 
-        // --- LOGIC PHÂN QUYỀN MỚI ---
-        if ("Instructor".equalsIgnoreCase(roleName)) {
-            // Nếu là Giảng viên: Lấy khóa học do họ dạy
-            courses = courseDAO.getCoursesByInstructor(userId, category, keyword, offset, PAGE_SIZE);
-            totalCourses = courseDAO.countCoursesByInstructor(userId, category, keyword);
-        } else {
-            // Mặc định (Student): Lấy khóa học đã đăng ký
-            courses = courseDAO.getEnrolledCoursesByUser(userId, category, keyword, offset, PAGE_SIZE);
-            totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
-        }
+        courses = courseDAO.getEnrolledCoursesByUser(userId, category, keyword, offset, PAGE_SIZE);
+        totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
 
         // after fetch course líst courses
         Map<Integer, Integer> firstLessonMap = new HashMap<>();

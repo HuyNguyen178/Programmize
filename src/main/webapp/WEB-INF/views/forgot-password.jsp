@@ -53,11 +53,10 @@
     <p>Enter your email address and we'll send you a verification code to reset your password.</p>
 
     <form action="forgot-password" method="post">
+        <input type="hidden" name="step" value="send">
 
         <%--            add csrftoken--%>
         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-
-        <input type="hidden" name="csrfToken" value="<%= CSRFUtil.getToken(session) %>">
 
         <div class="mb-3">
             <label class="form-label">Email Address</label>

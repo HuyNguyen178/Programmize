@@ -1009,7 +1009,7 @@ public class CourseDAO {
     }
 // ==================== INSTRUCTOR SPECIFIC METHODS (Added) ====================
 
-    public List<Course> getCoursesByInstructor(int instructorId, String category, String keyword, int offset, int limit) {
+    public List<Course> getCoursesByInstructor(int instructorId, Integer categoryId, String keyword, Boolean status) {
         List<Course> courses = new ArrayList<>();
         // Query lấy khóa học do instructorId dạy
         StringBuilder sql = new StringBuilder(
@@ -1024,11 +1024,20 @@ public class CourseDAO {
         if (keyword != null && !keyword.isEmpty()) {
             sql.append(" AND c.course_name LIKE ? ");
         }
-        if (category != null && !category.isEmpty()) {
-            sql.append(" AND EXISTS (SELECT 1 FROM course_category cc2 WHERE cc2.course_id = c.course_id AND cc2.category_id = ?) ");
+        if (categoryId != null) {
+            sql.append(
+                    " AND EXISTS (" +
+                            "   SELECT 1 FROM course_category cc2 " +
+                            "   JOIN setting s2 ON cc2.category_id = s2.setting_id " +
+                            "   WHERE cc2.course_id = c.course_id " +
+                            "     AND s2.setting_id = ? " +
+                            "     AND s2.type_id = 5 " +
+                            " ) "
+            );
         }
 
-        sql.append(" GROUP BY c.course_id ORDER BY c.course_id DESC LIMIT ? OFFSET ?");
+        if (status != null) sql.append(" AND c.status = ? ");
+        sql.append(" GROUP BY c.course_id ORDER BY c.course_id ASC ");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -1037,10 +1046,8 @@ public class CourseDAO {
             ps.setInt(idx++, instructorId);
 
             if (keyword != null && !keyword.isEmpty()) ps.setString(idx++, "%" + keyword + "%");
-            if (category != null && !category.isEmpty()) ps.setString(idx++, category);
-
-            ps.setInt(idx++, limit);
-            ps.setInt(idx++, offset);
+            if (categoryId != null) ps.setInt(idx++, categoryId);
+            if (status != null) ps.setBoolean(idx++, status);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -1056,7 +1063,7 @@ public class CourseDAO {
 
                 String cats = rs.getString("category_names");
                 if (cats != null && !cats.isEmpty()) {
-                    c.setCourseCategories(cats.split(", "));
+                    c.setCourseCategories(cats.split(",\\s*"));
                 } else {
                     c.setCourseCategories(new String[0]);
                 }

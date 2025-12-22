@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Course;
 import model.Chapter;
+import model.User;
 
 @WebServlet(name = "CourseContentServlet", urlPatterns = {"/course-content"})
 public class CourseContentServlet extends HttpServlet {
@@ -33,15 +34,30 @@ public class CourseContentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String category = request.getParameter("category");
-        String status = request.getParameter("status");
+        String categoryIdStr = request.getParameter("category");
+        String statusStr = request.getParameter("status");
         String search = request.getParameter("search");
 
         long startTime = System.currentTimeMillis();
-        System.out.println("=== CourseContentServlet doGet ===");
+        Integer categoryId = null;
+        if (categoryIdStr != null && !categoryIdStr.trim().isEmpty()) {
+            categoryId = Integer.parseInt(categoryIdStr);
+        }
+        if (search != null && search.trim().isEmpty()) {
+            search = "";
+        }
+
+        Boolean status = null;
+        if ("1".equals(statusStr)) {
+            status = true;
+        } else if ("0".equals(statusStr)) {
+            status = false;
+        }
+
+        User user = (User) request.getSession().getAttribute("loginUser");
 
         // query 1: get all courses
-        List<Course> courses = courseDAO.getAllCourses(category, null, status, search, null, null);
+        List<Course> courses = courseDAO.getCoursesByInstructor(user.getId(), categoryId, search, status);
         System.out.println("Query 1 - Courses loaded: " + courses.size() + " (" + (System.currentTimeMillis() - startTime) + "ms)");
 
         // fixed: Get all chapters in 1 query instead of N
@@ -66,8 +82,8 @@ public class CourseContentServlet extends HttpServlet {
         request.setAttribute("courseChaptersMap", courseChaptersMap);
         request.setAttribute("categories", categories);
 
-        request.setAttribute("selectedCategory", category);
-        request.setAttribute("selectedStatus", status);
+        request.setAttribute("selectedCategory", categoryId);
+        request.setAttribute("selectedStatus", statusStr    );
         request.setAttribute("searchKeyword", search);
 
         long totalTime = System.currentTimeMillis() - startTime;
