@@ -252,6 +252,13 @@
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
+
+        <%--removed feature add course from role Instructor --%>
+<%--                <div class="col-md-2 ms-auto text-end">--%>
+<%--                    <a href="${pageContext.request.contextPath}/add-course" class="btn btn-primary w-100">--%>
+<%--                        <i class="bi bi-plus-circle me-1"></i> Add New Course--%>
+<%--                    </a>--%>
+<%--                </div>--%>
             </form>
         </div>
     </div>

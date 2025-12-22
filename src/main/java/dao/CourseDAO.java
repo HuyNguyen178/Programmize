@@ -383,6 +383,52 @@ public class CourseDAO {
         return course;
     }
 
+    public Course getActiveCourseById(int courseId) {
+        String sql = "SELECT c.*, u.fullname AS instructor_name, " +
+                "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
+                "FROM course c " +
+                "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                "LEFT JOIN course_category cc ON c.course_id = cc.course_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
+                "WHERE c.course_id = ? AND c.status = 1 " +
+                "GROUP BY c.course_id";
+        Course course = null;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, courseId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                course = new Course();
+                course.setCourseId(rs.getInt("course_id"));
+                course.setThumbnailUrl(rs.getString("thumbnail_url"));
+                course.setCourseName(rs.getString("course_name"));
+                course.setCourseInstructor(rs.getString("instructor_name"));
+                course.setListedPrice(rs.getBigDecimal("listed_price"));
+                course.setSalePrice(rs.getBigDecimal("sale_price"));
+
+                String cats = rs.getString("category_names");
+                if (cats != null && !cats.isEmpty()) {
+                    course.setCourseCategories(cats.split(", "));
+                } else {
+                    course.setCourseCategories(new String[0]);
+                }
+
+                course.setDescription(rs.getString("description"));
+                course.setStatus(rs.getBoolean("status"));
+                course.setDuration(rs.getInt("duration"));
+                course.setInstructorId(rs.getInt("instructor_id"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return course;
+    }
+
     // Delete course by ID
     public boolean deleteCourse(int courseId) {
         // First delete from course_category

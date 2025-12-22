@@ -107,7 +107,7 @@ public class EditChapterServlet extends HttpServlet {
                         "Failed to update chapter. Please try again.");
             }
 
-            response.sendRedirect(request.getContextPath() + "/chapter-detail?courseId=" + courseId);
+            response.sendRedirect(request.getContextPath() + "/chapter-detail?id=" + chapterId);
 
         } catch (NumberFormatException e) {
             request.getSession().setAttribute("errorMessage",

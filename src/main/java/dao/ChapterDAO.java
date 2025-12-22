@@ -61,6 +61,26 @@ public class ChapterDAO {
         return chapters;
     }
 
+    public List<Chapter> getActiveChaptersByCourseId(int courseId) {
+        List<Chapter> chapters = new ArrayList<>();
+        String sql = "SELECT * FROM chapter WHERE course_id = ? AND status = 1 ORDER BY order_index ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, courseId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    chapters.add(mapResultSetToChapter(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting chapters by course ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return chapters;
+    }
+
     /**
      * Get all chapters
      */

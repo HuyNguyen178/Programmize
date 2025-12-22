@@ -69,7 +69,7 @@ public class LessonDetailServlet extends HttpServlet {
             String courseName = chapterDAO.getCourseNameById(courseId);
 
             // all chapters for this course
-            List<Chapter> chapters = chapterDAO.getChaptersByCourseId(courseId);
+            List<Chapter> chapters = chapterDAO.getActiveChaptersByCourseId(courseId);
 
             // all lessons for each chapter (for sidebar)
             Map<Integer, List<Lesson>> chapterLessonsMap = new HashMap<>();

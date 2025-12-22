@@ -44,7 +44,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             int courseId = Integer.parseInt(courseIdStr);
 
             // get course details from database
-            Course course = publicCourseDAO.getCourseById(courseId);
+            Course course = publicCourseDAO.getActiveCourseById(courseId);
 
             // calculate some display values
             String priceDisplay = getPriceDisplay(course);
@@ -54,7 +54,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             int enrollmentCount = publicCourseDAO.getCourseEnrollmentCount(courseId);
 
             // get chapters for this course
-            List<Chapter> chapters = chapterDAO.getChaptersByCourseId(courseId);
+            List<Chapter> chapters = chapterDAO.getActiveChaptersByCourseId(courseId);
 
             // map to store lessons for each chapter: chapterId -> List<Lesson>
             Map<Integer, List<Lesson>> chapterLessonsMap = new HashMap<>();
