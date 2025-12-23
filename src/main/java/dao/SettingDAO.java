@@ -8,14 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SettingDAO {
-    private final DBUtil jdbcUtil;
-
-    public SettingDAO() {
-        jdbcUtil = new DBUtil();
-    }
-
     public boolean updateSetting(Setting setting) {
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder("UPDATE setting SET ");
             List<Object> params = new ArrayList<>();
 
@@ -62,7 +56,7 @@ public class SettingDAO {
     }
 
     public Setting findById(int id) {
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             String sql = "SELECT * FROM setting WHERE setting_id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
@@ -88,7 +82,7 @@ public class SettingDAO {
 
     public List<Setting> findFiltered(String type, String status, String search, int page, String sortField, String sortOrder) {
         List<Setting> list = new ArrayList<>();
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             int pageSize = 10;
             int offset = (page - 1) * pageSize;
 
@@ -164,7 +158,7 @@ public class SettingDAO {
     public int getTotalPages(String type, String status, String search) {
         List<Object> params = new ArrayList<>();
         int total = 0;
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM setting WHERE 1=1");
 
             if (type != null && !type.isEmpty() && !"All".equalsIgnoreCase(type)) {
@@ -200,7 +194,7 @@ public class SettingDAO {
 
     public List<Setting> findAllTypes() {
         List<Setting> list = new ArrayList<>();
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             String sql = "SELECT setting_id, setting_name FROM setting WHERE type_id IS NULL";
             PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -219,7 +213,7 @@ public class SettingDAO {
     }
 
     public boolean addSetting(Setting setting) {
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             String sql = "INSERT INTO setting(setting_name, type_id, priority, value, status, description) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -248,7 +242,7 @@ public class SettingDAO {
     }
 
     public boolean existsByName(String name) {
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             String sql = "SELECT COUNT(*) FROM setting WHERE LOWER(setting_name) = LOWER(?)";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
@@ -264,7 +258,7 @@ public class SettingDAO {
     }
 
     public boolean existsByNameExceptId(String name, int id) {
-        try (Connection connection = jdbcUtil.getConnection()) {
+        try (Connection connection = DBUtil.getConnection()) {
             String sql = "SELECT COUNT(*) FROM setting WHERE LOWER(setting_name) = LOWER(?) AND setting_id <> ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);

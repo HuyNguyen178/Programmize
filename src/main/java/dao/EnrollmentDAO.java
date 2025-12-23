@@ -7,15 +7,11 @@ import utils.DBUtil;
 import java.sql.*;
 
 public class EnrollmentDAO {
-    private final DBUtil dbUtil;
-
-    public EnrollmentDAO() {dbUtil = new DBUtil();}
-
     public boolean addEnrollment(CourseEnrollment enrollment) {
         String sql = "INSERT INTO course_enrollment (user_id, course_id, price_paid, payment_method, enrolled_at, status) " +
                 "VALUES (?, ?, ?, ?, NOW(), ?)";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, enrollment.getUserId());
@@ -46,7 +42,7 @@ public class EnrollmentDAO {
         String sql = "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
                 "VALUES (?, ?, ?, ?, NOW(), ?)";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, enrollment.getUserId());

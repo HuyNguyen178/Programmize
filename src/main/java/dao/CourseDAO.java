@@ -1,17 +1,11 @@
 package dao;
 
-import model.Class;
-import model.User;
 import utils.DBUtil;
 import model.Course;
-
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import static utils.DBUtil.getConnection;
 
 public class CourseDAO {
 
@@ -270,7 +264,7 @@ public class CourseDAO {
     public boolean updateCourseStatus(int courseId, boolean newStatus) {
         String sql = "UPDATE course SET status = ? WHERE course_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setBoolean(1, newStatus);
@@ -1012,7 +1006,7 @@ public class CourseDAO {
                 } else {
                     c.setCourseCategories(new String[0]);
                 }
-                
+
                 courses.add(c);
             }
         } catch (Exception e) {

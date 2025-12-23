@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Lesson;
-import model.Lesson.LessonType;
-
-import static utils.DBUtil.getConnection;
+import utils.DBUtil;
 
 public class LessonDAO {
 
@@ -17,7 +15,7 @@ public class LessonDAO {
     public Lesson getLessonById(int lessonId) {
         String sql = "SELECT * FROM lesson WHERE lesson_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, lessonId);
@@ -38,7 +36,7 @@ public class LessonDAO {
         List<Lesson> lessons = new ArrayList<>();
         String sql = "SELECT * FROM lesson WHERE chapter_id = ? ORDER BY order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -59,7 +57,7 @@ public class LessonDAO {
         List<Lesson> lessons = new ArrayList<>();
         String sql = "SELECT * FROM lesson WHERE chapter_id = ? AND status = 1 ORDER BY order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -83,7 +81,7 @@ public class LessonDAO {
                 "WHERE c.course_id = ? " +
                 "ORDER BY c.order_index ASC, l.order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, courseId);
@@ -104,7 +102,7 @@ public class LessonDAO {
         List<Lesson> lessons = new ArrayList<>();
         String sql = "SELECT * FROM lesson ORDER BY chapter_id, order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -122,7 +120,7 @@ public class LessonDAO {
     public int countLessonsByChapterId(int chapterId) {
         String sql = "SELECT COUNT(*) AS total FROM lesson WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -142,7 +140,7 @@ public class LessonDAO {
     public int countActiveLessonsByChapterId(int chapterId) {
         String sql = "SELECT COUNT(*) AS total FROM lesson WHERE chapter_id = ? AND status = 1";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -162,7 +160,7 @@ public class LessonDAO {
     public int getTotalDurationByChapterId(int chapterId) {
         String sql = "SELECT COALESCE(SUM(duration), 0) AS total_duration FROM lesson WHERE chapter_id = ? AND status = 1";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -185,7 +183,7 @@ public class LessonDAO {
                 "INNER JOIN chapter c ON l.chapter_id = c.chapter_id " +
                 "WHERE c.course_id = ? AND l.status = 1";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, courseId);
@@ -207,7 +205,7 @@ public class LessonDAO {
                 "duration, order_index, is_preview, status, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, lesson.getChapterId());
@@ -245,7 +243,7 @@ public class LessonDAO {
                 "content = ?, video_url = ?, duration = ?, order_index = ?, " +
                 "is_preview = ?, status = ?, updated_at = ? WHERE lesson_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, lesson.getChapterId());
@@ -272,7 +270,7 @@ public class LessonDAO {
     public boolean deleteLesson(int lessonId) {
         String sql = "DELETE FROM lesson WHERE lesson_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, lessonId);
@@ -288,7 +286,7 @@ public class LessonDAO {
     public int getNextOrderIndex(int chapterId) {
         String sql = "SELECT COALESCE(MAX(order_index), 0) + 1 AS next_index FROM lesson WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -308,7 +306,7 @@ public class LessonDAO {
     public String getChapterNameById(int chapterId) {
         String sql = "SELECT chapter_name FROM chapter WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -331,7 +329,7 @@ public class LessonDAO {
                 "INNER JOIN course co ON c.course_id = co.course_id " +
                 "ORDER BY co.course_name ASC, c.order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 

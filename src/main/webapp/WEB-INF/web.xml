@@ -61,7 +61,7 @@
 
     <filter>
         <filter-name>AutoLoginFilter</filter-name>
-        <filter-class>filter.A_AutoLoginFilter</filter-class>
+        <filter-class>filter.AutoLoginFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AutoLoginFilter</filter-name>

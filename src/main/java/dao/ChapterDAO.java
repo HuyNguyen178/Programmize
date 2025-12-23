@@ -7,12 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Chapter;
- import java.util.Collections;
+import utils.DBUtil;
+import java.util.Collections;
  import java.util.HashMap;
  import java.util.Map;
-
-import static utils.DBUtil.getConnection;
-
 
 public class ChapterDAO {
 
@@ -22,7 +20,7 @@ public class ChapterDAO {
     public Chapter getChapterById(int chapterId) {
         String sql = "SELECT * FROM chapter WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -45,7 +43,7 @@ public class ChapterDAO {
         List<Chapter> chapters = new ArrayList<>();
         String sql = "SELECT * FROM chapter WHERE course_id = ? ORDER BY order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, courseId);
@@ -65,7 +63,7 @@ public class ChapterDAO {
         List<Chapter> chapters = new ArrayList<>();
         String sql = "SELECT * FROM chapter WHERE course_id = ? AND status = 1 ORDER BY order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, courseId);
@@ -88,7 +86,7 @@ public class ChapterDAO {
         List<Chapter> chapters = new ArrayList<>();
         String sql = "SELECT * FROM chapter ORDER BY course_id, order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -108,7 +106,7 @@ public class ChapterDAO {
     public String getCourseNameById(int courseId) {
         String sql = "SELECT course_name FROM course WHERE course_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, courseId);
@@ -130,7 +128,7 @@ public class ChapterDAO {
     public int countLessonsByChapterId(int chapterId) {
         String sql = "SELECT COUNT(*) AS total FROM lesson WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -153,7 +151,7 @@ public class ChapterDAO {
         String sql = "INSERT INTO chapter (course_id, chapter_name, description, order_index, status, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, chapter.getCourseId());
@@ -186,7 +184,7 @@ public class ChapterDAO {
         String sql = "UPDATE chapter SET course_id = ?, chapter_name = ?, description = ?, " +
                 "order_index = ?, status = ?, updated_at = ? WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapter.getCourseId());
@@ -211,7 +209,7 @@ public class ChapterDAO {
     public boolean deleteChapter(int chapterId) {
         String sql = "DELETE FROM chapter WHERE chapter_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, chapterId);
@@ -242,7 +240,7 @@ public class ChapterDAO {
         List<String[]> courses = new ArrayList<>();
         String sql = "SELECT course_id, course_name FROM course ORDER BY course_name ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -267,7 +265,7 @@ public class ChapterDAO {
     public int getNextOrderIndex(int courseId) {
         String sql = "SELECT COALESCE(MAX(order_index), 0) + 1 AS next_index FROM chapter WHERE course_id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, courseId);
@@ -300,7 +298,7 @@ public class ChapterDAO {
         String placeholders = String.join(",", Collections.nCopies(courseIds.size(), "?"));
         String sql = "SELECT * FROM chapter WHERE course_id IN (" + placeholders + ") ORDER BY course_id, order_index ASC";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             // Set parameters
