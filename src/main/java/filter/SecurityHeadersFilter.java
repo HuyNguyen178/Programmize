@@ -35,10 +35,11 @@ public class SecurityHeadersFilter implements Filter {
         httpResponse.setHeader("Content-Security-Policy",
             "default-src 'self'; " +
             "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-            "font-src 'self' https://fonts.gstatic.com; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
             "img-src 'self' data: https:; " +
             "connect-src 'self'; " +
+            "frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; " +
             "frame-ancestors 'none'; " +
             "form-action 'self'; " +
             "base-uri 'self'"
