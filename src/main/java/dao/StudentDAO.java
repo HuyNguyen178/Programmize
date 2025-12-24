@@ -3,6 +3,7 @@ package dao;
 import model.Student;
 import utils.DBUtil;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +14,14 @@ public class StudentDAO {
         StringBuilder sql = new StringBuilder(
                 "FROM user u " +
                         "JOIN setting s ON u.role_id = s.setting_id " +
-                        "LEFT JOIN class_enrollment cu ON u.user_id = cu.user_id " +
-                        "LEFT JOIN class c ON cu.class_id = c.class_id " +
+                        "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
+                        "LEFT JOIN class c ON ce.class_id = c.class_id " +
                         "WHERE s.setting_name = 'Student' " +
                         "AND c.instructor_id = ? "
         );
 
         if (status != null && !status.isEmpty()) {
-            sql.append(" AND u.status = ? ");
+            sql.append(" AND ce.status = ? ");
         }
 
         if (className != null && !className.isEmpty()) {
@@ -90,10 +91,12 @@ public class StudentDAO {
 
         StringBuilder baseSql = buildBaseSql(keyword, status, className);
 
-        String finalSql = "SELECT u.user_id, u.fullname, u.email, u.status, u.avatar_url, "
+        String finalSql = "SELECT u.user_id, u.fullname, u.email, "
+                + "ce.status AS enrollment_status, " // Chỉ định rõ lấy từ bảng class_enrollment
+                + "u.avatar_url, "
                 + "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
                 + baseSql.toString()
-                + "GROUP BY u.user_id, u.fullname, u.email, u.status, u.avatar_url "
+                + "GROUP BY u.user_id, u.fullname, u.email, ce.status, u.avatar_url " // Group by cột của ce
                 + "ORDER BY u.fullname ASC "
                 + "LIMIT ? OFFSET ?";
 
@@ -125,7 +128,7 @@ public class StudentDAO {
                     student.setId(rs.getInt("user_id"));
                     student.setFullname(rs.getString("fullname"));
                     student.setEmail(rs.getString("email"));
-                    student.setStatus(rs.getBoolean("status"));
+                    student.setStatus(rs.getBoolean("enrollment_status"));
                     student.setAvatarUrl(rs.getString("avatar_url"));
                     student.setClassName(rs.getString("class_name"));
                     students.add(student);
@@ -147,9 +150,7 @@ public class StudentDAO {
                 : "SELECT user_id, role_id FROM user WHERE username = ?";
 
         String sqlFindClass = "SELECT class_id FROM class WHERE class_name = ?";
-        String sqlFindStudentRole = "SELECT setting_id FROM setting WHERE setting_name = 'Student'";
-        String sqlInsertClassUser = "INSERT IGNORE INTO class_enrollment (user_id, class_id) VALUES (?, ?)";
-        String sqlUpdateRole = "UPDATE user SET role_id = ? WHERE user_id = ?";
+        String sqlInsertClassUser = "INSERT IGNORE INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " + "VALUES (?, ?, ?, ?, NOW(), ?) ";
 
         Connection conn = null;
 
@@ -157,7 +158,7 @@ public class StudentDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            int userId, currentRoleId;
+            int userId;
 
             // 1. Lấy user
             try (PreparedStatement ps = conn.prepareStatement(findUserSql)) {
@@ -168,7 +169,6 @@ public class StudentDAO {
                         return false;
                     }
                     userId = rs.getInt("user_id");
-                    currentRoleId = rs.getInt("role_id");
                 }
             }
 
@@ -189,28 +189,10 @@ public class StudentDAO {
             try (PreparedStatement ps = conn.prepareStatement(sqlInsertClassUser)) {
                 ps.setInt(1, userId);
                 ps.setInt(2, classId);
+                ps.setBigDecimal(3, BigDecimal.ZERO);
+                ps.setString(4, "Teacher Added");
+                ps.setBoolean(5, false);
                 ps.executeUpdate();
-            }
-
-            // 4. Role Student
-            int studentRoleId;
-            try (PreparedStatement ps = conn.prepareStatement(sqlFindStudentRole);
-                 ResultSet rs = ps.executeQuery()) {
-
-                if (!rs.next()) {
-                    conn.rollback();
-                    return false;
-                }
-                studentRoleId = rs.getInt(1);
-            }
-
-            // 5. Nếu role chưa phải Student → update
-            if (currentRoleId != studentRoleId) {
-                try (PreparedStatement ps = conn.prepareStatement(sqlUpdateRole)) {
-                    ps.setInt(1, studentRoleId);
-                    ps.setInt(2, userId);
-                    ps.executeUpdate();
-                }
             }
 
             conn.commit();
@@ -233,8 +215,8 @@ public class StudentDAO {
                         "IFNULL(GROUP_CONCAT(DISTINCT c.class_name SEPARATOR ', '), '') AS class_names " +
                         "FROM user u " +
                         "JOIN setting s ON u.role_id = s.setting_id " +
-                        "LEFT JOIN class_enrollment cu ON u.user_id = cu.user_id " +
-                        "LEFT JOIN class c ON cu.class_id = c.class_id " +
+                        "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
+                        "LEFT JOIN class c ON ce.class_id = c.class_id " +
                         "WHERE u.user_id = ? AND s.setting_name = 'Student' " +
                         "GROUP BY u.user_id";
 

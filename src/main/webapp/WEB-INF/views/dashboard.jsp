@@ -1,16 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%-- Import các models cần thiết nếu có --%>
-<%@ page import="model.User" %>
-<%@ page import="java.util.List" %>
-
-<%-- GIẢ ĐỊNH DATA CÓ SẴN TRONG REQUEST SCOPE
-    Integer totalUsers = (Integer) request.getAttribute("totalUsers");
-    Integer totalClasses = (Integer) request.getAttribute("totalClasses");
-    List<Object[]> topCourses = (List<Object[]>) request.getAttribute("topCourses");
-    List<Object[]> topClasses = (List<Object[]>) request.getAttribute("topClasses");
---%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -114,7 +104,7 @@
                 </div>
             </div>
 
-            <%-- Total Classes (NEW CARD) --%>
+            <%-- Total Classes --%>
             <div class="col-lg-3 col-md-6 col-sm-12">
                 <div class="card stat-card">
                     <div class="card-body p-4">
@@ -127,14 +117,15 @@
                 </div>
             </div>
 
-            <%-- Total Revenue (Current Period) --%>
+            <%-- Monthly Revenue --%>
             <div class="col-lg-3 col-md-6 col-sm-12">
                 <div class="card stat-card">
                     <div class="card-body p-4">
-                        <i class="fas fa-money-bill-wave icon-box text-warning"></i>
-                        <h5 class="text-warning">Total Revenue</h5>
+                        <h5 class="text-warning">Monthly Revenue</h5>
                         <h3 class="mb-0">
-                            <span class="text-dark">₫ 85,000,000</span> <i class="fas fa-arrow-down text-danger small ms-2"></i>
+                            <span class="text-dark">
+                                <fmt:formatNumber value="${monthlyRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                            </span>
                         </h3>
                     </div>
                 </div>
@@ -143,7 +134,6 @@
 
         <%-- 2. CHART AREA --%>
         <div class="row g-4 mb-5">
-            <%-- Sales/Revenue Chart (Line Chart) --%>
             <div class="col-lg-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white fw-bold"><i class="fas fa-chart-line"></i> Monthly Revenue Trend</div>
@@ -356,73 +346,49 @@
 <script src="../../assets/js/admin_scripts.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // --- 1. Monthly Revenue Chart ---
         const revenueCtx = document.getElementById('revenueCanvas').getContext('2d');
+
+        console.log("Monthly Data: ", [<c:forEach items="${monthlyRevenueList}" var="v" varStatus="s">${v}${!s.last ? ',' : ''}</c:forEach>]);
+
+
         new Chart(revenueCtx, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
-                    label: 'Revenue (VND)',
-                    // Dữ liệu Placeholder (ví dụ: đơn vị triệu đồng)
-                    data: [12, 19, 3, 5, 2, 3, 15, 20, 10, 18, 25, 30].map(x => x * 1000000),
+                    label: 'Revenue (₫)',
+                    data: [
+                        <c:forEach items="${monthlyRevenueList}" var="value" varStatus="status">
+                        ${value}${!status.last ? ',' : ''}
+                        </c:forEach>
+                    ],
                     borderColor: 'rgb(13, 110, 253)',
                     backgroundColor: 'rgba(13, 110, 253, 0.1)',
                     tension: 0.3,
                     fill: true,
-                    pointRadius: 5,
-                    pointBackgroundColor: 'rgb(13, 110, 253)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // Quan trọng để chart tự điều chỉnh theo kích thước div
-                plugins: {
-                    legend: { display: false },
-                    title: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { drawBorder: false },
-                        ticks: {
-                            callback: function(value, index, ticks) {
-                                // Hiển thị đơn vị triệu
-                                return (value / 1000000) + 'M ₫';
-                            }
-                        }
-                    },
-                    x: {
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-
-        // --- 2. User Role Distribution Chart ---
-        const roleCtx = document.getElementById('roleCanvas').getContext('2d');
-        new Chart(roleCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Student', 'Instructor', 'Admin', 'Guest'],
-                datasets: [{
-                    data: [75, 15, 5, 5], // Dữ liệu Placeholder (%)
-                    backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545'],
-                    hoverOffset: 10
+                    pointRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' },
-                    title: { display: false }
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('vi-VN') + ' ₫';
+                            }
+                        }
+                    }
                 }
             }
         });
-
-        document.getElementById('monthlySalesChart').style.height = '300px';
-        document.getElementById('userRoleChart').style.height = '300px';
     });
 </script>
 </body>

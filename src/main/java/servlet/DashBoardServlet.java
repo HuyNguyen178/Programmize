@@ -2,6 +2,7 @@ package servlet;
 
 import dao.ClassDAO;
 import dao.CourseDAO;
+import dao.EnrollmentDAO;
 import dao.UserDAO;
 import model.User;
 
@@ -12,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 
 @WebServlet("/dashboard")
@@ -20,7 +23,7 @@ public class DashBoardServlet extends HttpServlet {
     private UserDAO userDAO;
     private CourseDAO courseDAO;
     private ClassDAO classDAO;
-    // private OrderDAO orderDAO;
+    private EnrollmentDAO enrollmentDAO;
 
     @Override
     public void init() throws ServletException {
@@ -28,21 +31,28 @@ public class DashBoardServlet extends HttpServlet {
         userDAO = new UserDAO();
         courseDAO = new CourseDAO();
         classDAO = new ClassDAO();
-        // orderDAO = new OrderDAO();
+        enrollmentDAO = new EnrollmentDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        Calendar cal = Calendar.getInstance();
+
         int totalUsers = userDAO.countTotalUsers(null, null, null);
         int totalCourses = courseDAO.getTotalCourses();
         int totalClasses = classDAO.getTotalClasses();
+        int currentMonth = cal.get(Calendar.MONTH);
+        int currentYear = cal.get(Calendar.YEAR);
 
         List<User> recentUsers = userDAO.searchUsers(null, null, null, totalUsers - 3, 3);
         List<Object[]> topCourses = courseDAO.getTopSellingCourses(3);
         List<Object[]> topClasses = classDAO.getTopSellingClasses(3);
         List<Object[]> topInstructors = userDAO.getTopInstructorsByEnrollment(3);
+        List<BigDecimal> monthlyRevenueList = enrollmentDAO.getMonthlyRevenueList(currentYear);
+        BigDecimal monthlyRevenue = monthlyRevenueList.get(currentMonth );
+
 
         request.setAttribute("totalUsers", totalUsers);
         request.setAttribute("recentUsers", recentUsers);
@@ -51,6 +61,8 @@ public class DashBoardServlet extends HttpServlet {
         request.setAttribute("totalClasses", totalClasses);
         request.setAttribute("topClasses", topClasses);
         request.setAttribute("topInstructors", topInstructors);
+        request.setAttribute("monthlyRevenue", monthlyRevenue);
+        request.setAttribute("monthlyRevenueList", monthlyRevenueList);
 
         request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp")
                 .forward(request, response);

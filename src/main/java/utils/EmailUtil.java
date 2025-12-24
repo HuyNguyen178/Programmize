@@ -30,6 +30,5 @@ public class EmailUtil {
         message.setText(content);
 
         Transport.send(message);
-        System.out.println("Email sent to " + to);
     }
 }
