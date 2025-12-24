@@ -6,7 +6,7 @@ import dao.CourseDAO;
 import model.Lesson;
 import model.Chapter;
 import model.Course;
-
+import model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -97,6 +97,29 @@ public class LessonDetailServlet extends HttpServlet {
                 }
             }
 
+            User user = (User) request.getSession().getAttribute("loginUser");
+
+            // if not preview
+            if (!lesson.isPreview()) {
+                // redirect login
+                if (user == null) {
+                    request.getSession().setAttribute("errorMessage", "Please login to access this lesson.");
+                    response.sendRedirect(request.getContextPath() + "/login");
+                    return;
+                }
+
+                String role = user.getRoleName();
+                boolean isAdminOrInstructor = "Admin".equals(role) || "Instructor".equals(role);
+                boolean isEnrolled = courseDAO.isUserEnrolled(user.getId(), courseId);
+
+                // if not Admin/Instructor and not enrolled
+                if (!isAdminOrInstructor && !isEnrolled) {
+                    request.getSession().setAttribute("errorMessage", "Please enroll in this course to access this lesson.");
+                    response.sendRedirect(request.getContextPath() + "/public-course-details?id=" + courseId);
+                    return;
+                }
+            }
+
             // set attributes
             request.setAttribute("lesson", lesson);
             request.setAttribute("chapterName", chapter.getChapterName());
@@ -106,6 +129,21 @@ public class LessonDetailServlet extends HttpServlet {
             request.setAttribute("chapterLessonsMap", chapterLessonsMap);
             request.setAttribute("prevLesson", prevLesson);
             request.setAttribute("nextLesson", nextLesson);
+
+            // check if enrolled
+            boolean isEnrolled = false;
+            boolean isAdminOrInstructor = false;
+
+            if (user != null) {
+                String role = user.getRoleName();
+                if ("Admin".equals(role) || "Instructor".equals(role)) {
+                    isAdminOrInstructor = true;
+                }
+                isEnrolled = courseDAO.isUserEnrolled(user.getId(), courseId);
+            }
+
+            request.setAttribute("isEnrolled", isEnrolled);
+            request.setAttribute("isAdminOrInstructor", isAdminOrInstructor);
 
             System.out.println("LessonDetailServlet: Loaded lesson '" + lesson.getLessonName() +
                     "' from chapter '" + chapter.getChapterName() + "'");

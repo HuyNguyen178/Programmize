@@ -33,7 +33,6 @@ public class AuthorizationFilter implements Filter {
             "/public-classes",
             "/public-class-details",
             "/public-course-details",
-            "/lesson-detail",
             "/verify"
     );
 
@@ -58,6 +57,7 @@ public class AuthorizationFilter implements Filter {
             "/student-detail",
             "/add-student",
             "/add-chapter",
+            "/edit-chapter",
             "/add-lesson",
             "/edit-lesson"
     );

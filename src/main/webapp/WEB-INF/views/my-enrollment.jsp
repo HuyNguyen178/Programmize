@@ -199,11 +199,11 @@
                                 </div>
 
                                 <c:choose>
-                                    <c:when test="${e.type == 'COURSE' && e.status}">
-                                        <a href="learning?id=${e.itemId}" class="btn-action">GO TO LEARN</a>
+                                    <c:when test="${not empty firstLessonMap[e.courseId]}">
+                                        <a href="${pageContext.request.contextPath}/lesson-detail?id=${firstLessonMap[e.courseId]}" class="btn-action">GO TO LEARN</a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="${e.type == 'COURSE' ? 'course-details' : 'class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>
+                                        <a href="${pageContext.request.contextPath}/${e.type == 'COURSE' ? 'public-course-details' : 'class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>
                                     </c:otherwise>
                                 </c:choose>
                             </div>

@@ -1016,14 +1016,16 @@ public class CourseDAO {
     }
     // Check if user is enrolled in a course
     public boolean isUserEnrolled(int userId, int courseId) {
-        String sql = "SELECT COUNT(*) FROM course_enrollment WHERE user_id = ? AND course_id = ?";
+        String sql = "SELECT COUNT(*) FROM course_enrollment WHERE user_id = ? AND course_id = ? AND status = 1";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.setInt(2, courseId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error checking enrollment: " + e.getMessage());

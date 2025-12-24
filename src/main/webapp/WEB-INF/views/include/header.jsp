@@ -72,7 +72,7 @@
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile?id=${sessionScope.loginUser.id}">Profile</a></li>
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-courses">My Courses</a></li>
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-classes">My Classes</a></li>
-                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-enrollments">My Enrollment</a></li>
+                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-enrollments">My Enrollments</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href=<%=request.getContextPath()%>"/logout"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>

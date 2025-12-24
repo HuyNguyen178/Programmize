@@ -505,25 +505,47 @@
                 <div class="chapter-header">
                     <i class="fas fa-folder me-2"></i>${chapter.chapterName}
                 </div>
-                
+
                 <c:forEach var="lessonItem" items="${chapterLessonsMap[chapter.chapterId]}">
-                    <a href="${pageContext.request.contextPath}/lesson-detail?id=${lessonItem.lessonId}" 
-                       class="lesson-item ${lessonItem.lessonId == lesson.lessonId ? 'active' : ''}">
-                        <div class="lesson-icon ${lessonItem.lessonType.value}">
-                            <i class="${lessonItem.typeIcon}"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="lesson-title">
-                                ${lessonItem.orderIndex}. ${lessonItem.lessonName}
-                                <c:if test="${lessonItem.preview}">
-                                    <span class="preview-badge">Preview</span>
-                                </c:if>
+                    <c:choose>
+                        <%-- allow clicking --%>
+                        <c:when test="${lessonItem.preview or isEnrolled or isAdminOrInstructor}">
+                            <a href="${pageContext.request.contextPath}/lesson-detail?id=${lessonItem.lessonId}"
+                               class="lesson-item ${lessonItem.lessonId == lesson.lessonId ? 'active' : ''}">
+                                <div class="lesson-icon ${lessonItem.lessonType.value}">
+                                    <i class="${lessonItem.typeIcon}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="lesson-title">
+                                            ${lessonItem.orderIndex}. ${lessonItem.lessonName}
+                                        <c:if test="${lessonItem.preview}">
+                                            <span class="preview-badge">Preview</span>
+                                        </c:if>
+                                    </div>
+                                    <div class="lesson-meta">
+                                            ${lessonItem.durationFormatted} • ${lessonItem.typeDisplayName}
+                                    </div>
+                                </div>
+                            </a>
+                        </c:when>
+                        <%-- not llow clicking --%>
+                        <c:otherwise>
+                            <div class="lesson-item lesson-locked-item">
+                                <div class="lesson-icon ${lessonItem.lessonType.value}">
+                                    <i class="${lessonItem.typeIcon}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="lesson-title text-muted">
+                                            ${lessonItem.orderIndex}. ${lessonItem.lessonName}
+                                        <i class="fas fa-lock ms-2" title="Enroll to access"></i>
+                                    </div>
+                                    <div class="lesson-meta">
+                                            ${lessonItem.durationFormatted} • ${lessonItem.typeDisplayName}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="lesson-meta">
-                                ${lessonItem.durationFormatted} • ${lessonItem.typeDisplayName}
-                            </div>
-                        </div>
-                    </a>
+                        </c:otherwise>
+                    </c:choose>
                 </c:forEach>
             </c:forEach>
         </div>

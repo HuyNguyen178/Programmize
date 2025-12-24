@@ -6,6 +6,7 @@ import dao.LessonDAO;
 import model.Course;
 import model.Chapter;
 import model.Lesson;
+import model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -94,7 +95,25 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             request.setAttribute("totalDurationSeconds", totalDurationSeconds);
             request.setAttribute("totalDurationFromLessons", totalDurationFromLessons);
 
-            // forward to JSP
+            boolean isEnrolled = false;
+            boolean isAdminOrInstructor = false;
+
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                User user = (User) session.getAttribute("loginUser");
+                if (user != null) {
+                    String role = user.getRoleName();
+                    if ("Admin".equals(role) || "Instructor".equals(role)) {
+                        isAdminOrInstructor = true;
+                    }
+                    // check if enrolled
+                    isEnrolled = publicCourseDAO.isUserEnrolled(user.getId(), courseId);
+                }
+            }
+            request.setAttribute("isEnrolled", isEnrolled);
+            request.setAttribute("isAdminOrInstructor", isAdminOrInstructor);
+
+            // forward
             RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/public-course-details.jsp");
             dispatcher.forward(request, response);
 
