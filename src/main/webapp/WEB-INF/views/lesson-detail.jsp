@@ -81,7 +81,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .video-container iframe {
+        iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -368,6 +368,20 @@
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                             allowfullscreen></iframe>
                                 </div>
+
+                                <c:if test="${not empty lesson.pdfUrl}">
+                                    <div class="card mt-4">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <strong>Slides</strong>
+                                            </span>
+                                        </div>
+                                        <div class="card-body p-0" id="pdfContainer" style="height: 600px; position: relative;">
+                                            <iframe src="${lesson.pdfUrl}"></iframe>
+                                        </div>
+                                    </div>
+                                </c:if>
                             </c:when>
                             <c:otherwise>
                                 <div class="no-content">
@@ -431,18 +445,6 @@
                     <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Lesson Information</h5>
                     <div class="row">
                         <div class="col-md-6">
-                            <p class="mb-2">
-                                <strong>Type:</strong> 
-                                <span class="badge bg-primary">${lesson.typeDisplayName}</span>
-                            </p>
-                            <p class="mb-2">
-                                <strong>Duration:</strong> ${lesson.durationFormatted}
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-2">
-                                <strong>Chapter:</strong> ${chapterName}
-                            </p>
                             <c:if test="${lesson.preview}">
                                 <p class="mb-2">
                                     <span class="badge bg-info">Free Preview</span>

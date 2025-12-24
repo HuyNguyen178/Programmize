@@ -9,6 +9,7 @@ public class Lesson {
     private LessonType lessonType;
     private String content;
     private String videoUrl;
+    private String pdfUrl;
     private Integer duration;
     private Integer orderIndex;
     private boolean isPreview;
@@ -109,6 +110,13 @@ public class Lesson {
     }
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+    public String getPdfUrl() {
+        return pdfUrl;
+    }
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 
     public Integer getDuration() {

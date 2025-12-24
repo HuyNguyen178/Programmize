@@ -201,9 +201,9 @@ public class LessonDAO {
 
     // insert new lesson
     public int insertLesson(Lesson lesson) {
-        String sql = "INSERT INTO lesson (chapter_id, lesson_name, lesson_type, content, video_url, " +
+        String sql = "INSERT INTO lesson (chapter_id, lesson_name, lesson_type, content, video_url, pdf_url, " +
                 "duration, order_index, is_preview, status, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -213,13 +213,14 @@ public class LessonDAO {
             ps.setString(3, lesson.getLessonType() != null ? lesson.getLessonType().getValue() : "video");
             ps.setString(4, lesson.getContent());
             ps.setString(5, lesson.getVideoUrl());
-            ps.setInt(6, lesson.getDuration());
-            ps.setInt(7, lesson.getOrderIndex());
-            ps.setBoolean(8, lesson.isPreview());
-            ps.setBoolean(9, lesson.getStatus() != null && lesson.getStatus());
-            ps.setDate(10, new java.sql.Date(lesson.getCreatedAt() != null ?
+            ps.setString(6, lesson.getPdfUrl());
+            ps.setInt(7, lesson.getDuration());
+            ps.setInt(8, lesson.getOrderIndex());
+            ps.setBoolean(9, lesson.isPreview());
+            ps.setBoolean(10, lesson.getStatus() != null && lesson.getStatus());
+            ps.setDate(11, new java.sql.Date(lesson.getCreatedAt() != null ?
                     lesson.getCreatedAt().getTime() : new java.util.Date().getTime()));
-            ps.setDate(11, new java.sql.Date(lesson.getUpdatedAt() != null ?
+            ps.setDate(12, new java.sql.Date(lesson.getUpdatedAt() != null ?
                     lesson.getUpdatedAt().getTime() : new java.util.Date().getTime()));
 
             int affectedRows = ps.executeUpdate();
@@ -240,7 +241,7 @@ public class LessonDAO {
     // update lesson
     public boolean updateLesson(Lesson lesson) {
         String sql = "UPDATE lesson SET chapter_id = ?, lesson_name = ?, lesson_type = ?, " +
-                "content = ?, video_url = ?, duration = ?, order_index = ?, " +
+                "content = ?, video_url = ?, pdf_url = ?, duration = ?, order_index = ?, " +
                 "is_preview = ?, status = ?, updated_at = ? WHERE lesson_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
@@ -251,12 +252,13 @@ public class LessonDAO {
             ps.setString(3, lesson.getLessonType() != null ? lesson.getLessonType().getValue() : "video");
             ps.setString(4, lesson.getContent());
             ps.setString(5, lesson.getVideoUrl());
-            ps.setInt(6, lesson.getDuration());
-            ps.setInt(7, lesson.getOrderIndex());
-            ps.setBoolean(8, lesson.isPreview());
-            ps.setBoolean(9, lesson.getStatus() != null && lesson.getStatus());
-            ps.setDate(10, new java.sql.Date(new java.util.Date().getTime()));
-            ps.setInt(11, lesson.getLessonId());
+            ps.setString(6, lesson.getPdfUrl());
+            ps.setInt(7, lesson.getDuration());
+            ps.setInt(8, lesson.getOrderIndex());
+            ps.setBoolean(9, lesson.isPreview());
+            ps.setBoolean(10, lesson.getStatus() != null && lesson.getStatus());
+            ps.setDate(11, new java.sql.Date(new java.util.Date().getTime()));
+            ps.setInt(12, lesson.getLessonId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -356,6 +358,7 @@ public class LessonDAO {
         lesson.setLessonTypeFromString(rs.getString("lesson_type"));
         lesson.setContent(rs.getString("content"));
         lesson.setVideoUrl(rs.getString("video_url"));
+        lesson.setPdfUrl(rs.getString("pdf_url"));
         lesson.setDuration(rs.getInt("duration"));
         lesson.setOrderIndex(rs.getInt("order_index"));
         lesson.setPreview(rs.getBoolean("is_preview"));
