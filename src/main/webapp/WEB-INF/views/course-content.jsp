@@ -370,15 +370,15 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Lessons Placeholder -->
-                                                    <ul class="list-unstyled small bg-light rounded p-2 mt-2 mb-0">
-                                                        <li class="lesson-item text-muted">
-                                                            <span>
-                                                                <i class="bi bi-journal-text me-2"></i>
-                                                                Lesson list coming soon...
-                                                            </span>
-                                                        </li>
-                                                    </ul>
+<%--                                                    <!-- Lessons Placeholder -->--%>
+<%--                                                    <ul class="list-unstyled small bg-light rounded p-2 mt-2 mb-0">--%>
+<%--                                                        <li class="lesson-item text-muted">--%>
+<%--                                                            <span>--%>
+<%--                                                                <i class="bi bi-journal-text me-2"></i>--%>
+<%--                                                                Lesson list coming soon...--%>
+<%--                                                            </span>--%>
+<%--                                                        </li>--%>
+<%--                                                    </ul>--%>
                                                 </li>
                                             </c:forEach>
                                         </c:otherwise>

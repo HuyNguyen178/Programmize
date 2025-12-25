@@ -156,6 +156,13 @@
                         <small class="text-muted">e.g., 300 = 5 minutes</small>
                     </div>
 
+                    <div class="form-group conditional-field ${lesson.lessonType.value == 'video' ? 'active' : ''}" id="videoUrlGroup">
+                        <label for="pdfUrl" class="form-label">PDF URL</label>
+                        <input type="text" id="pdfUrl" name="pdfUrl" class="form-control"
+                               value="${lesson.pdfUrl}" placeholder="">
+                        <small class="text-muted">Link .pdf file</small>
+                    </div>
+
                 </div>
 
                 <%-- COLUMN 2: Configuration --%>

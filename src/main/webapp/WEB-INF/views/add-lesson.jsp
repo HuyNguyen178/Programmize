@@ -153,6 +153,14 @@
                         <small class="text-muted">e.g., 300 = 5 minutes</small>
                     </div>
 
+                    <%-- pdf url field --%>
+                    <div class="form-group conditional-field active" id="videoUrlGroup">
+                        <label for="pdfUrl" class="form-label">PDF URL</label>
+                        <input type="text" id="pdfUrl" name="pdfUrl" class="form-control"
+                               placeholder="">
+                        <small class="text-muted">Link .pdf file</small>
+                    </div>
+
                 </div>
 
                 <%-- COLUMN 2: Configuration --%>

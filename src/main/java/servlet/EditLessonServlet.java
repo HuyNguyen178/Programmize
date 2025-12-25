@@ -93,6 +93,7 @@ public class EditLessonServlet extends HttpServlet {
             String lessonTypeStr = request.getParameter("lessonType");
             String content = request.getParameter("content");
             String videoUrl = request.getParameter("videoUrl");
+            String pdfUrl = request.getParameter("pdfUrl");
 
             // fetch chapter ID
             String chapterIdStr = request.getParameter("chapterId");
@@ -131,6 +132,7 @@ public class EditLessonServlet extends HttpServlet {
             lesson.setLessonType(LessonType.fromString(lessonTypeStr));
             lesson.setContent(content);
             lesson.setVideoUrl(videoUrl);
+            lesson.setPdfUrl(pdfUrl);
             lesson.setDuration(duration);
             lesson.setOrderIndex(orderIndex);
             lesson.setPreview(isPreview);
