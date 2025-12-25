@@ -34,9 +34,9 @@ public class SecurityHeadersFilter implements Filter {
         // 5. Content-Security-Policy - Kiểm soát nguồn tài nguyên
         httpResponse.setHeader("Content-Security-Policy",
             "default-src 'self'; " +
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://use.fontawesome.com; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://use.fontawesome.com; " +
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://use.fontawesome.com https://ka-f.fontawesome.com; " +
             "img-src 'self' data: https: https://lh3.googleusercontent.com; " +
             "connect-src 'self'https://sandbox.vnpayment.vn; " +
             "frame-src 'self' https://sandbox.vnpayment.vn https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://drive.google.com https://docs.google.com; " +
