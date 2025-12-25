@@ -55,7 +55,7 @@
                                 <div class="col-md-4">
                                     <input type="radio" name="paymentMethod" id="vnpay" value="VNPAY" class="payment-radio" checked>
                                     <label for="vnpay" class="payment-label">
-                                        <i class="fas fa-qrcode fa-2x mb-2 text-primary"></i><br>VNPay QR
+                                        <i class="fas fa-qrcode fa-2x mb-2 text-primary"></i><br>VNPay
                                     </label>
                                 </div>
                                 <div class="col-md-4">

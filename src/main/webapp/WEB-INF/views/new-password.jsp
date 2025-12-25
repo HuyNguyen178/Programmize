@@ -54,7 +54,7 @@
                        class="form-control me-2" placeholder="Enter new password" required>
                 <button type="button" class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
                         style="width: 45px; height: 38px;"
-                        onclick="togglePassword()">
+                        onclick="togglePassword('newPassword','eyeIcon')">
                     <i id="eyeIcon" class="fa fa-eye-slash"></i>
                 </button>
             </div>

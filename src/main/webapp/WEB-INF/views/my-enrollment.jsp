@@ -156,8 +156,8 @@
             <span class="filter-label">Type</span>
             <select name="type" class="filter-select" onchange="this.form.submit()">
                 <option value="">All Types</option>
-                <option value="COURSE" ${type == 'COURSE' ? 'selected' : ''}>Online Course</option>
-                <option value="CLASS" ${type == 'CLASS' ? 'selected' : ''}>Offline Class</option>
+                <option value="COURSE" ${type == 'COURSE' ? 'selected' : ''}>Course</option>
+                <option value="CLASS" ${type == 'CLASS' ? 'selected' : ''}>Class</option>
             </select>
 
             <span class="filter-label">Status</span>
@@ -203,7 +203,7 @@
                                         <a href="${pageContext.request.contextPath}/lesson-detail?id=${firstLessonMap[e.courseId]}" class="btn-action">GO TO LEARN</a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="${pageContext.request.contextPath}/${e.type == 'COURSE' ? 'public-course-details' : 'class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>
+                                        <a href="${pageContext.request.contextPath}/${e.type == 'COURSE' ? 'public-course-details' : 'public-class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>
                                     </c:otherwise>
                                 </c:choose>
                             </div>

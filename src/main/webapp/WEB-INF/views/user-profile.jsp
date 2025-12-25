@@ -16,39 +16,21 @@
             background-color: #f8f9fa;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-        }
-
+            flex-direction: column; }
         main {
             flex: 1;
             padding-top: 20px;
-            padding-bottom: 40px;
-        }
-
-        .profile-card {
-            margin-top: 30px;
+            padding-bottom: 40px; }
+        .profile-card { margin-top: 30px;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
             background-color: #ffffff;
-            border: 1px solid #e9ecef;
-        }
-
-        /* Header/Title Styles */
+            border: 1px solid #e9ecef; }
         .page-header {
             border-bottom: 2px solid #007bff;
             padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        .page-header h2 {
-            font-weight: 700;
-            color: #212529;
-        }
-        .page-header p {
-            color: #6c757d;
-        }
-
-        /* Avatar Display Area */
+            margin-bottom: 30px; }
         .avatar-container {
             display: flex;
             flex-direction: column;
@@ -56,8 +38,7 @@
             padding: 15px;
             border: 1px dashed #ced4da;
             border-radius: 8px;
-            background-color: #fff;
-        }
+            background-color: #fff; }
         #currentAvatarImg {
             width: 100px;
             height: 100px;
@@ -65,28 +46,10 @@
             border-radius: 50%;
             border: 3px solid #fff;
             box-shadow: 0 0 0 2px #007bff;
-            margin-bottom: 15px;
-        }
-
-        /* Form Labels & Inputs */
+            margin-bottom: 15px; }
         .form-label {
             font-weight: 600;
-            color: #343a40;
-        }
-        .form-control {
-            border-radius: 6px;
-        }
-
-        /* Action Buttons */
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            font-weight: 600;
-        }
-        .btn-primary:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
-        }
+            color: #343a40; }
     </style>
 </head>
 <body>
@@ -98,134 +61,178 @@
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <div class="profile-card">
-
                     <div class="page-header">
                         <h2><i class="fas fa-user-edit me-2 text-primary"></i>My Profile Settings</h2>
                         <p>Manage your account information and preferences.</p>
                     </div>
 
                     <form action="profile" method="POST">
-
-                        <%--            add csrftoken--%>
-                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                        <input type="hidden" name="userId" value="${user.id}">
 
                         <div class="row">
-
                             <div class="col-md-4">
                                 <div class="avatar-container sticky-top" style="top: 100px;">
-
-                                    <%-- 1. Current Avatar (Live Preview) --%>
                                     <h5 class="mb-3">Avatar</h5>
                                     <c:choose>
                                         <c:when test="${not empty user.avatarUrl}">
-                                            <img src="${user.avatarUrl}" alt="Current Avatar" id="currentAvatarImg">
+                                            <img src="${user.avatarUrl}" alt="Avatar" id="currentAvatarImg">
                                         </c:when>
                                         <c:otherwise>
-                                            <c:set var="initial" value="${fn:toUpperCase(fn:substring(user.fullname, 0, 1))}" scope="request"/>
-                                            <img src="https://via.placeholder.com/100/007bff/ffffff?text=${initial}" alt="Default Avatar" id="currentAvatarImg">
+                                            <c:set var="initial" value="${fn:toUpperCase(fn:substring(user.fullname, 0, 1))}"/>
+                                            <img src="https://via.placeholder.com/100/007bff/ffffff?text=${initial}" id="currentAvatarImg">
                                         </c:otherwise>
                                     </c:choose>
-
-                                    <%-- 2. Avatar URL Input  --%>
                                     <div class="mt-4 w-100">
                                         <label for="avatarUrl" class="form-label">Avatar URL</label>
-                                        <input type="text" class="form-control" id="avatarUrl" name="avatarUrl"
-                                               value="${user.avatarUrl}" placeholder="Enter image URL">
+                                        <input type="text" class="form-control" id="avatarUrl" name="avatarUrl" value="${user.avatarUrl}">
                                     </div>
-
                                 </div>
                             </div>
-
 
                             <div class="col-md-8">
 
-                                <input type="hidden" name="userId" value="${user.id}">
-
-                                <%-- 1. Username  --%>
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control bg-light" id="username" value="${user.username}" readonly
-                                           title="Username cannot be changed." disabled>
-                                    <div class="form-text">Username cannot be changed.</div>
-                                </div>
-
-                                <%-- 2. Full Name --%>
                                 <div class="mb-3">
                                     <label for="fullname" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="fullname" name="fullname"
-                                           value="${user.fullname}" >
+                                    <input type="text" class="form-control" id="fullname" name="fullname" value="${user.fullname}">
                                 </div>
 
-                                <%-- 3. Email --%>
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                           value="${user.email}" >
+                                    <label class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light" value="${user.username}" readonly>
+                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalUsername">Change</button>
+                                    </div>
                                 </div>
 
-                                <%-- 4. Change Password Link --%>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light" value="${user.email}" readonly>
+                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEmail">Verify & Change</button>
+                                    </div>
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label">Password</label>
                                     <div>
-                                        <a href="/change-password" class="btn btn-outline-secondary btn-sm">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalPassword">
                                             <i class="fas fa-key me-2"></i>Change Password
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
+
                                 <c:if test="${not empty message}">
-                                    <div class="alert ${success ? 'alert-success' : 'alert-danger'}">
-                                            ${message}
-                                    </div>
+                                    <div class="alert ${success ? 'alert-success' : 'alert-danger'} mt-3">${message}</div>
                                 </c:if>
-
                             </div>
-
                         </div>
 
-                        <%-- Submit Button --%>
                         <div class="mt-5 pt-3 border-top text-end">
                             <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="fas fa-save me-2"></i>Save Changes
+                                <i class="fas fa-save me-2"></i>Save General Changes
                             </button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
 </main>
 
-<c:if test="${success}">
-    <script>
-        setTimeout(() => {
-            window.location.href = "home";
-        }, 2000);
-    </script>
-</c:if>
+<div class="modal fade" id="modalUsername" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="change-username" method="POST" class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Change Username</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label class="form-label">New Username</label><input type="text" name="newUsername" class="form-control" required></div>
+                <div class="mb-3"><label class="form-label">Current Password to Confirm</label><input type="password" name="password" class="form-control" required></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Username</button></div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEmail" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="change-email" method="POST" class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Update Email Address</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label class="form-label">New Email Address</label><input type="email" id="newEmail" name="newEmail" class="form-control" required></div>
+                <label class="form-label">Verification Code</label>
+                <div class="input-group mb-3">
+                    <input type="text" name="verifyCode" class="form-control" placeholder="Enter code" required>
+                    <button class="btn btn-info" type="button" id="btnSendCode">Send Code</button>
+                </div>
+                <small id="emailStatus" class="form-text"></small>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Verify & Update</button></div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPassword" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="change-password" method="POST" class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Change Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3"><label class="form-label">Current Password</label><input type="password" name="oldPass" class="form-control" required></div>
+                <div class="mb-3"><label class="form-label">New Password</label><input type="password" name="newPass" class="form-control" required></div>
+                <div class="mb-3"><label class="form-label">Confirm New Password</label><input type="password" name="confirmPass" class="form-control" required></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Password</button></div>
+        </form>
+    </div>
+</div>
 
 <jsp:include page="../views/include/footer.jsp" />
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const urlInput = document.getElementById('avatarUrl');
         const imgPreview = document.getElementById('currentAvatarImg');
-        const defaultPlaceholderUrl = "https://i.pinimg.com/736x/20/ef/6b/20ef6b554ea249790281e6677abc4160.jpg";
+        const defaultAvatar = "https://via.placeholder.com/100/007bff/ffffff?text=User";
 
         urlInput.addEventListener('input', function() {
             const url = urlInput.value.trim();
-            if (url) {
-                imgPreview.src = url;
-            } else {
-                imgPreview.src = defaultPlaceholderUrl;
-            }
+            imgPreview.src = url ? url : defaultAvatar;
         });
 
-        imgPreview.onerror = function() {
-            imgPreview.src = defaultPlaceholderUrl;
-        };
+        // Xử lý nút gửi mã OTP qua Email (AJAX)
+        const btnSendCode = document.getElementById('btnSendCode');
+        if (btnSendCode) {
+            btnSendCode.addEventListener('click', function() {
+                const email = document.getElementById('newEmail').value;
+                const status = document.getElementById('emailStatus');
+
+                if(!email || !email.includes('@')) {
+                    alert("Please enter a valid email address!");
+                    return;
+                }
+
+                this.disabled = true;
+                status.style.color = "blue";
+                status.innerText = "Sending verification code...";
+
+                // Gọi API gửi mail ngầm
+                fetch('send-otp?email=' + encodeURIComponent(email))
+                    .then(response => {
+                        if (response.ok) {
+                            status.style.color = "green";
+                            status.innerText = "Code sent! Check your inbox.";
+                        } else {
+                            status.style.color = "red";
+                            status.innerText = "Failed to send code. Try again.";
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        status.style.color = "red";
+                        status.innerText = "Error connecting to server.";
+                        this.disabled = false;
+                    });
+            });
+        }
     });
 </script>
 </body>

@@ -38,10 +38,10 @@ public class SecurityHeadersFilter implements Filter {
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
             "img-src 'self' data: https: https://lh3.googleusercontent.com; " +
-            "connect-src 'self'; " +
-            "frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://drive.google.com https://docs.google.com; " +
+            "connect-src 'self'https://sandbox.vnpayment.vn; " +
+            "frame-src 'self' https://sandbox.vnpayment.vn https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://drive.google.com https://docs.google.com; " +
             "frame-ancestors 'self'; " + //change "none" to "self" to be able to load iframe for pdf </assets/pdf/>
-            "form-action 'self'; " +
+            "form-action 'self' https://sandbox.vnpayment.vn; " +
             "base-uri 'self'"
         );
 
