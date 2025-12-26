@@ -20,7 +20,7 @@ public class RegisterServlet extends HttpServlet {
 
         String fullname = request.getParameter("fullName");
         String username = request.getParameter("username");
-        String email = request.getParameter("email").trim();
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
 
@@ -49,20 +49,23 @@ public class RegisterServlet extends HttpServlet {
         }
 
         // Check email
-        if (dao.checkUserOrEmailExists(email)) {
+        if (email.trim().isEmpty()) {
+            request.setAttribute("emailError", "Email cannot be empty!");
+            error = true;
+        } else if (dao.checkUserOrEmailExists(email)) {
             request.setAttribute("emailError", "Email already exists!");
             error = true;
         }
 
         // Check password
         if (password.length() < 8) {
-            request.setAttribute("passError", "Password must be at least 8 characters!");
+            request.setAttribute("passwordError", "Password must be at least 8 characters!");
             error = true;
         }
 
         // Check Confirm Password
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("confirmPassError", "Confirmation password does not match!");
+            request.setAttribute("confirmPasswordError", "Confirmation password does not match!");
             error = true;
         }
 

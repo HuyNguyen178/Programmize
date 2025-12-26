@@ -6,7 +6,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.User;
 import utils.EmailUtil;
-
 import java.io.IOException;
 
 @WebServlet("/verify")

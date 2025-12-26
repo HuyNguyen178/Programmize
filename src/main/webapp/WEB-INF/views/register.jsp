@@ -50,7 +50,6 @@
 
         <%--            add csrftoken--%>
         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-        <input type="hidden" name="csrfToken" value="<%= CSRFUtil.getToken(session) %>">
 
         <div class="mb-3">
             <label class="form-label">Full Name</label>

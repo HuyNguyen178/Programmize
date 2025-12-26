@@ -68,14 +68,16 @@ public class UserProfileServlet extends HttpServlet {
         String currentPassword = request.getParameter("password");
         if (newUsername != null && currentPassword != null) {
             if (!PasswordUtil.check(currentPassword, u.getPassword())) {
-                session.setAttribute("message", "Incorrect password!");
+                session.setAttribute("modalError", "Incorrect password!");
+                session.setAttribute("openModal", "username");
                 session.setAttribute("success", false);
                 response.sendRedirect("profile");
                 return;
             }
 
             if (userDAO.checkUserOrEmailExists(newUsername)) {
-                session.setAttribute("message", "Username has already existed!");
+                session.setAttribute("modalError", "Username has already existed!");
+                session.setAttribute("openModal", "username");
                 session.setAttribute("success", false);
                 response.sendRedirect("profile");
                 return;
@@ -89,5 +91,37 @@ public class UserProfileServlet extends HttpServlet {
             response.sendRedirect("profile");
             return;
         }
+
+        String oldPass = request.getParameter("oldPass");
+        String newPass = request.getParameter("newPass");
+        String confirmPass = request.getParameter("confirmPass");
+        if (!PasswordUtil.check(oldPass, u.getPassword())) {
+            session.setAttribute("modalError", "Incorrect password!");
+            session.setAttribute("openModal", "password");
+            session.setAttribute("success", false);
+            response.sendRedirect("profile");
+            return;
+        }
+
+        if (!newPass.equals(confirmPass)) {
+            session.setAttribute("modalError", "Password do not match!");
+            session.setAttribute("openModal", "password");
+            session.setAttribute("success", false);
+            response.sendRedirect("profile");
+            return;
+        }
+        if (newPass.length() < 8) {
+            session.setAttribute("modalError", "Password must be at least 8 characters!");
+            session.setAttribute("openModal", "password");
+            session.setAttribute("success", false);
+            response.sendRedirect("profile");
+            return;
+        }
+
+        userDAO.updateUser(user, newPass);
+        session.setAttribute(SessionConfig.ATTR_LOGIN_USER, user);
+        session.setAttribute("message", "Password updated successfully!");
+        session.setAttribute("success", true);
+        response.sendRedirect("profile");
     }
 }

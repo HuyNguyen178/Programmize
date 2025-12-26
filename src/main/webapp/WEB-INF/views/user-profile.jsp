@@ -108,7 +108,7 @@
                                     <label class="form-label">Email</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control bg-light" value="${user.email}" readonly>
-                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEmail">Verify & Change</button>
+                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEmail">Change</button>
                                     </div>
                                 </div>
 
@@ -130,6 +130,8 @@
                                                 aria-label="Close">
                                         </button>
                                     </div>
+                                    <c:remove var="message" scope="session"/>
+                                    <c:remove var="success" scope="session"/>
                                 </c:if>
                             </div>
                         </div>
@@ -155,6 +157,11 @@
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">New Username</label><input type="text" name="newUsername" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">Current Password to Confirm</label><input type="password" name="password" class="form-control" required></div>
+                <c:if test="${sessionScope.modalError != null && sessionScope.openModal == 'username'}">
+                    <small class="text-danger d-block mt-2">
+                            ${sessionScope.modalError}
+                    </small>
+                </c:if>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Username</button></div>
         </form>
@@ -166,7 +173,7 @@
         <form action="profile" method="POST" class="modal-content">
             
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-            <div class="modal-header"><h5 class="modal-title">Update Email Address</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header"><h5 class="modal-title">Change Email Address</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">New Email Address</label><input type="email" id="newEmail" name="newEmail" class="form-control" required></div>
                 <label class="form-label">Verification Code</label>
@@ -192,6 +199,11 @@
                 <div class="mb-3"><label class="form-label">Current Password</label><input type="password" name="oldPass" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">New Password</label><input type="password" name="newPass" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">Confirm New Password</label><input type="password" name="confirmPass" class="form-control" required></div>
+                <c:if test="${sessionScope.modalError != null && sessionScope.openModal == 'password'}">
+                    <small class="text-danger d-block mt-2">
+                            ${sessionScope.modalError}
+                    </small>
+                </c:if>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Password</button></div>
         </form>
@@ -249,5 +261,28 @@
         }
     });
 </script>
+
+<c:if test="${sessionScope.openModal != null}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modalMap = {
+                username: "modalUsername",
+                password: "modalPassword"
+            };
+
+            const modalKey = "${sessionScope.openModal}";
+            const modalId = modalMap[modalKey];
+
+            if (modalId) {
+                const modalEl = document.getElementById(modalId);
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+    </script>
+
+    <c:remove var="modalError" scope="session"/>
+    <c:remove var="openModal" scope="session"/>
+</c:if>
 </body>
 </html>
