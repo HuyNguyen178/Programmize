@@ -53,6 +53,49 @@ public class UserProfileServlet extends HttpServlet {
             return;
         }
 
+        // Thêm vào trong phương thức doPost của UserProfileServlet
+        String newEmail = request.getParameter("newEmail");
+        String verifyCode = request.getParameter("verifyCode");
+        String oldVerifyCode = request.getParameter("oldVerifyCode");
+
+        if (newEmail != null && verifyCode != null && oldVerifyCode != null) {
+            String sessionOldOtp = (String) session.getAttribute("old_email_otp");
+            String sessionNewOtp = (String) session.getAttribute("new_email_otp");
+
+            // 1. Kiểm tra mã OTP của email cũ
+            if (sessionOldOtp == null || !sessionOldOtp.equals(oldVerifyCode)) {
+                session.setAttribute("message", "Mã xác thực email CŨ không chính xác!");
+                session.setAttribute("success", false);
+                response.sendRedirect("profile");
+                return;
+            }
+
+            // 2. Kiểm tra mã OTP của email mới
+            if (sessionNewOtp == null || !sessionNewOtp.equals(verifyCode)) {
+                session.setAttribute("message", "Mã xác thực email MỚI không chính xác!");
+                session.setAttribute("success", false);
+                response.sendRedirect("profile");
+                return;
+            }
+
+            // 3. Cập nhật Database
+            u.setEmail(newEmail);
+            if (userDAO.updateUser(u, null)) {
+                session.setAttribute(SessionConfig.ATTR_LOGIN_USER, u);
+                session.setAttribute("message", "Email updated successfully!");
+                session.setAttribute("success", true);
+            } else {
+                session.setAttribute("message", "Update failed!");
+                session.setAttribute("success", false);
+            }
+
+            session.removeAttribute("old_email_otp");
+            session.removeAttribute("new_email_otp");
+
+            response.sendRedirect("profile");
+            return;
+        }
+
         String fullName = request.getParameter("fullname");
         if (fullName != null && !fullName.equals(user.getFullname())) {
             user.setFullname(fullName);

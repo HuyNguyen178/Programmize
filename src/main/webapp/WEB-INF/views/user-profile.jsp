@@ -21,7 +21,8 @@
             flex: 1;
             padding-top: 20px;
             padding-bottom: 40px; }
-        .profile-card { margin-top: 30px;
+        .profile-card {
+            margin-top: 30px;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
@@ -67,7 +68,6 @@
                     </div>
 
                     <form action="profile" method="POST">
-
                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                         <div class="row">
                             <div class="col-md-4">
@@ -90,7 +90,6 @@
                             </div>
 
                             <div class="col-md-8">
-
                                 <div class="mb-3">
                                     <label for="fullname" class="form-label">Full Name</label>
                                     <input type="text" class="form-control" id="fullname" name="fullname" value="${user.fullname}">
@@ -124,11 +123,7 @@
                                 <c:if test="${not empty message}">
                                     <div class="alert ${success ? 'alert-success' : 'alert-danger'} alert-dismissible fade show mt-3" role="alert">
                                             ${message}
-                                        <button type="button"
-                                                class="btn-close"
-                                                data-bs-dismiss="alert"
-                                                aria-label="Close">
-                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                     <c:remove var="message" scope="session"/>
                                     <c:remove var="success" scope="session"/>
@@ -148,43 +143,55 @@
     </div>
 </main>
 
+<div class="modal fade" id="modalEmail" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="profile" method="POST" class="modal-content">
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Email Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Current Email Verification (Send to: ${user.email})</label>
+                    <div class="input-group mb-2">
+                        <input type="text" name="oldVerifyCode" class="form-control" placeholder="Enter code from OLD email" required>
+                        <button class="btn btn-secondary" type="button" id="btnSendOldCode">Send Code</button>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label class="form-label">New Email Address</label>
+                    <input type="email" id="newEmail" name="newEmail" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">New Email Verification Code</label>
+                    <div class="input-group">
+                        <input type="text" name="verifyCode" class="form-control" placeholder="Enter code from NEW email" required>
+                        <button class="btn btn-info" type="button" id="btnSendNewCode">Send Code</button>
+                    </div>
+                </div>
+                <small id="emailStatus" class="form-text"></small>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Update Email</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="modal fade" id="modalUsername" tabindex="-1">
     <div class="modal-dialog">
         <form action="profile" method="POST" class="modal-content">
-            
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
             <div class="modal-header"><h5 class="modal-title">Change Username</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">New Username</label><input type="text" name="newUsername" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">Current Password to Confirm</label><input type="password" name="password" class="form-control" required></div>
-                <c:if test="${sessionScope.modalError != null && sessionScope.openModal == 'username'}">
-                    <small class="text-danger d-block mt-2">
-                            ${sessionScope.modalError}
-                    </small>
-                </c:if>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Username</button></div>
-        </form>
-    </div>
-</div>
-
-<div class="modal fade" id="modalEmail" tabindex="-1">
-    <div class="modal-dialog">
-        <form action="profile" method="POST" class="modal-content">
-            
-            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-            <div class="modal-header"><h5 class="modal-title">Change Email Address</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <div class="mb-3"><label class="form-label">New Email Address</label><input type="email" id="newEmail" name="newEmail" class="form-control" required></div>
-                <label class="form-label">Verification Code</label>
-                <div class="input-group mb-3">
-                    <input type="text" name="verifyCode" class="form-control" placeholder="Enter code" required>
-                    <button class="btn btn-info" type="button" id="btnSendCode">Send Code</button>
-                </div>
-                <div class="mb-3"><label class="form-label">Current Password to Confirm</label><input type="password" name="password" class="form-control" required></div>
-                <small id="emailStatus" class="form-text"></small>
-            </div>
-            <div class="modal-footer"><button type="submit" class="btn btn-primary">Verify & Update</button></div>
         </form>
     </div>
 </div>
@@ -192,18 +199,12 @@
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
         <form action="profile" method="POST" class="modal-content">
-            
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
             <div class="modal-header"><h5 class="modal-title">Change Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">Current Password</label><input type="password" name="oldPass" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">New Password</label><input type="password" name="newPass" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">Confirm New Password</label><input type="password" name="confirmPass" class="form-control" required></div>
-                <c:if test="${sessionScope.modalError != null && sessionScope.openModal == 'password'}">
-                    <small class="text-danger d-block mt-2">
-                            ${sessionScope.modalError}
-                    </small>
-                </c:if>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Password</button></div>
         </form>
@@ -215,73 +216,42 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const urlInput = document.getElementById('avatarUrl');
-        const imgPreview = document.getElementById('currentAvatarImg');
-        const defaultAvatar = "https://via.placeholder.com/100/007bff/ffffff?text=User";
-
-        urlInput.addEventListener('input', function() {
-            const url = urlInput.value.trim();
-            imgPreview.src = url ? url : defaultAvatar;
+        // Send OTP to OLD Email
+        document.getElementById('btnSendOldCode').addEventListener('click', function() {
+            this.disabled = true;
+            fetch('send-otp?type=old')
+                .then(res => res.ok ? alert("OTP sent to your current email!") : (this.disabled = false));
         });
 
-        // Xử lý nút gửi mã OTP qua Email (AJAX)
-        const btnSendCode = document.getElementById('btnSendCode');
-        if (btnSendCode) {
-            btnSendCode.addEventListener('click', function() {
-                const email = document.getElementById('newEmail').value;
-                const status = document.getElementById('emailStatus');
+        // Send OTP to NEW Email
+        document.getElementById('btnSendNewCode').addEventListener('click', function() {
+            const email = document.getElementById('newEmail').value;
+            if(!email) return alert("Please enter your new email first!");
 
-                if(!email || !email.includes('@')) {
-                    alert("Please enter a valid email address!");
-                    return;
-                }
+            this.disabled = true;
+            const status = document.getElementById('emailStatus');
+            status.innerText = "Sending code...";
 
-                this.disabled = true;
-                status.style.color = "blue";
-                status.innerText = "Sending verification code...";
-
-                // Gọi API gửi mail ngầm
-                fetch('send-otp?email=' + encodeURIComponent(email))
-                    .then(response => {
-                        if (response.ok) {
-                            status.style.color = "green";
-                            status.innerText = "Code sent! Check your inbox.";
-                        } else {
-                            status.style.color = "red";
-                            status.innerText = "Failed to send code. Try again.";
-                            this.disabled = false;
-                        }
-                    })
-                    .catch(err => {
-                        status.style.color = "red";
-                        status.innerText = "Error connecting to server.";
+            fetch('send-otp?type=new&email=' + encodeURIComponent(email))
+                .then(res => {
+                    if(res.ok) {
+                        status.innerText = "Code sent to new email!";
+                    } else {
+                        alert("Error sending code.");
                         this.disabled = false;
-                    });
-            });
-        }
+                    }
+                });
+        });
     });
 </script>
 
 <c:if test="${sessionScope.openModal != null}">
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const modalMap = {
-                username: "modalUsername",
-                password: "modalPassword"
-            };
-
-            const modalKey = "${sessionScope.openModal}";
-            const modalId = modalMap[modalKey];
-
-            if (modalId) {
-                const modalEl = document.getElementById(modalId);
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
+            const modalId = "${sessionScope.openModal}" === "username" ? "modalUsername" : "modalPassword";
+            new bootstrap.Modal(document.getElementById(modalId)).show();
         });
     </script>
-
-    <c:remove var="modalError" scope="session"/>
     <c:remove var="openModal" scope="session"/>
 </c:if>
 </body>

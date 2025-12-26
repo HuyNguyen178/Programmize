@@ -89,6 +89,10 @@
         <div class="card shadow-sm">
             <div class="card-body">
 
+                <% if ("success".equals(request.getParameter("status"))) { %>
+                <div class="alert alert-success">Add new account success!</div>
+                <% } %>
+
                 <%-- FILTER BAR --%>
                 <form class="row g-3 align-items-center mb-4" method="GET">
                     <input type="hidden" name="pageIndex" value="1">

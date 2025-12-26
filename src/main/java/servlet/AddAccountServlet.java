@@ -90,6 +90,6 @@ public class AddAccountServlet extends HttpServlet {
         }
         List<String> roles = settingDAO.getRoleNames();
         request.setAttribute("roles", roles);
-        request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+        response.sendRedirect("account-list?status=success");
     }
 }
