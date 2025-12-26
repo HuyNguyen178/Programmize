@@ -67,8 +67,8 @@
                     </div>
 
                     <form action="profile" method="POST">
-                        <input type="hidden" name="userId" value="${user.id}">
 
+                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="avatar-container sticky-top" style="top: 100px;">
@@ -122,7 +122,14 @@
                                 </div>
 
                                 <c:if test="${not empty message}">
-                                    <div class="alert ${success ? 'alert-success' : 'alert-danger'} mt-3">${message}</div>
+                                    <div class="alert ${success ? 'alert-success' : 'alert-danger'} alert-dismissible fade show mt-3" role="alert">
+                                            ${message}
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="alert"
+                                                aria-label="Close">
+                                        </button>
+                                    </div>
                                 </c:if>
                             </div>
                         </div>
@@ -141,7 +148,9 @@
 
 <div class="modal fade" id="modalUsername" tabindex="-1">
     <div class="modal-dialog">
-        <form action="change-username" method="POST" class="modal-content">
+        <form action="profile" method="POST" class="modal-content">
+            
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
             <div class="modal-header"><h5 class="modal-title">Change Username</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">New Username</label><input type="text" name="newUsername" class="form-control" required></div>
@@ -154,7 +163,9 @@
 
 <div class="modal fade" id="modalEmail" tabindex="-1">
     <div class="modal-dialog">
-        <form action="change-email" method="POST" class="modal-content">
+        <form action="profile" method="POST" class="modal-content">
+            
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
             <div class="modal-header"><h5 class="modal-title">Update Email Address</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">New Email Address</label><input type="email" id="newEmail" name="newEmail" class="form-control" required></div>
@@ -163,6 +174,7 @@
                     <input type="text" name="verifyCode" class="form-control" placeholder="Enter code" required>
                     <button class="btn btn-info" type="button" id="btnSendCode">Send Code</button>
                 </div>
+                <div class="mb-3"><label class="form-label">Current Password to Confirm</label><input type="password" name="password" class="form-control" required></div>
                 <small id="emailStatus" class="form-text"></small>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Verify & Update</button></div>
@@ -172,7 +184,9 @@
 
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
-        <form action="change-password" method="POST" class="modal-content">
+        <form action="profile" method="POST" class="modal-content">
+            
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
             <div class="modal-header"><h5 class="modal-title">Change Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">Current Password</label><input type="password" name="oldPass" class="form-control" required></div>

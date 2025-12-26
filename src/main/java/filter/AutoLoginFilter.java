@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
+import utils.SessionConfig;
+
 import java.io.IOException;
 
 @WebFilter("/*")
@@ -18,7 +20,7 @@ public class AutoLoginFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
-        if (session != null && session.getAttribute("loginUser") != null) {
+        if (session != null && session.getAttribute(SessionConfig.ATTR_LOGIN_USER) != null) {
             chain.doFilter(request, response);
             return;
         }
@@ -35,7 +37,7 @@ public class AutoLoginFilter implements Filter {
 
                     if (user != null) {
                         HttpSession newSession = req.getSession();
-                        newSession.setAttribute("loginUser", user);
+                        newSession.setAttribute(SessionConfig.ATTR_LOGIN_USER, user);
 
                         switch (user.getRoleName()) {
                             case "Admin":

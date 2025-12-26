@@ -48,7 +48,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute(SessionConfig.ATTR_LOGIN_USER, user);
             session.setAttribute(SessionConfig.ATTR_CREATION_TIME, System.currentTimeMillis());
             session.setAttribute(SessionConfig.ATTR_LAST_ROTATION, System.currentTimeMillis());
-            session.setMaxInactiveInterval(SessionConfig.SESSION_TIMEOUT_MINUTES * 60);
+            session.setMaxInactiveInterval(SessionConfig.SESSION_TIMEOUT_MINUTES * 600);
 
             // Set secure session cookie
             Cookie sessionCookie = new Cookie(SessionConfig.SESSION_COOKIE_NAME, session.getId());

@@ -1,20 +1,13 @@
 package dao;
 
 import model.User;
-import org.mindrot.jbcrypt.BCrypt;
 import utils.DBUtil;
-
+import utils.PasswordUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    private final DBUtil dbUtil;
-
-    public UserDAO() {
-        dbUtil = new DBUtil();
-    }
-
     public User checkLogin(String userOrEmail, String password) {
         String sql =
                 "SELECT u.user_id, u.fullname, u.username, u.email, u.status, " +
@@ -24,7 +17,7 @@ public class UserDAO {
                         "WHERE u.username = ? OR u.email = ? " +
                         "LIMIT 1";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, userOrEmail);
@@ -35,7 +28,7 @@ public class UserDAO {
 
                     String hashedPassword = rs.getString("password");
 
-                    if (BCrypt.checkpw(password, hashedPassword)) {
+                    if (PasswordUtil.check(password, hashedPassword)) {
                         User u = new User();
                         u.setId(rs.getInt("user_id"));
                         u.setUsername(rs.getString("username"));
@@ -56,7 +49,7 @@ public class UserDAO {
 
     public boolean checkUserOrEmailExists(String userOrEmail) {
         String sql = "SELECT 1 FROM user WHERE username = ? OR email = ?";
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userOrEmail);
             stmt.setString(2, userOrEmail);
@@ -74,10 +67,10 @@ public class UserDAO {
                 "INSERT INTO user (fullname, username, email, password, status, avatar_url, role_id) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+            String hashed = PasswordUtil.hash(user.getPassword());
 
             stmt.setString(1, user.getFullname());
             stmt.setString(2, user.getUsername());
@@ -108,7 +101,7 @@ public class UserDAO {
     public void updateStatusByEmail(String email) {
         String sql = "UPDATE user SET status = TRUE WHERE email = ?";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.executeUpdate();
@@ -120,10 +113,10 @@ public class UserDAO {
     public boolean updatePasswordByEmail(String email, String newPassword) {
         String sql = "UPDATE user SET password = ? WHERE email = ?";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            String hashed = PasswordUtil.hash(newPassword);
 
             stmt.setString(1, hashed);
             stmt.setString(2, email);
@@ -142,7 +135,7 @@ public class UserDAO {
                         "JOIN setting s ON s.setting_id = u.role_id " +
                         "WHERE cu.class_id = ? AND s.setting_name = 'Instructor'";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, classId);
@@ -178,7 +171,7 @@ public class UserDAO {
                         " ORDER BY u.user_id ASC " +
                         " LIMIT ? OFFSET ?";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             setFilterParameters(ps, params, 1);
@@ -209,7 +202,7 @@ public class UserDAO {
     public boolean updateUserStatus(int userId, boolean newStatus) {
         String sql = "UPDATE user SET status = ? WHERE user_id = ?";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setBoolean(1, newStatus);
@@ -235,7 +228,7 @@ public class UserDAO {
                         "LEFT JOIN setting s ON u.role_id = s.setting_id " +
                         filterClause;
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             setFilterParameters(ps, params, 1);
@@ -290,7 +283,7 @@ public class UserDAO {
                         "LEFT JOIN setting s ON u.role_id = s.setting_id " +
                         "WHERE u.user_id = ?";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
@@ -320,7 +313,7 @@ public class UserDAO {
     public void saveRememberToken(int userId, String token) {
         String sql = "UPDATE user SET remember_token = ? WHERE user_id = ?";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, token);
             stmt.setInt(2, userId);
@@ -339,7 +332,7 @@ public class UserDAO {
                         "WHERE u.remember_token = ? " +
                         "LIMIT 1";
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, token);
@@ -367,7 +360,7 @@ public class UserDAO {
 
         int roleId = -1;
 
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, roleName);
@@ -386,26 +379,28 @@ public class UserDAO {
     }
 
     public boolean updateUser(User user, String password) {
-        String sql = "UPDATE user SET fullname = ?, email = ?, status = ?, avatar_url = ?, password = ?, role_id = ? " +
+        String sql = "UPDATE user SET username = ?, fullname = ?, email = ?, status = ?, avatar_url = ?, password = ?, role_id = ? " +
                 "WHERE user_id = ?";
         int roleId = getRoleIdByRoleName(user.getRoleName());
         String newPassword ;
-        try (Connection conn = dbUtil.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             if(password == null || password.isEmpty()) {
                 newPassword = user.getPassword();
-            }else {
-                newPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            }
+            else {
+                newPassword = PasswordUtil.hash(password);
             }
 
-            stmt.setString(1, user.getFullname());
-            stmt.setString(2, user.getEmail());
-            stmt.setBoolean(3, user.isStatus());
-            stmt.setString(4, user.getAvatarUrl());
-            stmt.setString(5, newPassword);
-            stmt.setInt(6, roleId);
-            stmt.setInt(7, user.getId());
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getFullname());
+            stmt.setString(3, user.getEmail());
+            stmt.setBoolean(4, user.isStatus());
+            stmt.setString(5, user.getAvatarUrl());
+            stmt.setString(6, newPassword);
+            stmt.setInt(7, roleId);
+            stmt.setInt(8, user.getId());
 
             return stmt.executeUpdate() > 0;
 
