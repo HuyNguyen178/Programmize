@@ -415,44 +415,6 @@ public class UserDAO {
         return false;
     }
 
-    public List<Object[]> getTopInstructorsByEnrollment(int limit) {
-        List<Object[]> topStatsList = new ArrayList<>();
-
-        String sql = "SELECT u.user_id, u.fullname, u.status, " +
-                "COUNT(cl_u.user_id) AS enrollments_count " +
-                "FROM user u " +
-                "JOIN class cl ON u.user_id = cl.instructor_id " +
-                "LEFT JOIN class_enrollment cl_u ON cl.class_id = cl_u.class_id " +
-                "WHERE u.role_id = (SELECT setting_id FROM setting WHERE setting_name = 'Instructor') " +
-                "GROUP BY u.user_id, u.fullname " +
-                "ORDER BY enrollments_count DESC " +
-                "LIMIT ?";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, limit);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    User instructor = new User();
-                    instructor.setId(rs.getInt("user_id"));
-                    instructor.setFullname(rs.getString("fullname"));
-                    instructor.setStatus(rs.getBoolean("status"));
-                    Integer enrollments = rs.getInt("enrollments_count");
-
-                    Object[] statArray = new Object[2];
-                    statArray[0] = instructor;
-                    statArray[1] = enrollments;
-
-                    topStatsList.add(statArray);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return topStatsList;
-    }
 
     public List<User> getAllInstructors() {
         List<User> instructors = new ArrayList<>();

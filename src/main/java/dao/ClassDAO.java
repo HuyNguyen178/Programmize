@@ -306,51 +306,6 @@ public class ClassDAO {
         return 0;
     }
 
-    public List<Object[]> getTopSellingClasses(int limit) {
-        List<Object[]> topStatsList = new ArrayList<>();
-
-        String sql =
-                "SELECT " +
-                        "   cl.class_id, cl.class_name, cl.listed_price, cl.sale_price, " +
-                        "   COUNT(cl_u.user_id) AS enrollments_count, " +
-                        "   (COUNT(cl_u.user_id) * cl.sale_price) AS total_revenue " +
-                        "FROM " +
-                        "   class cl " +
-                        "LEFT JOIN " +
-                        "   class_enrollment cl_u ON cl.class_id = cl_u.class_id " +
-                        "GROUP BY " +
-                        "   cl.class_id, cl.class_name, cl.listed_price, cl.sale_price " +
-                        "ORDER BY " +
-                        "   total_revenue DESC " +
-                        "LIMIT ?";
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, limit);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Class cls = new Class();
-                    cls.setId(rs.getInt("class_id"));
-                    cls.setName(rs.getString("class_name"));
-
-                    Integer enrollments = rs.getInt("enrollments_count");
-                    BigDecimal revenue = rs.getBigDecimal("total_revenue");
-
-                    Object[] statArray = new Object[3];
-                    statArray[0] = cls;
-                    statArray[1] = enrollments;
-                    statArray[2] = revenue;
-                    topStatsList.add(statArray);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return topStatsList;
-    }
 
     public int countActiveClasses(String keyword, Integer categoryId) {
         try (Connection connection = DBUtil.getConnection()) {

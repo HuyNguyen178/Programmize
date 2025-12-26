@@ -1,75 +1,43 @@
 package servlet;
 
-import dao.ClassDAO;
-import dao.CourseDAO;
-import dao.EnrollmentDAO;
-import dao.UserDAO;
-import model.User;
-
+import dao.DashboardDAO;
+import dao.DashboardDAO.DashboardData;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
 
 @WebServlet("/dashboard")
 public class DashBoardServlet extends HttpServlet {
-
-    private UserDAO userDAO;
-    private CourseDAO courseDAO;
-    private ClassDAO classDAO;
-    private EnrollmentDAO enrollmentDAO;
+    private DashboardDAO dashboardDAO;
 
     @Override
     public void init() throws ServletException {
-        super.init();
-        userDAO = new UserDAO();
-        courseDAO = new CourseDAO();
-        classDAO = new ClassDAO();
-        enrollmentDAO = new EnrollmentDAO();
+        dashboardDAO = new DashboardDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        Calendar cal = Calendar.getInstance();
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
 
-        int totalUsers = userDAO.countTotalUsers(null, null, null);
-        int totalCourses = courseDAO.getTotalCourses();
-        int totalClasses = classDAO.getTotalClasses();
-        int currentMonth = cal.get(Calendar.MONTH);
-        int currentYear = cal.get(Calendar.YEAR);
+        DashboardData data = dashboardDAO.getEverything(currentYear, 3);
 
-        List<User> recentUsers = userDAO.searchUsers(null, null, null, totalUsers - 3, 3);
-        List<Object[]> topCourses = courseDAO.getTopSellingCourses(3);
-        List<Object[]> topClasses = classDAO.getTopSellingClasses(3);
-        List<Object[]> topInstructors = userDAO.getTopInstructorsByEnrollment(3);
-        List<BigDecimal> monthlyRevenueList = enrollmentDAO.getMonthlyRevenueList(currentYear);
-        BigDecimal monthlyRevenue = monthlyRevenueList.get(currentMonth );
+        request.setAttribute("totalUsers", data.totalUsers);
+        request.setAttribute("totalCourses", data.totalCourses);
+        request.setAttribute("totalClasses", data.totalClasses);
+        request.setAttribute("recentUsers", data.recentUsers);
+        request.setAttribute("topInstructors", data.topInstructors);
+        request.setAttribute("topCourses", data.topCourses);
+        request.setAttribute("topClasses", data.topClasses);
+        request.setAttribute("monthlyRevenueList", data.monthlyRevenue);
+        request.setAttribute("monthlyRevenue", data.monthlyRevenue.get(currentMonth));
 
-
-        request.setAttribute("totalUsers", totalUsers);
-        request.setAttribute("recentUsers", recentUsers);
-        request.setAttribute("totalCourses", totalCourses);
-        request.setAttribute("topCourses", topCourses);
-        request.setAttribute("totalClasses", totalClasses);
-        request.setAttribute("topClasses", topClasses);
-        request.setAttribute("topInstructors", topInstructors);
-        request.setAttribute("monthlyRevenue", monthlyRevenue);
-        request.setAttribute("monthlyRevenueList", monthlyRevenueList);
-
-        request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp")
-                .forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
     }
 }

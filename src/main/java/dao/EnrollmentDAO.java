@@ -75,26 +75,6 @@ public class EnrollmentDAO {
         return false;
     }
 
-    public List<BigDecimal> getMonthlyRevenueList(int year) {
-        List<BigDecimal> monthlyData = new ArrayList<>();
-        for (int i = 0; i < 12; i++) monthlyData.add(BigDecimal.ZERO);
-        String sql = "SELECT MONTH(enrolled_at) as month, SUM(price_paid) as total " +
-                "FROM (SELECT enrolled_at, price_paid, status FROM course_enrollment " +
-                "      UNION ALL " +
-                "      SELECT enrolled_at, price_paid, status FROM class_enrollment) as combined " +
-                "WHERE YEAR(enrolled_at) = ? AND status = true GROUP BY MONTH(enrolled_at)";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, year);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    monthlyData.set(rs.getInt("month") - 1, rs.getBigDecimal("total"));
-                }
-            }
-        } catch (Exception e) { e.printStackTrace(); }
-        return monthlyData;
-    }
-
     public List<Object> getAllEnrollmentsWithDetails(int userId, String keyword, String type, String status) {
         List<Object> enrollments = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
