@@ -14,8 +14,10 @@ import model.User;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet("/edit-class")
@@ -86,16 +88,16 @@ public class EditClassServlet extends HttpServlet {
             int classId = Integer.parseInt(request.getParameter("classId"));
             int instructorId = Integer.parseInt(instructorIdStr);
 
-            LocalDate startDate = null;
-            LocalDate endDate = null;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            Date startDate = null;
+            Date endDate = null;
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
             if (startDateStr != null && !startDateStr.isBlank()) {
-                startDate = LocalDate.parse(startDateStr, formatter);
+                startDate = formatter.parse(startDateStr);
             }
 
             if (endDateStr != null && !endDateStr.isBlank()) {
-                endDate = LocalDate.parse(endDateStr, formatter);
+                endDate = formatter.parse(endDateStr);
             }
 
             Class c = classDAO.getClassById(classId);
@@ -113,7 +115,7 @@ public class EditClassServlet extends HttpServlet {
             instructor.setId(instructorId);
             c.setInstructor(instructor);
 
-            if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
+            if (startDate != null && endDate != null && endDate.before(startDate)) {
                 request.getSession().setAttribute("errorMessage", "End date must be after start date!");
                 request.setAttribute("clazz", c);
                 request.setAttribute("instructors", userDAO.getAllInstructors());

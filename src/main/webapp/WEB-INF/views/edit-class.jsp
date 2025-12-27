@@ -131,12 +131,12 @@
                     <div class="form-group">
                         <label for="startDate" class="form-label">Start Date</label>
                         <input type="text" id="startDate" name="startDate" class="form-control"
-                               min="0" placeholder="yyyy-MM-dd" pattern="\d{4}-\d{2}-\d{2}" value="${clazz.startDate}">
+                               min="0" placeholder="dd/MM/yyyy" pattern="\d{2}/\d{2}/\d{4}" value="<fmt:formatDate value='${clazz.startDate}' pattern='dd/MM/yyyy'/>">
                     </div>
                     <div class="form-group">
                         <label for="endDate" class="form-label">End Date</label>
                         <input type="text" id="endDate" name="endDate" class="form-control"
-                               min="0" placeholder="yyyy-MM-dd" pattern="\d{4}-\d{2}-\d{2}" value="${clazz.endDate}">
+                               min="0" placeholder="dd/MM/yyyy" pattern="\d{2}/\d{2}/\d{4}" value="<fmt:formatDate value='${clazz.endDate}' pattern='dd/MM/yyyy'/>">
                     </div>
 
                 </div>
@@ -167,11 +167,11 @@
                         <label class="form-label">Status *</label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="1" ${clazz.status == '1' ? 'checked' : ''}>
+                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="1" ${clazz.status ? 'checked' : ''}>
                                 <label class="form-check-label" for="statusActive">Active</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="0" ${clazz.status == '0' ? 'checked' : ''}>
+                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="0" ${!clazz.status ? 'checked' : ''}>
                                 <label class="form-check-label" for="statusInactive">Inactive</label>
                             </div>
                         </div>

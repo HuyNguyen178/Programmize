@@ -13,8 +13,10 @@ import model.Setting;
 import model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet("/add-class")
@@ -58,16 +60,16 @@ public class AddClassServlet extends HttpServlet {
 
             int instructorId = Integer.parseInt(instructorIdStr);
 
-            LocalDate startDate = null;
-            LocalDate endDate = null;
+            Date startDate = null;
+            Date endDate = null;
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             if (startDateStr != null && !startDateStr.isBlank()) {
-                startDate = LocalDate.parse(startDateStr, formatter);
+                startDate = formatter.parse(startDateStr);
             }
 
             if (endDateStr != null && !endDateStr.isBlank()) {
-                endDate = LocalDate.parse(endDateStr, formatter);
+                endDate = formatter.parse(endDateStr);
             }
 
             Class c = new Class();
@@ -85,7 +87,7 @@ public class AddClassServlet extends HttpServlet {
             instructor.setId(instructorId);
             c.setInstructor(instructor);
 
-            if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
+            if (startDate != null && endDate != null && endDate.before(startDate)) {
                 request.getSession().setAttribute("errorMessage", "End date must be after start date!");
                 request.setAttribute("clazz", c);
                 request.setAttribute("instructors", userDAO.getAllInstructors());

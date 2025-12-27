@@ -101,12 +101,30 @@
         .card-content {
             padding: 1rem 1rem 0.5rem;
         }
-        .card-content h3 {
+
+        .card-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .class-title {
             font-size: 1.15rem;
             font-weight: 700;
-            margin-bottom: 0.4rem;
+            margin: 0;
             line-height: 1.3;
             color: #222;
+        }
+
+        /* START DATE BADGE */
+        .class-start-date {
+            font-size: 0.8rem;
+            color: #555;
+            background: #f1f3f5;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
         }
 
         /* META */
@@ -278,7 +296,15 @@
                                 </c:choose>
                             </div>
                             <div class="card-content">
-                                <h3>${clazz.name}</h3>
+                                <div class="card-title-row">
+                                    <h3 class="class-title">${clazz.name}</h3>
+
+                                    <c:if test="${not empty clazz.startDate}">
+                                        <span class="class-start-date">
+                                            <fmt:formatDate value="${clazz.startDate}" pattern="dd/MM/yyyy"/>
+                                        </span>
+                                    </c:if>
+                                </div>
                                 <div class="card-meta">
                                     <c:if test="${not empty clazz.instructor.fullname}">
                                         👤 ${clazz.instructor.fullname}

@@ -162,11 +162,11 @@
                         <label class="form-label">Status *</label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="1" ${course.status == '1' ? 'checked' : ''}>
+                                <input class="form-check-input" type="radio" name="status" id="statusActive" value="1" ${course.status ? 'checked' : ''}>
                                 <label class="form-check-label" for="statusActive">Active</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="0" ${course.status == '0' ? 'checked' : ''}>
+                                <input class="form-check-input" type="radio" name="status" id="statusInactive" value="0" ${!course.status ? 'checked' : ''}>
                                 <label class="form-check-label" for="statusInactive">Inactive</label>
                             </div>
                         </div>

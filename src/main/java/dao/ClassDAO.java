@@ -83,8 +83,8 @@ public class ClassDAO {
                 c.setThumbnailUrl(resultSet.getString("thumbnail_url"));
                 c.setStatus(resultSet.getBoolean("status"));
                 c.setDescription(resultSet.getString("description"));
-                c.setStartDate(resultSet.getDate("start_date").toLocalDate());
-                c.setEndDate(resultSet.getDate("end_date").toLocalDate());
+                c.setStartDate(resultSet.getDate("start_date"));
+                c.setEndDate(resultSet.getDate("end_date"));
 
                 User instructor = new User();
                 instructor.setId(resultSet.getInt("instructor_id"));
@@ -177,8 +177,8 @@ public class ClassDAO {
                 cls.setSalePrice(rs.getBigDecimal("sale_price"));
                 cls.setDescription(rs.getString("description"));
                 cls.setStatus(rs.getBoolean("status"));
-                cls.setStartDate(rs.getDate("start_date").toLocalDate());
-                cls.setEndDate(rs.getDate("end_date").toLocalDate());
+                cls.setStartDate(rs.getDate("start_date"));
+                cls.setEndDate(rs.getDate("end_date"));
 
                 User instructor = new User();
                 instructor.setId(rs.getInt("instructor_id"));
@@ -221,8 +221,8 @@ public class ClassDAO {
                 instructor.setFullname(rs.getString("instructor_name"));
                 c.setInstructor(instructor);
 
-                c.setStartDate(rs.getDate("start_date").toLocalDate());
-                c.setEndDate(rs.getDate("end_date").toLocalDate());
+                c.setStartDate(rs.getDate("start_date"));
+                c.setEndDate(rs.getDate("end_date"));
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
 
@@ -380,8 +380,8 @@ public class ClassDAO {
                 c.setId(rs.getInt("class_id"));
                 c.setName(rs.getString("class_name"));
                 c.setThumbnailUrl(rs.getString("thumbnail_url"));
-                c.setStartDate(rs.getDate("start_date").toLocalDate());
-                c.setEndDate(rs.getDate("end_date").toLocalDate());
+                c.setStartDate(rs.getDate("start_date"));
+                c.setEndDate(rs.getDate("end_date"));
                 c.setStatus(rs.getBoolean("status"));
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
@@ -467,8 +467,8 @@ public class ClassDAO {
                 } else {
                     c.setCategories(new String[0]);
                 }
-                c.setStartDate(rs.getDate("start_date").toLocalDate());
-                c.setEndDate(rs.getDate("end_date").toLocalDate());
+                c.setStartDate(rs.getDate("start_date"));
+                c.setEndDate(rs.getDate("end_date"));
                 c.setStatus(rs.getBoolean("status"));
                 c.setNumberOfStudents(rs.getInt("number_of_students"));
                 c.setDescription(rs.getString("description"));
@@ -561,8 +561,8 @@ public class ClassDAO {
                 c.setSalePrice(resultSet.getBigDecimal("sale_price"));
                 c.setStatus(resultSet.getBoolean("status"));
                 c.setDescription(resultSet.getString("description"));
-                c.setStartDate(resultSet.getDate("start_date").toLocalDate());
-                c.setEndDate(resultSet.getDate("end_date").toLocalDate());
+                c.setStartDate(resultSet.getDate("start_date"));
+                c.setEndDate(resultSet.getDate("end_date"));
 
                 String catStr = resultSet.getString("category_names");
                 if (catStr != null) {

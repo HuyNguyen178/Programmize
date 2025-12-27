@@ -186,11 +186,8 @@
                                                  alt="Thumbnail" class="thumbnail rounded">
                                         </td>
 
-                                        <td style="text-align: center;">
-                                            <a href="${pageContext.request.contextPath}/course-content"
-                                               class="course-link">
+                                        <td style="text-align: left;">
                                                 <strong>${course.courseName}</strong>
-                                            </a>
                                         </td>
                                         <td>
                                             <c:choose>
@@ -214,12 +211,12 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-                                        <td>
+                                        <td style="text-align: right">
                                             <fmt:formatNumber value="${course.listedPrice}"
                                                               type="currency"
                                                               currencySymbol="$" />
                                         </td>
-                                        <td>
+                                        <td style="text-align: right;">
                                             <fmt:formatNumber value="${course.salePrice}"
                                                               type="currency"
                                                               currencySymbol="$" />

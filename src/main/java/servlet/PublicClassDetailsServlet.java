@@ -39,17 +39,8 @@ public class PublicClassDetailsServlet extends HttpServlet {
             return;
         }
 
-        Date startDate = null;
-        Date endDate = null;
-        if (clazz.getStartDate() != null) {
-            startDate = java.sql.Date.valueOf(clazz.getStartDate());
-        }
-        request.setAttribute("startDate", startDate);
-
-        if (clazz.getEndDate() != null) {
-            endDate = java.sql.Date.valueOf(clazz.getEndDate());
-        }
-        request.setAttribute("endDate", endDate);
+        request.setAttribute("startDate", clazz.getStartDate());
+        request.setAttribute("endDate", clazz.getEndDate());
 
         request.setAttribute("clazz", clazz);
         request.getRequestDispatcher("/WEB-INF/views/public-class-details.jsp")

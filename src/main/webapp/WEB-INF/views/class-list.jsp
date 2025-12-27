@@ -187,11 +187,8 @@
                                                  alt="Thumbnail" class="thumbnail rounded">
                                         </td>
 
-                                        <td style="text-align: center;">
-                                            <a href="${pageContext.request.contextPath}/class-content"
-                                               class="class-link">
+                                        <td style="text-align: left;">
                                                 <strong>${clazz.name}</strong>
-                                            </a>
                                         </td>
                                         <td>
                                             <c:choose>
@@ -218,7 +215,7 @@
                                         <td>
                                             <c:choose>
                                                 <c:when test="${not empty clazz.startDate}">
-                                                    <span>${clazz.startDate}</span>
+                                                    <fmt:formatDate value="${clazz.startDate}" pattern="dd/MM/yyyy"/>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <em>No start date</em>
@@ -228,7 +225,7 @@
                                         <td>
                                             <c:choose>
                                                 <c:when test="${not empty clazz.endDate}">
-                                                    <span>${clazz.endDate}</span>
+                                                    <fmt:formatDate value="${clazz.endDate}" pattern="dd/MM/yyyy"/>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <em>No end date</em>
