@@ -1,7 +1,13 @@
+providers = []
+
+[variables]
+JAVA_HOME = "/nix/var/nix/profiles/default"
+
 [phases.setup]
 nixPkgs = ["jdk17", "maven"]
 
 [phases.build]
+dependsOn = ["setup"]
 cmds = ["mvn clean package -DskipTests"]
 
 [start]
