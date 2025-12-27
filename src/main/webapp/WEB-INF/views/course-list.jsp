@@ -175,12 +175,12 @@
                                         <td>
                                             <fmt:formatNumber value="${course.listedPrice}"
                                                               type="currency"
-                                                              currencySymbol="$" />
+                                                              currencySymbol="₫" />
                                         </td>
                                         <td>
                                             <fmt:formatNumber value="${course.salePrice}"
                                                               type="currency"
-                                                              currencySymbol="$" />
+                                                              currencySymbol="₫" />
                                         </td>
                                         <td>
                                             <c:choose>
