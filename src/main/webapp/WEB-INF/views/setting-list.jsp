@@ -14,43 +14,6 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* CONTENT SHIFT CONFIGURATION (COPIED FROM account-list.jsp) */
-        #content {
-            margin-left: 260px; /* Default position when Sidebar is open */
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #content.expanded {
-            margin-left: 72px; /* Position when Sidebar is closed */
-        }
-        /* TOPBAR SHIFT CONFIGURATION (COPIED FROM account-list.jsp) */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            width: calc(100% - 260px);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-
-        /* TABLE ALIGNMENT */
-        .table th, .table td {
-            vertical-align: middle;
-            text-align: center;
-        }
-        /* Status Badges (Sử dụng Bootstrap badges thay vì style cục bộ) */
-        .status-active {
-            font-weight: bold;
-        }
-        .status-inactive {
-            font-weight: bold;
-        }
-        /* Cập nhật các nút sắp xếp/tìm kiếm để khớp với account-list */
         .table th a {
             color: #212529; /* Màu chữ đen */
             text-decoration: none;

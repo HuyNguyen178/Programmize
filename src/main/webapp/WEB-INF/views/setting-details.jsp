@@ -15,61 +15,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="../../assets/css/admin.css" rel="stylesheet">
+    <link href="../../assets/css/detail.css" rel="stylesheet">
 
-    <style>
-        /* KHẮC PHỤC XUNG ĐỘT LAYOUT: Đảm bảo body không có margin */
-        body {
-            margin: 0;
-            background-color: #f8f9fa;
-        }
-
-        /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
-        #content {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-
-            /* CSS CĂN GIỮA MỚI */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: calc(100% - 260px);
-            box-sizing: border-box;
-        }
-        #content.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-
-        /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
-        .container-fluid-custom {
-            max-width: 850px; /* Chiều rộng tối đa thống nhất */
-            width: 100%;
-        }
-
-        /* Cải thiện Header tối giản */
-        .page-header {
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e9ecef;
-            width: 100%;
-        }
-
-        /* Giữ nguyên Topbar CSS */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-        }
-
-    </style>
 </head>
 
 <body class="bg-light">

@@ -13,65 +13,14 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* Content Shift Configuration (IDENTICAL to account-list.jsp) */
-        #content {
-            margin-left: 260px; /* Default position when Sidebar is open [cite: 89] */
-            transition: margin-left 0.25s ease; /* [cite: 90] */
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #content.expanded {
-            margin-left: 72px; /* Position when Sidebar is closed [cite: 91] */
-        }
-        /* Topbar Shift Configuration (Copied from account-list.jsp) */
-        #topbar {
-            margin-left: 260px; /* [cite: 4] */
-            transition: margin-left 0.25s ease; /* [cite: 4] */
-            width: calc(100% - 260px);
-        }
-        #topbar.expanded {
-            margin-left: 72px; /* [cite: 5] */
-            width: calc(100% - 72px); /* [cite: 5] */
-        }
-
-        /* Table alignment (Copied from account-list.jsp) */
-        .table th, .table td {
-            vertical-align: middle; /* [cite: 6] */
-            text-align: center; /* [cite: 6] */
-        }
-        /* Course Name (2nd column) left-aligned */
-        .table td:nth-child(2) {
-            text-align: center; /* Tương tự cột Full Name ở account-list.jsp [cite: 7] */
-        }
-
-        /* Thumbnail style (Giữ nguyên kích thước 50px như ban đầu để tránh làm thay đổi cấu trúc dữ liệu nếu có) */
         .thumbnail {
             width: 50px; /* [cite: 83] */
             height: 50px; /* [cite: 83] */
             object-fit: cover;
         }
-
-        /* Loại bỏ các style cũ của course-list.jsp không cần thiết */
-
-        /* Đảm bảo các trạng thái status dùng lớp badge của Bootstrap */
-        .status-active {
-            font-weight: bold;
-        }
-        .status-inactive {
-            font-weight: bold;
-        }
-        a {
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
-<c:set var="currentSortColumn" value="${param.sortColumn}" />
-<c:set var="currentSortOrder" value="${param.sortOrder}" />
-<c:set var="nextOrderCourseName" value="${currentSortColumn == 'course_name' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
-<c:set var="nextOrderCourseId" value="${currentSortColumn == 'course_id' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
-<c:set var="nextOrderListedPrice" value="${currentSortColumn == 'listed_price' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
-<c:set var="nextOrderSalePrice" value="${currentSortColumn == 'sale_price' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
 <%-- SỬ DỤNG JAVASCRIPT INCLUDE GIỐNG account-list.jsp --%>
 <jsp:include page="include/admin-topbar.jsp"/>
 <jsp:include page="include/admin-sidebar.jsp"/>
@@ -163,30 +112,14 @@
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="bg-light">
                         <tr>
-                            <th style="width: 5%;">
-                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=course_id&sortOrder=${nextOrderCourseId}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
-                                    Id
-                                </a>
-                            </th>
+                            <th style="width: 5%;">ID</th>
                             <%-- Thêm cột Thumbnail/Image để tương đồng với Avatar trong account-list --%>
                             <th style="width: 8%;">Image</th>
-                            <th style="width: 20%;">
-                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=course_name&sortOrder=${nextOrderCourseName}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
-                                    Course Name
-                                </a>
-                            </th>
+                            <th style="width: 20%;">Course Name</th>
                             <th style="width: 15%;">Category</th>
                             <th style="width: 15%;">Instructor</th>
-                            <th style="width: 10%;">
-                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=listed_price&sortOrder=${nextOrderListedPrice}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
-                                    Listed Price
-                                </a>
-                            </th>
-                            <th style="width: 10%;">
-                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=sale_price&sortOrder=${nextOrderSalePrice}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
-                                    Sale Price
-                                </a>
-                            </th>
+                            <th style="width: 10%;">Listed Price</th>
+                            <th style="width: 10%;">Sale Price</th>
                             <th style="width: 7%;">Status</th>
                             <th style="width: 10%;">Actions</th>
                         </tr>
@@ -211,8 +144,11 @@
                                                  alt="Thumbnail" class="thumbnail rounded">
                                         </td>
 
-                                        <td style="text-align: left;">
+                                        <td style="text-align: center;">
+                                            <a href="${pageContext.request.contextPath}/course-content"
+                                               class="course-link">
                                                 <strong>${course.courseName}</strong>
+                                            </a>
                                         </td>
                                         <td>
                                             <c:choose>
@@ -236,12 +172,12 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-                                        <td style="text-align: right">
+                                        <td>
                                             <fmt:formatNumber value="${course.listedPrice}"
                                                               type="currency"
                                                               currencySymbol="$" />
                                         </td>
-                                        <td style="text-align: right;">
+                                        <td>
                                             <fmt:formatNumber value="${course.salePrice}"
                                                               type="currency"
                                                               currencySymbol="$" />

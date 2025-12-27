@@ -73,62 +73,12 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* Layout and styling fixes */
-        body { margin: 0;
-            background-color: #f8f9fa; }
-
-        /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
-        #content {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-
-            /* CSS CĂN GIỮA MỚI */
-            display: flex;
-            /* Bật Flexbox */
-            flex-direction: column;
-            /* Xếp dọc */
-            align-items: center;
-            /* Căn giữa theo chiều ngang */
-            /* Dùng width: 100% để đảm bảo nó chiếm toàn bộ khoảng trống */
-            width: calc(100% - 260px);
-            box-sizing: border-box; /* Bao gồm padding trong width */
-        }
-
-        #content.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px); /* Điều chỉnh width khi sidebar thu gọn */
-        }
-
-        /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
-        .container-fluid {
-            max-width: 850px;
-            /* Chiều rộng tối đa của nội dung (có thể điều chỉnh) */
-            width: 100%;
-        }
-
         .avatar-preview {
             width: 100px;
             height: 100px;
             object-fit: cover;
             border-radius: 50%;
             border: 2px solid #ccc;
-        }
-        /* Cải thiện Header tối giản */
-        .page-header {
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e9ecef;
-            width: 100%; /* Đảm bảo header chiếm hết chiều rộng container */
-        }
-        .btn-header {
-            padding: 8px 15px;
-            font-size: 0.95rem;
-        }
-        .page-header h2 {
-            font-size: 2rem;
-            margin-bottom: 0;
         }
     </style>
 </head>
@@ -138,7 +88,7 @@
 <%@ include file="include/admin-sidebar.jsp" %>
 <%@ include file="include/admin-topbar.jsp" %>
 
-<div id="content" class="p-4">
+<div id="content" class="content-wrapper">
     <div class="container-fluid p-0">
 
         <%-- HEADER SECTION --%>

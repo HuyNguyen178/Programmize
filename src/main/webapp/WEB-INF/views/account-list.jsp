@@ -14,35 +14,6 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* Content Shift Configuration (IDENTICAL to student-list.jsp) */
-        #content {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #content.expanded {
-            margin-left: 72px;
-        }
-        /* Topbar Shift Configuration (IDENTICAL to student-list.jsp) */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            width: calc(100% - 260px);
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-        /* Table alignment */
-        .table th, .table td {
-            vertical-align: middle;
-            text-align: center;
-        }
-        /* Full Name (3rd column) left-aligned */
-        .table td:nth-child(3) {
-            text-align: left;
-        }
         /* Avatar Style */
         .rounded-circle {
             width: 40px;

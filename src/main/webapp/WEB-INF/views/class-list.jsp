@@ -13,57 +13,12 @@
     <link href="../../assets/css/admin.css" rel="stylesheet">
 
     <style>
-        /* Content Shift Configuration (IDENTICAL to account-list.jsp) */
-        #content {
-            margin-left: 260px; /* Default position when Sidebar is open [cite: 89] */
-            transition: margin-left 0.25s ease; /* [cite: 90] */
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #content.expanded {
-            margin-left: 72px; /* Position when Sidebar is closed [cite: 91] */
-        }
-        /* Topbar Shift Configuration (Copied from account-list.jsp) */
-        #topbar {
-            margin-left: 260px; /* [cite: 4] */
-            transition: margin-left 0.25s ease; /* [cite: 4] */
-            width: calc(100% - 260px);
-        }
-        #topbar.expanded {
-            margin-left: 72px; /* [cite: 5] */
-            width: calc(100% - 72px); /* [cite: 5] */
-        }
-
-        /* Table alignment (Copied from account-list.jsp) */
-        .table th, .table td {
-            vertical-align: middle; /* [cite: 6] */
-            text-align: center; /* [cite: 6] */
-        }
-        /* class Name (2nd column) left-aligned */
-        .table td:nth-child(2) {
-            text-align: center; /* Tương tự cột Full Name ở account-list.jsp [cite: 7] */
-        }
-
-        /* Thumbnail style (Giữ nguyên kích thước 50px như ban đầu để tránh làm thay đổi cấu trúc dữ liệu nếu có) */
         .thumbnail {
             width: 50px; /* [cite: 83] */
             height: 50px; /* [cite: 83] */
             object-fit: cover;
         }
 
-        /* Loại bỏ các style cũ của class-list.jsp không cần thiết */
-
-        /* Đảm bảo các trạng thái status dùng lớp badge của Bootstrap */
-        .status-active {
-            font-weight: bold;
-        }
-        .status-inactive {
-            font-weight: bold;
-        }
-
-        a {
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
