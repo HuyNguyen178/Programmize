@@ -318,10 +318,6 @@
                                         </small>
                                     </div>
                                     <div>
-                                        <a href="${pageContext.request.contextPath}/edit-course?id=${course.courseId}"
-                                           class="btn btn-sm btn-outline-primary me-2">
-                                            <i class="bi bi-pencil me-1"></i> Edit Course
-                                        </a>
                                         <a href="${pageContext.request.contextPath}/add-chapter?courseId=${course.courseId}"
                                            class="btn btn-sm btn-primary">
                                             <i class="fa fa-plus me-1"></i> Add Chapter

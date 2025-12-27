@@ -247,10 +247,6 @@
                                         </small>
                                     </div>
                                     <div>
-                                        <a href="${pageContext.request.contextPath}/edit-class?id=${clazz.id}"
-                                           class="btn btn-sm btn-outline-primary me-2">
-                                            <i class="bi bi-pencil me-1"></i> Edit class
-                                        </a>
                                         <button type="button" class="btn btn-sm btn-danger"
                                                 onclick="event.stopPropagation(); confirmDeleteClass(${clazz.id}, '${clazz.name}')">
                                             Remove Class

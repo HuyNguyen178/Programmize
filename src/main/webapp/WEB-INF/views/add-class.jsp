@@ -12,6 +12,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="../../assets/css/admin.css" rel="stylesheet">
 
+  <!-- Summernote Rich Text Editor -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
+
   <style>
     /* Layout and styling fixes */
     body { margin: 0; background-color: #f8f9fa; }
@@ -78,6 +84,11 @@
       padding: 10px;
       border-radius: 0.25rem;
     }
+
+    /* TinyMCE container styling */
+    .tox-tinymce {
+      border-radius: 0.25rem;
+    }
   </style>
 </head>
 <body>
@@ -129,13 +140,13 @@
 
           <div class="form-group">
             <label for="startDate" class="form-label">Start Date</label>
-            <input type="text" id="startDate" name="startDate" class="form-control" value="${clazz.startDate}"
-                   min="0" placeholder="yyyy-MM-dd" pattern="\d{4}-\d{2}-\d{2}">
+            <input type="text" id="startDate" name="startDate" class="form-control" value="<fmt:formatDate value='${clazz.startDate}' pattern='dd/MM/yyyy'/>"
+                   min="0" placeholder="dd/MM/yyyy" pattern="\d{2}/\d{2}/\d{4}">
           </div>
           <div class="form-group">
             <label for="endDate" class="form-label">End Date</label>
-            <input type="text" id="endDate" name="endDate" class="form-control" value="${clazz.endDate}"
-                   min="0" placeholder="yyyy-MM-dd" pattern="\d{4}-\d{2}-\d{2}">
+            <input type="text" id="endDate" name="endDate" class="form-control" value="<fmt:formatDate value='${clazz.endDate}' pattern='dd/MM/yyyy'/>"
+                   min="0" placeholder="dd/MM/yyyy" pattern="\d{2}/\d{2}/\d{4}">
           </div>
 
         </div>
@@ -224,8 +235,34 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../assets/js/admin_scripts.js"></script>
+
+<script>
+  // Initialize Summernote
+  $(document).ready(function() {
+    $('#description').summernote({
+      height: 300,
+      fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto', 'Open Sans'],
+      fontNamesIgnoreCheck: ['Roboto', 'Open Sans'],
+      fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['table', ['table']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ],
+      placeholder: 'Enter class description...',
+      tabsize: 2,
+      disableDragAndDrop: false
+    });
+  });
+</script>
 
 </body>
 </html>

@@ -63,7 +63,7 @@ public class AddClassServlet extends HttpServlet {
             Date startDate = null;
             Date endDate = null;
 
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             if (startDateStr != null && !startDateStr.isBlank()) {
                 startDate = formatter.parse(startDateStr);
             }
