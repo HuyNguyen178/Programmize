@@ -21,8 +21,7 @@
             flex: 1;
             padding-top: 20px;
             padding-bottom: 40px; }
-        .profile-card {
-            margin-top: 30px;
+        .profile-card { margin-top: 30px;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
@@ -51,6 +50,11 @@
         .form-label {
             font-weight: 600;
             color: #343a40; }
+        /* Style cho ô chỉ đọc */
+        .form-control[readonly] {
+            background-color: #f1f3f5 !important;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -98,17 +102,16 @@
                                 <div class="mb-3">
                                     <label class="form-label">Username</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control bg-light" value="${user.username}" readonly>
+                                        <input type="text" class="form-control" value="${user.username}" readonly>
                                         <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalUsername">Change</button>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light" value="${user.email}" readonly>
-                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalEmail">Change</button>
-                                    </div>
+                                    <%-- Đã xóa nút Change ở đây --%>
+                                    <input type="text" class="form-control" value="${user.email}" readonly>
+                                    <small class="text-muted italic">Email address cannot be changed.</small>
                                 </div>
 
                                 <div class="mb-3">
@@ -143,45 +146,7 @@
     </div>
 </main>
 
-<div class="modal fade" id="modalEmail" tabindex="-1">
-    <div class="modal-dialog">
-        <form action="profile" method="POST" class="modal-content">
-            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-            <div class="modal-header">
-                <h5 class="modal-title">Change Email Address</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Current Email Verification (Send to: ${user.email})</label>
-                    <div class="input-group mb-2">
-                        <input type="text" name="oldVerifyCode" class="form-control" placeholder="Enter code from OLD email" required>
-                        <button class="btn btn-secondary" type="button" id="btnSendOldCode">Send Code</button>
-                    </div>
-                </div>
-
-                <hr>
-
-                <div class="mb-3">
-                    <label class="form-label">New Email Address</label>
-                    <input type="email" id="newEmail" name="newEmail" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">New Email Verification Code</label>
-                    <div class="input-group">
-                        <input type="text" name="verifyCode" class="form-control" placeholder="Enter code from NEW email" required>
-                        <button class="btn btn-info" type="button" id="btnSendNewCode">Send Code</button>
-                    </div>
-                </div>
-                <small id="emailStatus" class="form-text"></small>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Update Email</button>
-            </div>
-        </form>
-    </div>
-</div>
-
+<%-- Modal Username --%>
 <div class="modal fade" id="modalUsername" tabindex="-1">
     <div class="modal-dialog">
         <form action="profile" method="POST" class="modal-content">
@@ -190,12 +155,16 @@
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">New Username</label><input type="text" name="newUsername" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">Current Password to Confirm</label><input type="password" name="password" class="form-control" required></div>
+                <c:if test="${sessionScope.modalError != null && sessionScope.openModal == 'username'}">
+                    <small class="text-danger d-block mt-2">${sessionScope.modalError}</small>
+                </c:if>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Username</button></div>
         </form>
     </div>
 </div>
 
+<%-- Modal Password --%>
 <div class="modal fade" id="modalPassword" tabindex="-1">
     <div class="modal-dialog">
         <form action="profile" method="POST" class="modal-content">
@@ -205,6 +174,9 @@
                 <div class="mb-3"><label class="form-label">Current Password</label><input type="password" name="oldPass" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">New Password</label><input type="password" name="newPass" class="form-control" required></div>
                 <div class="mb-3"><label class="form-label">Confirm New Password</label><input type="password" name="confirmPass" class="form-control" required></div>
+                <c:if test="${sessionScope.modalError != null && sessionScope.openModal == 'password'}">
+                    <small class="text-danger d-block mt-2">${sessionScope.modalError}</small>
+                </c:if>
             </div>
             <div class="modal-footer"><button type="submit" class="btn btn-primary">Update Password</button></div>
         </form>
@@ -216,31 +188,13 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Send OTP to OLD Email
-        document.getElementById('btnSendOldCode').addEventListener('click', function() {
-            this.disabled = true;
-            fetch('send-otp?type=old')
-                .then(res => res.ok ? alert("OTP sent to your current email!") : (this.disabled = false));
-        });
+        const urlInput = document.getElementById('avatarUrl');
+        const imgPreview = document.getElementById('currentAvatarImg');
+        const defaultAvatar = "https://via.placeholder.com/100/007bff/ffffff?text=User";
 
-        // Send OTP to NEW Email
-        document.getElementById('btnSendNewCode').addEventListener('click', function() {
-            const email = document.getElementById('newEmail').value;
-            if(!email) return alert("Please enter your new email first!");
-
-            this.disabled = true;
-            const status = document.getElementById('emailStatus');
-            status.innerText = "Sending code...";
-
-            fetch('send-otp?type=new&email=' + encodeURIComponent(email))
-                .then(res => {
-                    if(res.ok) {
-                        status.innerText = "Code sent to new email!";
-                    } else {
-                        alert("Error sending code.");
-                        this.disabled = false;
-                    }
-                });
+        urlInput.addEventListener('input', function() {
+            const url = urlInput.value.trim();
+            imgPreview.src = url ? url : defaultAvatar;
         });
     });
 </script>
@@ -248,10 +202,20 @@
 <c:if test="${sessionScope.openModal != null}">
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const modalId = "${sessionScope.openModal}" === "username" ? "modalUsername" : "modalPassword";
-            new bootstrap.Modal(document.getElementById(modalId)).show();
+            const modalMap = {
+                username: "modalUsername",
+                password: "modalPassword"
+            };
+            const modalKey = "${sessionScope.openModal}";
+            const modalId = modalMap[modalKey];
+            if (modalId) {
+                const modalEl = document.getElementById(modalId);
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
         });
     </script>
+    <c:remove var="modalError" scope="session"/>
     <c:remove var="openModal" scope="session"/>
 </c:if>
 </body>
