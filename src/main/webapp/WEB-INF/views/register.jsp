@@ -39,10 +39,10 @@
 <body>
 <div class="register-card">
     <div class="text-center mb-4">
-        <div class="d-flex justify-content-center align-items-center">
+        <a href="home" class="d-flex justify-content-center align-items-center text-decoration-none text-reset">
             <i class="fa-solid fa-code fa-2x text-primary me-2"></i>
             <h3 class="mt-0 mb-0">Programmize</h3>
-        </div>
+        </a>
         <h5 class="text-muted mt-2">Create Account</h5>
     </div>
 
