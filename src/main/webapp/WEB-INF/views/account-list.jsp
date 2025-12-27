@@ -94,12 +94,12 @@
                 <% } %>
 
                 <%-- FILTER BAR --%>
-                <form class="row g-3 align-items-center mb-4" method="GET">
+                <form action="account-list" class="row g-3 align-items-center mb-4" method="GET">
                     <input type="hidden" name="pageIndex" value="1">
 
                     <%-- 1. FILTER BY ROLE --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="roleFilter">
+                        <select class="form-select" name="roleFilter" onchange="this.form.submit()">
                             <option value="" <%= (currentRoleName == null || currentRoleName.isEmpty()) ? "selected" : "" %>>All Roles</option>
                             <% if (roleList != null) {
                                 for (String role : roleList) { %>
@@ -114,8 +114,8 @@
 
                     <%-- 2. FILTER BY STATUS --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="statusFilter">
-                            <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Status</option>
+                        <select class="form-select" name="statusFilter" onchange="this.form.submit()">
+                            <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Statuses</option>
                             <option value="1" <%= "1".equals(currentStatus) ? "selected" : "" %>>Active</option>
                             <option value="0" <%= "0".equals(currentStatus) ? "selected" : "" %>>Inactive</option>
                         </select>
