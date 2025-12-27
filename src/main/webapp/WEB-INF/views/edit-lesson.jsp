@@ -226,8 +226,8 @@
                 <%-- CONTENT FIELD (FULL WIDTH) --%>
                 <div class="col-12">
                     <div class="form-group">
-                        <label for="content" class="form-label">Lesson Content</label>
-                        <textarea id="content" name="content" class="form-control" rows="5"
+                        <label for="description" class="form-label">Lesson Content</label>
+                        <textarea id="description" name="content" class="form-control" rows="5"
                                   placeholder="Enter lesson content, description, or text material...">${lesson.content}</textarea>
                         <small class="text-muted">HTML content is supported for text lessons</small>
                     </div>
