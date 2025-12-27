@@ -110,8 +110,8 @@ public class UserProfileServlet extends HttpServlet {
             response.sendRedirect("profile");
             return;
         }
-        if (newPass.length() < 8) {
-            session.setAttribute("modalError", "Password must be at least 8 characters!");
+        if (!PasswordUtil.isValidPassword(newPass)) {
+            session.setAttribute("modalError", "Password must be at least 8 characters, contain at least 1 uppercase, 1 lowercase and 1 special character!");
             session.setAttribute("openModal", "password");
             session.setAttribute("success", false);
             response.sendRedirect("profile");

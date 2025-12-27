@@ -4,6 +4,8 @@ import dao.UserDAO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import utils.PasswordUtil;
+
 import java.io.IOException;
 
 @WebServlet("/register")
@@ -58,14 +60,14 @@ public class RegisterServlet extends HttpServlet {
         }
 
         // Check password
-        if (password.length() < 8) {
-            request.setAttribute("passwordError", "Password must be at least 8 characters!");
+        if (!PasswordUtil.isValidPassword(password)) {
+            request.setAttribute("passwordError", "Password must be at least 8 characters, contain at least 1 uppercase, 1 lowercase and 1 special character!");
             error = true;
         }
 
         // Check Confirm Password
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("confirmPasswordError", "Confirmation password does not match!");
+            request.setAttribute("confirmPasswordError", "Confirm password does not match!");
             error = true;
         }
 
