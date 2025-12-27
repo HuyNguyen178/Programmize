@@ -44,16 +44,20 @@
         }
 
         .banner-item {
-            background: linear-gradient(90deg, #1a82a8 0%, #35b8d8 100%);
+            background-image: url("/assets/img/home/french.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
             border-radius: 24px;
             overflow: hidden;
             color: white;
             padding: 40px 50px;
             position: relative;
+            min-height: 350px;
         }
 
         .banner-item.slide-2 {
-            background: linear-gradient(90deg, #5a37aa 0%, #8b68d9 100%);
+            background-image: url("/assets/img/home/python.png");
         }
 
         .banner-content h2 {
@@ -251,9 +255,9 @@
                             <div class="row w-100 align-items-center">
                                 <div class="col-lg-7 col-md-12">
                                     <div class="banner-content">
-                                        <h2>Full-Stack Online Class</h2>
+                                        <h2>Français</h2>
                                         <p></p>
-                                        <a href="#" class="btn btn-banner">Free Trial</a>
+                                        <a href="<%= request.getContextPath()%>/public-course-details?id=4" class="btn btn-banner">More</a>
                                     </div>
                                 </div>
                                 <div class="col-lg-5 banner-image-col text-end">
@@ -267,9 +271,9 @@
                             <div class="row w-100 align-items-center">
                                 <div class="col-lg-7 col-md-12">
                                     <div class="banner-content">
-                                        <h2> Backend Java Web </h2>
+                                        <h2> Python Programming </h2>
                                         <p></p>
-                                        <a href="#" class="btn btn-banner">Detail</a>
+                                        <a href="<%= request.getContextPath()%>/public-course-details?id=1" class="btn btn-banner">More</a>
                                     </div>
                                 </div>
                                 <div class="col-lg-5 banner-image-col text-end">
