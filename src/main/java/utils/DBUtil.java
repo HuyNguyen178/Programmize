@@ -6,25 +6,34 @@ import java.sql.SQLException;
 
 public class DBUtil {
 
-    private static final String HOST = System.getenv("DB_HOST");
-    private static final String PORT = System.getenv("DB_PORT");
-    private static final String DB_NAME = System.getenv("DB_NAME");
-    private static final String USER = System.getenv("DB_USER");
-    private static final String PASSWORD = System.getenv("DB_PASSWORD");
-    private static final String URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + "?sslMode=REQUIRED" + "&useSSL=true" + "&allowPublicKeyRetrieval=true";
+    // Đọc từ environment variable, nếu không có thì dùng giá trị mặc định (cho local dev)
+    private static String getEnv(String key, String defaultValue) {
+        String value = System.getenv(key);
+        return (value != null && !value.isEmpty()) ? value : defaultValue;
+    }
+
+    private static final String HOST = getEnv("DB_HOST", "localhost");
+    private static final String PORT = getEnv("DB_PORT", "3306");
+    private static final String DB_NAME = getEnv("DB_NAME", "programmize");
+    private static final String USER = getEnv("DB_USER", "root");
+    private static final String PASSWORD = getEnv("DB_PASSWORD", "");
+
+    private static final String URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME
+            + "?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
     static {
         try {
-            // Nạp Driver MySQL (Đảm bảo project của bạn đã có thư viện mysql-connector-java)
             Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("MySQL Driver loaded successfully");
         } catch (ClassNotFoundException e) {
-            System.err.println("Không tìm thấy Driver MySQL! Hãy kiểm tra lại thư viện.");
+            System.err.println("MySQL Driver not found!");
             e.printStackTrace();
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        System.out.println("Connecting to: " + URL);
+        // Log để debug (có thể xóa sau khi deploy thành công)
+        System.out.println("Connecting to database at: " + HOST + ":" + PORT + "/" + DB_NAME);
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
