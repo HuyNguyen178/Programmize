@@ -320,17 +320,17 @@
                                     <%-- If on Sale: Show old price crossed out and new price in yellow --%>
                                     <c:when test="${course.salePrice != null && course.listedPrice != null && course.salePrice < course.listedPrice}">
                                         <span class="text-decoration-line-through" style="opacity: 0.8; margin-right: 8px;">
-                                            <fmt:formatNumber value="${course.listedPrice}" type="currency" currencySymbol="$" />
+                                            <fmt:formatNumber value="${course.listedPrice}" type="currency" currencySymbol="₫" />
                                         </span>
                                         <span class="text-warning fw-bold">
-                                            <fmt:formatNumber value="${course.salePrice}" type="currency" currencySymbol="$" />
+                                            <fmt:formatNumber value="${course.salePrice}" type="currency" currencySymbol="₫" />
                                         </span>
                                     </c:when>
 
                                     <%-- Normal Price --%>
                                     <c:otherwise>
                                         <span class="fw-bold">
-                                            <fmt:formatNumber value="${course.listedPrice}" type="currency" currencySymbol="$" />
+                                            <fmt:formatNumber value="${course.listedPrice}" type="currency" currencySymbol="₫" />
                                         </span>
                                     </c:otherwise>
                                 </c:choose>

@@ -500,13 +500,13 @@
                             <c:when test="${course.salePrice != null}">
                                 <c:if test="${course.listedPrice > course.salePrice}">
                                     <span class="original-price">
-                                        $<fmt:formatNumber value="${course.listedPrice}" pattern="#,##0.00"/>
+                                        ₫<fmt:formatNumber value="${course.listedPrice}" pattern="#,##0.00"/>
                                     </span>
                                 </c:if>
-                                $<fmt:formatNumber value="${course.salePrice}" pattern="#,##0.00"/>
+                                ₫<fmt:formatNumber value="${course.salePrice}" pattern="#,##0.00"/>
                             </c:when>
                             <c:when test="${course.listedPrice != null}">
-                                $<fmt:formatNumber value="${course.listedPrice}" pattern="#,##0.00"/>
+                                ₫<fmt:formatNumber value="${course.listedPrice}" pattern="#,##0.00"/>
                             </c:when>
                             <c:otherwise>
                                 FREE
