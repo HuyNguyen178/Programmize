@@ -500,7 +500,7 @@ public class ClassDAO {
         return false;
     }
 
-    public List<Class> getAllClasses(Integer categoryId, Integer instructorId, Boolean status, String keyword) {
+    public List<Class> getAllClasses(Integer categoryId, Integer instructorId, Boolean status, String keyword, String sortColumn, String sortOrder) {
         List<Class> classes = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder(
@@ -542,7 +542,32 @@ public class ClassDAO {
             }
 
             sql.append(" GROUP BY c.class_id, c.class_name ");
-            sql.append(" ORDER BY c.class_id ASC");
+
+            String orderBy = "c.class_id";
+
+            if (sortColumn != null) {
+                switch (sortColumn) {
+                    case "id":
+                        orderBy = "c.class_id";
+                        break;
+                    case "name":
+                        orderBy = "c.class_name";
+                        break;
+                    case "start_date":
+                        orderBy = "c.start_date";
+                        break;
+                    case "end_date":
+                        orderBy = "c.end_date";
+                        break;
+                }
+            }
+
+            String direction = "ASC";
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                direction = "DESC";
+            }
+
+            sql.append(" ORDER BY ").append(orderBy).append(" ").append(direction);
 
             PreparedStatement statement = connection.prepareStatement(sql.toString());
             for (int i = 0; i < params.size(); i++) {

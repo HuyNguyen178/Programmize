@@ -150,9 +150,9 @@
                         <select id="instructorId" name="instructorId" class="form-select" required>
                             <option value="">-- Select Instructor --</option>
                             <c:forEach items="${allInstructors}" var="inst">
-                                <option value="${inst[0]}"
-                                    ${course.instructorId == inst[0] ? 'selected' : ''}>
-                                        ${inst[1]}
+                                <option value="${inst.id}"
+                                    ${course.instructorId == inst.id ? 'selected' : ''}>
+                                        ${inst.fullname}
                                 </option>
                             </c:forEach>
                         </select>

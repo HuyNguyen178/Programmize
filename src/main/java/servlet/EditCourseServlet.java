@@ -1,10 +1,13 @@
 package servlet;
 
 import dao.CourseDAO;
+import dao.UserDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import model.User;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,10 +15,12 @@ import java.util.List;
 @WebServlet("/edit-course")
 public class EditCourseServlet extends HttpServlet {
     private CourseDAO publicCourseDAO;
+    private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         publicCourseDAO = new CourseDAO();
+        userDAO = new UserDAO();
     }
 
     // GET: Hiển thị form edit với dữ liệu course hiện tại
@@ -47,7 +52,7 @@ public class EditCourseServlet extends HttpServlet {
 
             // Lấy danh sách categories và instructors cho dropdown
             List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
-            List<String[]> allInstructors = publicCourseDAO.getAllUsersAsInstructors();
+            List<User> allInstructors = userDAO.getAllInstructors();
 
             // Lấy categories hiện tại của course
             List<String[]> courseCategories = publicCourseDAO.getCategoriesForCourse(courseId);
@@ -80,7 +85,9 @@ public class EditCourseServlet extends HttpServlet {
             String courseName = request.getParameter("courseName");
             String thumbnailUrl = request.getParameter("thumbnailUrl");
             String description = request.getParameter("description");
-            String status = request.getParameter("status");
+            String statusStr = request.getParameter("status");
+
+            boolean status = "1".equals(statusStr);
 
             // Lấy instructor ID (thay vì instructor name)
             int instructorId = Integer.parseInt(request.getParameter("instructorId"));
@@ -114,7 +121,7 @@ public class EditCourseServlet extends HttpServlet {
             course.setDescription(description);
             course.setListedPrice(listedPrice);
             course.setSalePrice(salePrice);
-            course.setStatus(Boolean.parseBoolean(status));
+            course.setStatus(status);
             course.setDuration(duration);
             course.setInstructorId(instructorId);
 

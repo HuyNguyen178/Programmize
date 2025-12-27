@@ -1,10 +1,13 @@
 package servlet;
 
 import dao.CourseDAO;
+import dao.UserDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import model.User;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,10 +15,12 @@ import java.util.List;
 @WebServlet("/add-course")
 public class AddCourseServlet extends HttpServlet {
     private CourseDAO publicCourseDAO;
+    private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         publicCourseDAO = new CourseDAO();
+        userDAO = new UserDAO();
     }
 
     // GET: Hiển thị form add course
@@ -26,7 +31,7 @@ public class AddCourseServlet extends HttpServlet {
         try {
             // Lấy danh sách categories và instructors cho dropdown
             List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
-            List<String[]> allInstructors = publicCourseDAO.getAllUsersAsInstructors();
+            List<User> allInstructors = userDAO.getAllInstructors();
 
             // Set attributes cho JSP
             request.setAttribute("allCategories", allCategories);      // List of [setting_id, setting_name]

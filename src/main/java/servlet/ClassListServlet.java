@@ -38,6 +38,9 @@ public class ClassListServlet extends HttpServlet {
         String idStr = request.getParameter("id");
         String newStatusStr = request.getParameter("newStatus");
 
+        String sortColumn = request.getParameter("sortColumn");
+        String sortOrder = request.getParameter("sortOrder");
+
         Integer categoryId = null;
         Integer instructorId = null;
         Boolean status = null;
@@ -66,7 +69,7 @@ public class ClassListServlet extends HttpServlet {
         List<Setting> categories = settingDAO.getAllCategories();
 
         List<User> instructors = userDAO.getAllInstructors();
-        List<Class> classes = classDAO.getAllClasses(categoryId, instructorId, status, keyword);
+        List<Class> classes = classDAO.getAllClasses(categoryId, instructorId, status, keyword, sortColumn, sortOrder);
 
         request.setAttribute("classes", classes);
 
@@ -76,6 +79,8 @@ public class ClassListServlet extends HttpServlet {
         request.setAttribute("selectedInstructorId", instructorId);
         request.setAttribute("searchKeyword", keyword);
         request.setAttribute("selectedStatus", statusStr);
+        request.setAttribute("sortColumn", sortColumn);
+        request.setAttribute("sortOrder", sortOrder);
 
         request.getRequestDispatcher("/WEB-INF/views/class-list.jsp").forward(request, response);
     }

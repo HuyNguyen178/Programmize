@@ -60,9 +60,18 @@
         .status-inactive {
             font-weight: bold;
         }
+        a {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+<c:set var="currentSortColumn" value="${param.sortColumn}" />
+<c:set var="currentSortOrder" value="${param.sortOrder}" />
+<c:set var="nextOrderCourseName" value="${currentSortColumn == 'course_name' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
+<c:set var="nextOrderCourseId" value="${currentSortColumn == 'course_id' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
+<c:set var="nextOrderListedPrice" value="${currentSortColumn == 'listed_price' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
+<c:set var="nextOrderSalePrice" value="${currentSortColumn == 'sale_price' && currentSortOrder == 'asc' ? 'desc' : 'asc'}"/>
 <%-- SỬ DỤNG JAVASCRIPT INCLUDE GIỐNG account-list.jsp --%>
 <jsp:include page="include/admin-topbar.jsp"/>
 <jsp:include page="include/admin-sidebar.jsp"/>
@@ -154,14 +163,30 @@
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="bg-light">
                         <tr>
-                            <th style="width: 5%;">ID</th>
+                            <th style="width: 5%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=course_id&sortOrder=${nextOrderCourseId}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Id
+                                </a>
+                            </th>
                             <%-- Thêm cột Thumbnail/Image để tương đồng với Avatar trong account-list --%>
                             <th style="width: 8%;">Image</th>
-                            <th style="width: 20%;">Course Name</th>
+                            <th style="width: 20%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=course_name&sortOrder=${nextOrderCourseName}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Course Name
+                                </a>
+                            </th>
                             <th style="width: 15%;">Category</th>
                             <th style="width: 15%;">Instructor</th>
-                            <th style="width: 10%;">Listed Price</th>
-                            <th style="width: 10%;">Sale Price</th>
+                            <th style="width: 10%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=listed_price&sortOrder=${nextOrderListedPrice}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Listed Price
+                                </a>
+                            </th>
+                            <th style="width: 10%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=sale_price&sortOrder=${nextOrderSalePrice}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Sale Price
+                                </a>
+                            </th>
                             <th style="width: 7%;">Status</th>
                             <th style="width: 10%;">Actions</th>
                         </tr>

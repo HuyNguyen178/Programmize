@@ -56,7 +56,7 @@ public class CourseDAO {
         // Add sorting
         if (sortColumn != null && !sortColumn.isEmpty()) {
             String actualColumn = sortColumn;
-            if (sortColumn.equals("sales_price")) {
+            if (sortColumn.equals("sale_price")) {
                 actualColumn = "c.sale_price";
             } else if (sortColumn.equals("id")) {
                 actualColumn = "c.course_id";

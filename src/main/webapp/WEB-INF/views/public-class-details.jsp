@@ -408,9 +408,6 @@
                                     </c:choose>
                                 </button>
                             </form>
-                            <a href="#" class="btn btn-outline-secondary btn-lg btn-enroll">
-                                <i class="fas fa-bookmark me-2"></i> Add to Wishlist
-                            </a>
                         </c:otherwise>
                     </c:choose>
 

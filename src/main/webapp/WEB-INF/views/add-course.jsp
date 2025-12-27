@@ -163,7 +163,7 @@
                         <select id="instructorId" name="instructorId" class="form-select" required>
                             <option value="">-- Select Instructor --</option>
                             <c:forEach items="${allInstructors}" var="inst">
-                                <option value="${inst[0]}">${inst[1]}</option>
+                                <option value="${inst.id}">${inst.fullname}</option>
                             </c:forEach>
                         </select>
                     </div>

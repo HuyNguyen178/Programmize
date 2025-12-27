@@ -60,6 +60,10 @@
         .status-inactive {
             font-weight: bold;
         }
+
+        a {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -155,14 +159,29 @@
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="bg-light">
                         <tr>
-                            <th style="width: 5%;">ID</th>
-                            <%-- Thêm cột Thumbnail/Image để tương đồng với Avatar trong account-list --%>
+                            <th style="width: 5%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/class-list?sortColumn=id&sortOrder=${sortColumn == 'id' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategoryId}&instructor=${selectedInstructorId}&status=${selectedStatus}&search=${searchKeyword}">
+                                    ID
+                                </a>
+                            </th>
                             <th style="width: 8%;">Image</th>
-                            <th style="width: 20%;">Class Name</th>
+                            <th style="width: 20%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/class-list?sortColumn=name&sortOrder=${sortColumn == 'name' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategoryId}&instructor=${selectedInstructorId}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Class Name
+                                </a>
+                            </th>
                             <th style="width: 15%;">Category</th>
                             <th style="width: 15%;">Instructor</th>
-                            <th style="width: 10%;">Start Date</th>
-                            <th style="width: 10%;">End Date</th>
+                            <th style="width: 10%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/class-list?sortColumn=start_date&sortOrder=${sortColumn == 'start_date' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategoryId}&instructor=${selectedInstructorId}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Start Date
+                                </a>
+                            </th>
+                            <th style="width: 10%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/class-list?sortColumn=end_date&sortOrder=${sortColumn == 'end_date' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategoryId}&instructor=${selectedInstructorId}&status=${selectedStatus}&search=${searchKeyword}">
+                                    End Date
+                                </a>
+                            </th>
                             <th style="width: 7%;">Status</th>
                             <th style="width: 10%;">Actions</th>
                         </tr>
