@@ -2,20 +2,27 @@ package servlet;
 
 import dao.SettingDAO;
 import dao.UserDAO;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
 import model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
-@WebServlet("/account-add")
+@WebServlet("/add-account")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 10 * 1024 * 1024
+)
 public class AddAccountServlet extends HttpServlet {
-
     private UserDAO userDAO;
     private SettingDAO settingDAO;
 
@@ -46,9 +53,30 @@ public class AddAccountServlet extends HttpServlet {
         String password = request.getParameter("password");
         String newRoleName = request.getParameter("roleName");
         boolean status = "1".equals(request.getParameter("status"));
-        String avatarUrl = request.getParameter("avatarUrl");
-        if(avatarUrl == null){
-            avatarUrl = "assets/img/admin-avatar.png";
+
+        String avatarUrl = "assets/img/user_avt/admin_avatar.png";
+        Part avatarPart = request.getPart("avatar");
+        if (avatarPart != null && avatarPart.getSize() > 0) {
+
+            // Thư mục lưu ảnh thực tế
+            String uploadDir = getServletContext().getRealPath("/assets/img/user_avt");
+            File uploadFolder = new File(uploadDir);
+
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+
+            // Lấy tên file an toàn
+            String fileName = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
+
+            // Tránh trùng tên file
+            String newFileName = System.currentTimeMillis() + "_" + fileName;
+
+            // Lưu file
+            avatarPart.write(uploadDir + File.separator + newFileName);
+
+            // Đường dẫn lưu DB (URL tương đối)
+            avatarUrl = "assets/img/user_avt/" + newFileName;
         }
 
         User newUser = new User();

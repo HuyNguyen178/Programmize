@@ -9,13 +9,11 @@
     import jakarta.servlet.http.HttpServletRequest;
     import jakarta.servlet.http.HttpServletResponse;
     import model.User;
-
     import java.io.IOException;
     import java.util.List;
 
     @WebServlet(name = "AccountList", urlPatterns = {"/account-list"})
     public class AccountListServlet extends HttpServlet {
-
         private UserDAO userDAO;
         private SettingDAO settingDAO;
 

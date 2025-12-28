@@ -378,29 +378,36 @@ public class UserDAO {
         return roleId;
     }
 
-    public boolean updateUser(User user, String password) {
-        String sql = "UPDATE user SET username = ?, fullname = ?, email = ?, status = ?, avatar_url = ?, password = ?, role_id = ? " +
+    public boolean updateUser(User user) {
+        String sql = "UPDATE user SET username = ?, fullname = ?, email = ?, status = ?, avatar_url = ?, role_id = ? " +
                 "WHERE user_id = ?";
         int roleId = getRoleIdByRoleName(user.getRoleName());
         String newPassword ;
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            if(password == null || password.isEmpty()) {
-                newPassword = user.getPassword();
-            }
-            else {
-                newPassword = PasswordUtil.hash(password);
-            }
-
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getFullname());
             stmt.setString(3, user.getEmail());
             stmt.setBoolean(4, user.isStatus());
             stmt.setString(5, user.getAvatarUrl());
-            stmt.setString(6, newPassword);
-            stmt.setInt(7, roleId);
-            stmt.setInt(8, user.getId());
+            stmt.setInt(6, roleId);
+            stmt.setInt(7, user.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updatePassword(User user, String password) {
+        String sql = "UPDATE user SET password = ? " +
+                "WHERE user_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, PasswordUtil.hash(password));
+            stmt.setInt(2, user.getId());
 
             return stmt.executeUpdate() > 0;
 

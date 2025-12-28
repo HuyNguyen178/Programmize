@@ -58,7 +58,7 @@
 
     String pageTitle = isEditMode ? "Account Detail - " + finalUsername : "Add New Account";
     String headerTitle = isEditMode ? "Account Detail" : "Add New Account";
-    String formAction = isEditMode ? "account-detail" : "account-add";
+    String formAction = isEditMode ? "account-detail" : "add-account";
 %>
 <!DOCTYPE html>
 <html>
@@ -105,9 +105,8 @@
         <div class="alert alert-danger"><%= errorMsg %></div>
         <% } %>
 
-        <form action="<%= formAction %>" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="<%= formAction %>" method="post" class="p-4 bg-white rounded shadow-lg" enctype="multipart/form-data">
 
-            <%--            add csrftoken--%>
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
             <%-- USER ID  --%>
@@ -176,12 +175,17 @@
                              alt="Avatar Preview">
                     </div>
 
-                    <%-- AVATAR URL --%>
-                    <div class="mb-3">
-                        <label for="avatarUrl" class="form-label">Avatar URL</label>
-                        <input id="avatarUrl" type="text" name="avatarUrl" class="form-control"
-                               value="<%= finalAvatarUrl %>"
-                               oninput="updateAvatarPreview(this.value)">
+                    <div class="mb-3 text-center">
+                        <input type="file"
+                               id="avatarFile"
+                               name="avatar"
+                               accept="image/*"
+                               hidden>
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                onclick="document.getElementById('avatarFile').click()">
+                            <i class="fas fa-image me-1"></i> Select Picture
+                        </button>
                     </div>
 
                     <%-- ROLE SELECTION --%>
@@ -248,36 +252,32 @@
     </div>
 </div>
 
-<%-- JavaScript for UX --%>
 <script>
-    const placeholderAvatar = "<%= placeholderAvatar %>";
-    function updateAvatarPreview(url) {
-        const img = document.getElementById('avatarPreviewImg');
-        const defaultUrl = placeholderAvatar;
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('avatarFile');
+        const avatarImg = document.getElementById('avatarPreviewImg');
 
-        const tempImg = new Image();
-        tempImg.onload = function() {
-            img.src = url;
-            img.style.borderColor = '#0d6efd';
-        };
-        tempImg.onerror = function() {
-            img.src = defaultUrl;
-            img.style.borderColor = '#dc3545';
-        };
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
 
-        if (url && url.trim() !== '') {
-            tempImg.src = url;
-        } else {
-            img.src = defaultUrl;
-            img.style.borderColor = '#ccc';
-        }
-    }
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file!');
+                fileInput.value = '';
+                return;
+            }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const avatarUrlInput = document.getElementById('avatarUrl');
-        if(avatarUrlInput) {
-            updateAvatarPreview(avatarUrlInput.value);
-        }
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image must be smaller than 5MB!');
+                fileInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                avatarImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

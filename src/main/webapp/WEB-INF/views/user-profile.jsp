@@ -71,7 +71,7 @@
                         <p>Manage your account information and preferences.</p>
                     </div>
 
-                    <form action="profile" method="POST">
+                    <form action="profile" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                         <div class="row">
                             <div class="col-md-4">
@@ -86,9 +86,17 @@
                                             <img src="https://via.placeholder.com/100/007bff/ffffff?text=${initial}" id="currentAvatarImg">
                                         </c:otherwise>
                                     </c:choose>
-                                    <div class="mt-4 w-100">
-                                        <label for="avatarUrl" class="form-label">Avatar URL</label>
-                                        <input type="text" class="form-control" id="avatarUrl" name="avatarUrl" value="${user.avatarUrl}">
+                                    <div class="mt-4 w-100 text-center">
+                                        <input type="file"
+                                               id="avatarFile"
+                                               name="avatar"
+                                               accept="image/*"
+                                               hidden>
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm"
+                                                onclick="document.getElementById('avatarFile').click()">
+                                            <i class="fas fa-image me-1"></i> Select Picture
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -187,17 +195,34 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const urlInput = document.getElementById('avatarUrl');
-        const imgPreview = document.getElementById('currentAvatarImg');
-        const defaultAvatar = "https://via.placeholder.com/100/007bff/ffffff?text=User";
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('avatarFile');
+        const avatarImg = document.getElementById('currentAvatarImg');
 
-        urlInput.addEventListener('input', function() {
-            const url = urlInput.value.trim();
-            imgPreview.src = url ? url : defaultAvatar;
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file!');
+                fileInput.value = '';
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image must be smaller than 5MB!');
+                fileInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                avatarImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         });
     });
 </script>
+
 
 <c:if test="${sessionScope.openModal != null}">
     <script>

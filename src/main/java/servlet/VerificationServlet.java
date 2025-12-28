@@ -79,7 +79,7 @@ public class VerificationServlet extends HttpServlet {
             String fullname = (String) session.getAttribute("registerFullname");
             String username = (String) session.getAttribute("registerUsername");
             String password = (String) session.getAttribute("registerPassword");
-            String avatarUrl = "assets/img/admin-avatar.png";
+            String avatarUrl = "assets/img/user_avt/admin_avatar.png";
 
             if (fullname != null && username != null && password != null) {
                 User user = new User();
