@@ -46,6 +46,10 @@
         <h5 class="text-muted mt-2">Login</h5>
     </div>
 
+    <% if (request.getAttribute("lockoutMessage") != null) { %>
+    <div class="alert alert-warning"><%= request.getAttribute("lockoutMessage") %></div>
+    <% } %>
+
     <form action="login" method="post">
         <input type="hidden" name="csrfToken" value="<%= CSRFUtil.getToken(session) %>">
         <input type="hidden" name="redirect" value="<%= request.getParameter("redirect") != null ? request.getParameter("redirect") : "" %>">
@@ -54,7 +58,7 @@
             <label class="form-label">Username or Email</label>
             <input type="text" name="userOrEmail" class="form-control" placeholder="Enter your username or email"
                    required
-                   value="<%= request.getParameter("userOrEmail") != null ? request.getParameter("userOrEmail") : "" %>">
+                   value="<%= request.getAttribute("userOrEmail") != null ? request.getAttribute("userOrEmail") : (request.getParameter("userOrEmail") != null ? request.getParameter("userOrEmail") : "") %>">
         </div>
         <% if (request.getAttribute("userOrEmailError") != null) { %>
         <div class="text-danger mb-3"><%= request.getAttribute("userOrEmailError") %></div>
@@ -88,6 +92,15 @@
         <% if (request.getAttribute("error") != null) { %>
         <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
         <% } %>
+
+        <% if (request.getAttribute("remainingAttempts") != null) {
+            Integer remaining = (Integer) request.getAttribute("remainingAttempts");
+            if (remaining != null && remaining > 0 && remaining < 5) { %>
+        <div class="alert alert-warning">
+            <i class="fa fa-exclamation-triangle me-2"></i>
+            <%= remaining %> attempt(s) remaining before account lockout.
+        </div>
+        <% } } %>
 
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
