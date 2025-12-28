@@ -35,14 +35,14 @@
         String typeParam = request.getParameter("type");
         String statusParam = request.getParameter("status");
         String searchParam = request.getParameter("search");
-        String sortField = request.getParameter("sortField");
+        String sortColumn = request.getParameter("sortColumn");
         String sortOrder = request.getParameter("sortOrder");
 
         // Gán giá trị mặc định nếu null
         typeParam = (typeParam == null || typeParam.equals("null")) ? "" : typeParam;
         statusParam = (statusParam == null || statusParam.equals("null")) ? "" : statusParam;
         searchParam = (searchParam == null || searchParam.equals("null")) ? "" : searchParam;
-        sortField = (sortField == null || sortField.equals("null")) ? "id" : sortField;
+        sortColumn = (sortColumn == null || sortColumn.equals("null")) ? "id" : sortColumn;
         sortOrder = (sortOrder == null || sortOrder.equals("null")) ? "asc" : sortOrder;
     %>
 
@@ -112,52 +112,33 @@
                         <thead class="bg-light">
                         <tr>
                             <th>
-                                <a href="setting-list?sortField=id&sortOrder=<%= "id".equals(sortField) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
+                                <a href="setting-list?sortColumn=id&sortOrder=<%= "id".equals(sortColumn) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
                                     ID
-                                    <%-- Thêm icon sort --%>
-                                    <% if ("id".equals(sortField)) { %>
-                                    <i class="fas <%= "asc".equals(sortOrder) ? "fa-sort-up" : "fa-sort-down" %> ms-1"></i>
-                                    <% } %>
                                 </a>
                             </th>
                             <th>
-                                <a href="setting-list?sortField=name&sortOrder=<%= "name".equals(sortField) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
+                                <a href="setting-list?sortColumn=name&sortOrder=<%= "name".equals(sortColumn) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
                                     Name
-                                    <% if ("name".equals(sortField)) { %>
-                                    <i class="fas <%= "asc".equals(sortOrder) ? "fa-sort-up" : "fa-sort-down" %> ms-1"></i>
-                                    <% } %>
                                 </a>
                             </th>
                             <th>
-                                <a href="setting-list?sortField=type&sortOrder=<%= "type".equals(sortField) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
+                                <a href="setting-list?sortColumn=type&sortOrder=<%= "type".equals(sortColumn) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
                                     Type
-                                    <% if ("type".equals(sortField)) { %>
-                                    <i class="fas <%= "asc".equals(sortOrder) ? "fa-sort-up" : "fa-sort-down" %> ms-1"></i>
-                                    <% } %>
                                 </a>
                             </th>
                             <th>
-                                <a href="setting-list?sortField=value&sortOrder=<%= "value".equals(sortField) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
+                                <a href="setting-list?sortColumn=value&sortOrder=<%= "value".equals(sortColumn) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
                                     Value
-                                    <% if ("value".equals(sortField)) { %>
-                                    <i class="fas <%= "asc".equals(sortOrder) ? "fa-sort-up" : "fa-sort-down" %> ms-1"></i>
-                                    <% } %>
                                 </a>
                             </th>
                             <th>
-                                <a href="setting-list?sortField=priority&sortOrder=<%= "priority".equals(sortField) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
+                                <a href="setting-list?sortColumn=priority&sortOrder=<%= "priority".equals(sortColumn) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
                                     Priority
-                                    <% if ("priority".equals(sortField)) { %>
-                                    <i class="fas <%= "asc".equals(sortOrder) ? "fa-sort-up" : "fa-sort-down" %> ms-1"></i>
-                                    <% } %>
                                 </a>
                             </th>
                             <th>
-                                <a href="setting-list?sortField=status&sortOrder=<%= "status".equals(sortField) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
+                                <a href="setting-list?sortColumn=status&sortOrder=<%= "status".equals(sortColumn) && "asc".equals(sortOrder) ? "desc" : "asc" %>&type=<%= typeParam %>&status=<%= statusParam %>&search=<%= searchParam %>">
                                     Status
-                                    <% if ("status".equals(sortField)) { %>
-                                    <i class="fas <%= "asc".equals(sortOrder) ? "fa-sort-up" : "fa-sort-down" %> ms-1"></i>
-                                    <% } %>
                                 </a>
                             </th>
                             <th style="width: 10%;">Actions</th> <%-- Giảm độ rộng cột Actions --%>
@@ -212,7 +193,7 @@
                                         <input type="hidden" name="status" value="<%= statusParam %>">
                                         <input type="hidden" name="search" value="<%= searchParam %>">
                                         <input type="hidden" name="page" value="<%= request.getAttribute("page") %>">
-                                        <input type="hidden" name="sortField" value="<%= sortField %>">
+                                        <input type="hidden" name="sortColumn" value="<%= sortColumn %>">
                                         <input type="hidden" name="sortOrder" value="<%= sortOrder %>">
                                         <button type="submit"
                                                 class="btn btn-sm <%= s.isStatus() ? "btn-outline-warning" : "btn-outline-success" %>"
@@ -253,7 +234,7 @@
                         <ul class="pagination mb-0">
                             <%
                                 // Nút Previous
-                                String filterQuery = "&type=" + typeParam + "&status=" + statusParam + "&search=" + searchParam + "&sortField=" + sortField + "&sortOrder=" + sortOrder;
+                                String filterQuery = "&type=" + typeParam + "&status=" + statusParam + "&search=" + searchParam + "&sortColumn=" + sortColumn + "&sortOrder=" + sortOrder;
                             %>
                             <li class="page-item <%= (currentPage == 1) ? "disabled" : "" %>">
                                 <a class="page-link"

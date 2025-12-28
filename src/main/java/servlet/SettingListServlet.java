@@ -26,18 +26,18 @@ public class SettingListServlet extends HttpServlet {
         String type = request.getParameter("type");
         String status = request.getParameter("status");
         String search = request.getParameter("search");
-        String sortField = request.getParameter("sortField");
+        String sortColumn = request.getParameter("sortColumn");
         String sortOrder = request.getParameter("sortOrder");
         int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
 
-        List<Setting> settings = settingRepository.findFiltered(type, status, search, page, sortField, sortOrder);
+        List<Setting> settings = settingRepository.findFiltered(type, status, search, page, sortColumn, sortOrder);
         int totalPages = settingRepository.getTotalPages(type, status, search);
 
         request.setAttribute("settings", settings);
         request.setAttribute("page", page);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("types", settingRepository.findAllTypes());
-        request.setAttribute("sortField", sortField);
+        request.setAttribute("sortColumn", sortColumn);
         request.setAttribute("sortOrder", sortOrder);
 
         request.getRequestDispatcher("/WEB-INF/views/setting-list.jsp").forward(request, response);
@@ -55,13 +55,13 @@ public class SettingListServlet extends HttpServlet {
         String status = request.getParameter("status");
         String search = request.getParameter("search");
         String page = request.getParameter("page");
-        String sortField = request.getParameter("sortField");
+        String sortColumn = request.getParameter("sortColumn");
         String sortOrder = request.getParameter("sortOrder");
         response.sendRedirect("setting-list?page=" + page
                 + "&type=" + type
                 + "&status=" + status
                 + "&search=" + search
-                + "&sortField=" + sortField
+                + "&sortColumn=" + sortColumn
                 + "&sortOrder=" + sortOrder);
     }
 }

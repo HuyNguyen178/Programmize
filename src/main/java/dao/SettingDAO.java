@@ -80,7 +80,7 @@ public class SettingDAO {
         return null;
     }
 
-    public List<Setting> findFiltered(String type, String status, String search, int page, String sortField, String sortOrder) {
+    public List<Setting> findFiltered(String type, String status, String search, int page, String sortColumn, String sortOrder) {
         List<Setting> list = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
             int pageSize = 10;
@@ -106,16 +106,16 @@ public class SettingDAO {
             }
 
             String safeField;
-            if ("name".equalsIgnoreCase(sortField)) {
+            if ("name".equalsIgnoreCase(sortColumn)) {
                 safeField = "s.setting_name";
             }
-            else if ("type".equalsIgnoreCase(sortField)) {
+            else if ("type".equalsIgnoreCase(sortColumn)) {
                 safeField = "type_name";
             }
-            else if ("priority".equalsIgnoreCase(sortField)) {
+            else if ("priority".equalsIgnoreCase(sortColumn)) {
                 safeField = "s.priority";
             }
-            else if ("value".equalsIgnoreCase(sortField)) {
+            else if ("value".equalsIgnoreCase(sortColumn)) {
                 safeField = "s.value";
             }
             else {
