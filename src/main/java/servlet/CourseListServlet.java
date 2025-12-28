@@ -71,6 +71,8 @@ public class CourseListServlet extends HttpServlet {
         request.setAttribute("selectedInstructor", instructor);
         request.setAttribute("selectedStatus", status);
         request.setAttribute("searchKeyword", searchKeyword);
+        request.setAttribute("sortColumn", sortColumn);
+        request.setAttribute("sortOrder", sortOrder);
 
         // Forward to JSP
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/course-list.jsp");

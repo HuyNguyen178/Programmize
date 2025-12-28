@@ -18,8 +18,7 @@ public class CourseDAO {
 
         // Use JOIN to get category name from setting table and instructor name from user table
         StringBuilder sql = new StringBuilder(
-                "SELECT DISTINCT c.course_id, c.course_name, c.listed_price, c.sale_price, " +
-                        "c.thumbnail_url, c.instructor_id, c.duration, c.description, c.status, " +
+                "SELECT DISTINCT c.*, " +
                         "u.fullname AS instructor_name, " +
                         "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
                         "FROM course c " +
@@ -50,33 +49,33 @@ public class CourseDAO {
         }
 
         // Group by to handle multiple categories
-        sql.append(" GROUP BY c.course_id, c.course_name, c.listed_price, c.sale_price, " +
-                "c.thumbnail_url, c.instructor_id, c.duration, c.description, c.status, u.fullname");
+        sql.append(" GROUP BY c.course_id, c.course_name ");
 
         // Add sorting
+        String actualColumn = "c.course_id";
         if (sortColumn != null && !sortColumn.isEmpty()) {
-            String actualColumn = sortColumn;
-            if (sortColumn.equals("sale_price")) {
-                actualColumn = "c.sale_price";
-            } else if (sortColumn.equals("id")) {
-                actualColumn = "c.course_id";
-            } else if (sortColumn.equals("course_name")) {
-                actualColumn = "c.course_name";
-            } else if (sortColumn.equals("instructor")) {
-                actualColumn = "u.fullname";
+            switch (sortColumn) {
+                case "id":
+                    actualColumn = "c.course_id";
+                    break;
+                case "name":
+                    actualColumn = "c.course_name";
+                    break;
+                case "listed_price":
+                    actualColumn = "c.listed_price";
+                    break;
+                case "sale_price":
+                    actualColumn = "c.sale_price";
+                    break;
             }
-
-            sql.append(" ORDER BY ").append(actualColumn);
-            if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
-                sql.append(" DESC");
-            } else {
-                sql.append(" ASC");
-            }
-        } else {
-            sql.append(" ORDER BY c.course_id ASC");
         }
 
-        System.out.println("Executing SQL: " + sql.toString());
+        String direction = "ASC";
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            direction = "DESC";
+        }
+
+        sql.append(" ORDER BY ").append(actualColumn).append(" ").append(direction);
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -96,19 +95,16 @@ public class CourseDAO {
             // Set category parameter
             if (category != null && !category.isEmpty() && !category.equals("All Categories")) {
                 stmt.setInt(paramIndex++, Integer.parseInt(category));
-                System.out.println("Setting category parameter: " + category);
             }
 
             // Set instructor parameter
             if (instructor != null && !instructor.isEmpty() && !instructor.equals("All Instructors")) {
                 stmt.setInt(paramIndex++, Integer.parseInt(instructor));
-                System.out.println("Setting instructor parameter: " + instructor);
             }
 
             // Set status parameter - SỬA: dùng setInt cho boolean trong MySQL
             if (status != null && !status.isEmpty() && !status.equals("All Statuses") && !status.equals("")) {
                 stmt.setInt(paramIndex++, Integer.parseInt(status));
-                System.out.println("Setting status parameter: " + status);
             }
 
             // Set search keyword parameters
@@ -117,7 +113,6 @@ public class CourseDAO {
                 stmt.setString(paramIndex++, searchPattern);
                 stmt.setString(paramIndex++, searchPattern);
                 stmt.setString(paramIndex++, searchPattern);
-                System.out.println("Setting search parameter: " + searchPattern);
             }
 
             rs = stmt.executeQuery();

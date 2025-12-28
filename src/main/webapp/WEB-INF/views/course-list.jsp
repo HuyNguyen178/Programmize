@@ -18,6 +18,10 @@
             height: 50px; /* [cite: 83] */
             object-fit: cover;
         }
+
+        a {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -52,7 +56,7 @@
 
                     <%-- 1. FILTER BY CATEGORY (col-md-3) --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="category">
+                        <select class="form-select" name="category" onchange="this.form.submit()">
                             <option value="">All Categories</option>
                             <c:forEach items="${categories}" var="cat">
                                 <option value="${cat[0]}" ${selectedCategory == cat[0] ? 'selected' : ''}>
@@ -64,7 +68,7 @@
 
                     <%-- 2. FILTER BY INSTRUCTOR (col-md-3) --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="instructor">
+                        <select class="form-select" name="instructor" onchange="this.form.submit()">
                             <option value="">All Instructors</option>
                             <c:forEach items="${instructors}" var="inst">
                                 <option value="${inst[0]}" ${selectedInstructor == inst[0] ? 'selected' : ''}>
@@ -76,7 +80,7 @@
 
                     <%-- 3. FILTER BY STATUS (col-md-2) --%>
                     <div class="col-md-2">
-                        <select class="form-select" name="status">
+                        <select class="form-select" name="status" onchange="this.form.submit()">
                             <option value="">All Statuses</option>
                             <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
                             <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Inactive</option>
@@ -112,14 +116,29 @@
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="bg-light">
                         <tr>
-                            <th style="width: 5%;">ID</th>
-                            <%-- Thêm cột Thumbnail/Image để tương đồng với Avatar trong account-list --%>
+                            <th style="width: 5%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=id&sortOrder=${sortColumn == 'id' && sortOrder == 'desc' ? 'asc' : 'desc'}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    ID
+                                </a>
+                            </th>
                             <th style="width: 8%;">Image</th>
-                            <th style="width: 20%;">Course Name</th>
+                            <th style="width: 20%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=name&sortOrder=${sortColumn == 'name' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Course Name
+                                </a>
+                            </th>
                             <th style="width: 15%;">Category</th>
                             <th style="width: 15%;">Instructor</th>
-                            <th style="width: 10%;">Listed Price</th>
-                            <th style="width: 10%;">Sale Price</th>
+                            <th style="width: 10%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=listed_price&sortOrder=${sortColumn == 'listed_price' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Listed Price
+                                </a>
+                            </th>
+                            <th style="width: 10%;">
+                                <a style="color: black" href="${pageContext.request.contextPath}/course-list?sortColumn=sale_price&sortOrder=${sortColumn == 'sale_price' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategory}&instructor=${selectedInstructor}&status=${selectedStatus}&search=${searchKeyword}">
+                                    Sale Price
+                                </a>
+                            </th>
                             <th style="width: 7%;">Status</th>
                             <th style="width: 10%;">Actions</th>
                         </tr>
@@ -144,11 +163,8 @@
                                                  alt="Thumbnail" class="thumbnail rounded">
                                         </td>
 
-                                        <td style="text-align: center;">
-                                            <a href="${pageContext.request.contextPath}/course-content"
-                                               class="course-link">
-                                                <strong>${course.courseName}</strong>
-                                            </a>
+                                        <td style="text-align: left; color: black">
+                                            <strong>${course.courseName}</strong>
                                         </td>
                                         <td>
                                             <c:choose>

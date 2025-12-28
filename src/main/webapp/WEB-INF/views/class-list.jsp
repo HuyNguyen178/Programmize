@@ -19,6 +19,10 @@
             object-fit: cover;
         }
 
+        a {
+            text-decoration: none;
+        }
+
     </style>
 </head>
 <body>
@@ -115,7 +119,7 @@
                         <thead class="bg-light">
                         <tr>
                             <th style="width: 5%;">
-                                <a style="color: black" href="${pageContext.request.contextPath}/class-list?sortColumn=id&sortOrder=${sortColumn == 'id' && sortOrder == 'asc' ? 'desc' : 'asc'}&category=${selectedCategoryId}&instructor=${selectedInstructorId}&status=${selectedStatus}&search=${searchKeyword}">
+                                <a style="color: black" href="${pageContext.request.contextPath}/class-list?sortColumn=id&sortOrder=${sortColumn == 'id' && sortOrder == 'desc' ? 'asc' : 'desc'}&category=${selectedCategoryId}&instructor=${selectedInstructorId}&status=${selectedStatus}&search=${searchKeyword}">
                                     ID
                                 </a>
                             </th>
