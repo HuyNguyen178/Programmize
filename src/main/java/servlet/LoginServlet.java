@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import model.User;
+import service.AuditLogService;
 import service.RateLimiterService;
 import utils.SessionConfig;
 
@@ -14,10 +15,12 @@ import java.io.IOException;
 public class LoginServlet extends HttpServlet {
 
     private RateLimiterService rateLimiter;
+    private AuditLogService auditLog;
 
     @Override
     public void init() throws ServletException {
         rateLimiter = RateLimiterService.getInstance();
+        auditLog = AuditLogService.getInstance();
     }
 
     @Override
@@ -35,8 +38,8 @@ public class LoginServlet extends HttpServlet {
         if (rateLimiter.isLocked(clientIp)) {
             long remainingMinutes = rateLimiter.getRemainingLockoutMinutes(clientIp);
             req.setAttribute("lockoutMessage",
-                "Account locked due to too many failed attempts. " +
-                "Please try again in " + remainingMinutes + " minute(s).");
+                    "Account locked due to too many failed attempts. " +
+                            "Please try again in " + remainingMinutes + " minute(s).");
         }
 
         // Show remaining attempts warning
@@ -62,8 +65,8 @@ public class LoginServlet extends HttpServlet {
         if (rateLimiter.isLocked(clientIp)) {
             long remainingMinutes = rateLimiter.getRemainingLockoutMinutes(clientIp);
             request.setAttribute("lockoutMessage",
-                "Account locked due to too many failed attempts. " +
-                "Please try again in " + remainingMinutes + " minute(s).");
+                    "Account locked due to too many failed attempts. " +
+                            "Please try again in " + remainingMinutes + " minute(s).");
             request.setAttribute("userOrEmail", userOrEmail);
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
             return;
@@ -73,6 +76,7 @@ public class LoginServlet extends HttpServlet {
 
         if (!dao.checkUserOrEmailExists(userOrEmail)) {
             rateLimiter.recordFailedLogin(clientIp, userOrEmail);
+            auditLog.logLoginFailed(userOrEmail, clientIp, "User/email not found");
             request.setAttribute("userOrEmailError", "Username or email does not exist!");
             request.setAttribute("remainingAttempts", rateLimiter.getRemainingAttempts(clientIp));
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
@@ -84,6 +88,7 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             // Check if user is active
             if (!user.isStatus()) {
+                auditLog.logLoginFailed(userOrEmail, clientIp, "Account inactive");
                 request.setAttribute("passError", "Your account is inactive. Please contact administrator.");
                 request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
                 return;
@@ -91,6 +96,7 @@ public class LoginServlet extends HttpServlet {
 
             // Login successful - clear rate limiter
             rateLimiter.recordSuccessfulLogin(clientIp);
+            auditLog.logLoginSuccess(String.valueOf(user.getId()), user.getUsername(), clientIp);
 
             // Create new session with secure settings
             HttpSession session = request.getSession(true);
@@ -152,15 +158,17 @@ public class LoginServlet extends HttpServlet {
         } else {
             // Login failed - record attempt
             rateLimiter.recordFailedLogin(clientIp, userOrEmail);
+            auditLog.logLoginFailed(userOrEmail, clientIp, "Wrong password");
             int remaining = rateLimiter.getRemainingAttempts(clientIp);
 
             if (remaining > 0) {
                 request.setAttribute("passError", "Wrong password!");
                 request.setAttribute("remainingAttempts", remaining);
             } else {
+                auditLog.logAccountLocked(userOrEmail, clientIp, 5);
                 long lockMinutes = rateLimiter.getRemainingLockoutMinutes(clientIp);
                 request.setAttribute("lockoutMessage",
-                    "Too many failed attempts. Account locked for " + lockMinutes + " minute(s).");
+                        "Too many failed attempts. Account locked for " + lockMinutes + " minute(s).");
             }
 
             request.setAttribute("userOrEmail", userOrEmail);

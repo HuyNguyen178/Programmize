@@ -7,12 +7,21 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.User;
+import service.AuditLogService;
 import utils.SessionConfig;
 
 import java.io.IOException;
 
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
+
+    private AuditLogService auditLog;
+
+    @Override
+    public void init() throws ServletException {
+        auditLog = AuditLogService.getInstance();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,6 +36,12 @@ public class LogoutServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
+            // Log logout before invalidating session
+            User user = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
+            if (user != null) {
+                auditLog.logLogout(String.valueOf(user.getId()), user.getUsername(), getClientIp(request));
+            }
+
             // Clear all session attributes
             session.invalidate();
         }
@@ -48,5 +63,19 @@ public class LogoutServlet extends HttpServlet {
         response.addCookie(rememberCookie);
 
         response.sendRedirect(request.getContextPath() + "/login");
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
     }
 }

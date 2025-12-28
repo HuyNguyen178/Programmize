@@ -3,12 +3,15 @@ package servlet;
 import dao.SettingDAO;
 import dao.UserDAO;
 import model.User;
+import service.AuditLogService;
+import utils.SessionConfig;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,12 +21,14 @@ public class AddAccountServlet extends HttpServlet {
 
     private UserDAO userDAO;
     private SettingDAO settingDAO;
+    private AuditLogService auditLog;
 
     @Override
     public void init() throws ServletException {
         super.init();
         settingDAO = new SettingDAO();
         userDAO = new UserDAO();
+        auditLog = AuditLogService.getInstance();
     }
 
     @Override
@@ -76,6 +81,19 @@ public class AddAccountServlet extends HttpServlet {
         }
 
         if (userDAO.addUser(newUser)) {
+            // Log user creation
+            HttpSession session = request.getSession(false);
+            User admin = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
+            if (admin != null) {
+                auditLog.logUserCreated(
+                        String.valueOf(admin.getId()),
+                        admin.getUsername(),
+                        getClientIp(request),
+                        String.valueOf(newUser.getId()),
+                        username
+                );
+            }
+
             request.setAttribute("addSuccess", true);
 
         } else {
@@ -91,5 +109,19 @@ public class AddAccountServlet extends HttpServlet {
         List<String> roles = settingDAO.getRoleNames();
         request.setAttribute("roles", roles);
         response.sendRedirect("account-list?status=success");
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
     }
 }
