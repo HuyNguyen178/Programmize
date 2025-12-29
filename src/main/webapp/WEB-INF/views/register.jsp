@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <style>
         body {
             background: linear-gradient(135deg, #007bff, #6610f2);
@@ -39,10 +40,10 @@
 <body>
 <div class="register-card">
     <div class="text-center mb-4">
-        <div class="d-flex justify-content-center align-items-center">
+        <a href="home" class="d-flex justify-content-center align-items-center text-decoration-none text-reset">
             <i class="fa-solid fa-code fa-2x text-primary me-2"></i>
             <h3 class="mt-0 mb-0">Programmize</h3>
-        </div>
+        </a>
         <h5 class="text-muted mt-2">Create Account</h5>
     </div>
 

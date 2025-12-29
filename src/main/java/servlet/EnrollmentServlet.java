@@ -82,7 +82,7 @@ public class EnrollmentServlet extends HttpServlet {
                 vnp_Params.put("vnp_Command", "pay");
                 vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
 
-                long amount = pricePaid.multiply(new BigDecimal(2500000)).longValue();
+                long amount = pricePaid.multiply(new BigDecimal(100)).longValue();
                 vnp_Params.put("vnp_Amount", String.valueOf(amount));
                 vnp_Params.put("vnp_CurrCode", "VND");
                 vnp_Params.put("vnp_TxnRef", String.valueOf(System.currentTimeMillis()));

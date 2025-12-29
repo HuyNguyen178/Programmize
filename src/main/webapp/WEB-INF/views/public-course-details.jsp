@@ -12,6 +12,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
 
     <style>
         body {
@@ -391,49 +392,47 @@
                                         <c:choose>
                                             <c:when test="${not empty lessons}">
                                                 <c:forEach var="lesson" items="${lessons}" varStatus="lessonStatus">
-                                                    <c:forEach var="lesson" items="${lessons}" varStatus="lessonStatus">
-                                                        <c:choose>
-                                                            <%-- allow to see --%>
-                                                            <c:when test="${lesson.preview or isEnrolled or isAdminOrInstructor}">
-                                                                <a href="${pageContext.request.contextPath}/lesson-detail?id=${lesson.lessonId}"
-                                                                   class="lesson-item text-decoration-none">
-                                                                    <i class="lesson-icon ${lesson.typeIcon}"></i>
-                                                                    <span class="lesson-title text-dark">
-                                                                        ${chapterStatus.index + 1}.${lessonStatus.index + 1}: ${lesson.lessonName}
-                                                                    </span>
-                                                                    <div class="lesson-meta">
-                                                                        <c:if test="${lesson.preview}">
-                                                                            <span class="lesson-preview-badge">
-                                                                                <i class="fas fa-eye me-1"></i> Preview
-                                                                            </span>
-                                                                        </c:if>
-                                                                        <c:if test="${lesson.duration > 0}">
-                                                                            <span class="lesson-duration">
-                                                                                <i class="fas fa-clock me-1"></i> ${lesson.durationFormatted}
-                                                                            </span>
-                                                                        </c:if>
-                                                                    </div>
-                                                                </a>
-                                                            </c:when>
-                                                            <%-- not allow to see (lock icon) --%>
-                                                            <c:otherwise>
-                                                                <div class="lesson-item">
-                                                                    <i class="lesson-icon ${lesson.typeIcon}"></i>
-                                                                    <span class="lesson-title">
-                                                                        ${chapterStatus.index + 1}.${lessonStatus.index + 1}: ${lesson.lessonName}
-                                                                    </span>
-                                                                    <div class="lesson-meta">
-                                                                        <i class="fas fa-lock lesson-locked" title="Enroll to access"></i>
-                                                                        <c:if test="${lesson.duration > 0}">
-                                                                            <span class="lesson-duration">
-                                                                                <i class="fas fa-clock me-1"></i> ${lesson.durationFormatted}
-                                                                            </span>
-                                                                        </c:if>
-                                                                    </div>
+                                                    <c:choose>
+                                                        <%-- allow to see --%>
+                                                        <c:when test="${lesson.preview or isEnrolled or isAdminOrInstructor}">
+                                                            <a href="${pageContext.request.contextPath}/lesson-detail?id=${lesson.lessonId}"
+                                                               class="lesson-item text-decoration-none">
+                                                                <i class="lesson-icon ${lesson.typeIcon}"></i>
+                                                                <span class="lesson-title text-dark">
+                                                                    ${chapterStatus.index + 1}.${lessonStatus.index + 1}: ${lesson.lessonName}
+                                                                </span>
+                                                                <div class="lesson-meta">
+                                                                    <c:if test="${lesson.preview}">
+                                                                        <span class="lesson-preview-badge">
+                                                                            <i class="fas fa-eye me-1"></i> Preview
+                                                                        </span>
+                                                                    </c:if>
+                                                                    <c:if test="${lesson.duration > 0}">
+                                                                        <span class="lesson-duration">
+                                                                            <i class="fas fa-clock me-1"></i> ${lesson.durationFormatted}
+                                                                        </span>
+                                                                    </c:if>
                                                                 </div>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </c:forEach>
+                                                            </a>
+                                                        </c:when>
+                                                        <%-- not allow to see (lock icon) --%>
+                                                        <c:otherwise>
+                                                            <div class="lesson-item">
+                                                                <i class="lesson-icon ${lesson.typeIcon}"></i>
+                                                                <span class="lesson-title">
+                                                                    ${chapterStatus.index + 1}.${lessonStatus.index + 1}: ${lesson.lessonName}
+                                                                </span>
+                                                                <div class="lesson-meta">
+                                                                    <i class="fas fa-lock lesson-locked" title="Enroll to access"></i>
+                                                                    <c:if test="${lesson.duration > 0}">
+                                                                        <span class="lesson-duration">
+                                                                            <i class="fas fa-clock me-1"></i> ${lesson.durationFormatted}
+                                                                        </span>
+                                                                    </c:if>
+                                                                </div>
+                                                            </div>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:forEach>
                                             </c:when>
                                             <c:otherwise>
@@ -516,6 +515,7 @@
 
                     <!-- Enrollment Buttons -->
                     <c:choose>
+                        <%-- guest --%>
                         <c:when test="${empty sessionScope.loginUser}">
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this course</p>
@@ -524,12 +524,24 @@
                                 </a>
                             </div>
                         </c:when>
-                        <c:otherwise>
 
-                            <!-- User is logged in -->
+                        <%-- user enrolled --%>
+                        <c:when test="${isEnrolled}">
+                            <div class="enrolled-status text-center">
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>You already own this course.</strong>
+                                </div>
+                                <a href="${pageContext.request.contextPath}/my-courses" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-book-open me-2"></i> Go to My Courses
+                                </a>
+                            </div>
+                        </c:when>
+
+                        <%-- user not enrolled --%>
+                        <c:otherwise>
                             <form action="${pageContext.request.contextPath}/enrollment" method="get">
                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-
                                 <input type="hidden" name="type" value="course">
                                 <input type="hidden" name="id" value="${course.courseId}">
 

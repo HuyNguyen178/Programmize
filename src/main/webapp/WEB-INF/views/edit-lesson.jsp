@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/admin.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -225,8 +226,8 @@
                 <%-- CONTENT FIELD (FULL WIDTH) --%>
                 <div class="col-12">
                     <div class="form-group">
-                        <label for="content" class="form-label">Lesson Content</label>
-                        <textarea id="content" name="content" class="form-control" rows="5"
+                        <label for="description" class="form-label">Lesson Content</label>
+                        <textarea id="description" name="content" class="form-control" rows="5"
                                   placeholder="Enter lesson content, description, or text material...">${lesson.content}</textarea>
                         <small class="text-muted">HTML content is supported for text lessons</small>
                     </div>

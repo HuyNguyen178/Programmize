@@ -36,9 +36,9 @@
 
         <div class="footer-column">
             <strong>Contact</strong>
-            <div class="contact-item">📧 email@programmize.com</div>
-            <div class="contact-item">📞 +1 (555) 123-4567</div>
-            <div class="contact-item">📍 123 Learning Street, Edu City</div>
+            <div class="contact-item">📧 programmize178@gmail.com</div>
+            <div class="contact-item">📞 +84 390059077</div>
+            <div class="contact-item">📍 18 Hoang Quoc Viet, Ha Noi</div>
         </div>
 
         <div class="footer-column">
@@ -55,5 +55,5 @@
         </div>
 
     </div>
-    <p>&copy; 2025 Programmize.</p>
+    <p>Copyright © 2025 Programmize. All rights reserved.</p>
 </footer>

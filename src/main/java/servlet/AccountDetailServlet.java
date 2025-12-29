@@ -3,12 +3,15 @@ package servlet;
 import dao.SettingDAO;
 import dao.UserDAO;
 import model.User;
+import service.AuditLogService;
+import utils.SessionConfig;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,11 +21,13 @@ public class AccountDetailServlet extends HttpServlet {
 
     private UserDAO userDAO;
     private SettingDAO settingDAO;
+    private AuditLogService auditLog;
 
     @Override
     public void init() throws ServletException {
         userDAO = new UserDAO();
         settingDAO = new SettingDAO();
+        auditLog = AuditLogService.getInstance();
     }
 
     @Override
@@ -77,6 +82,9 @@ public class AccountDetailServlet extends HttpServlet {
             return;
         }
 
+        // Get old user data for audit logging
+        User oldUser = userDAO.getUserById(userId);
+
         User user = new User();
         user.setId(userId);
         user.setFullname(fullname);
@@ -89,7 +97,38 @@ public class AccountDetailServlet extends HttpServlet {
             user.setPassword(password);
         }
 
-        if (userDAO.updateUser(user) || userDAO.updatePassword(user, password)) {
+        if (userDAO.updateUser(user, password)) {
+            // Audit logging
+            HttpSession session = request.getSession(false);
+            User admin = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
+            if (admin != null && oldUser != null) {
+                StringBuilder changes = new StringBuilder();
+                if (!oldUser.getFullname().equals(fullname)) changes.append("fullname, ");
+                if (!oldUser.getEmail().equals(email)) changes.append("email, ");
+                if (oldUser.isStatus() != status) changes.append("status, ");
+                if (password != null && !password.isBlank()) changes.append("password, ");
+
+                if (!oldUser.getRoleName().equals(roleName)) {
+                    auditLog.logRoleChanged(
+                            String.valueOf(admin.getId()),
+                            admin.getUsername(),
+                            getClientIp(request),
+                            String.valueOf(userId),
+                            oldUser.getRoleName(),
+                            roleName
+                    );
+                }
+
+                String changesStr = changes.length() > 0 ? changes.substring(0, changes.length() - 2) : "no changes";
+                auditLog.logUserUpdated(
+                        String.valueOf(admin.getId()),
+                        admin.getUsername(),
+                        getClientIp(request),
+                        String.valueOf(userId),
+                        changesStr
+                );
+            }
+
             response.sendRedirect("account-list?updated=true");
         } else {
             forwardWithError(request, response, userId,
@@ -122,5 +161,22 @@ public class AccountDetailServlet extends HttpServlet {
         } else {
             response.sendRedirect("account-list?error=notfound");
         }
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        if ("0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)) {
+            ip = "127.0.0.1";
+        }
+        return ip;
     }
 }

@@ -6,3 +6,52 @@
 
 # ignore ALL files in below directory
 /target/
+
+# ===== Compiled files =====
+target/
+*.jar
+*.war
+
+# ===== IDE - IntelliJ IDEA =====
+.idea/
+*.iml
+out/
+
+# ===== IDE - Eclipse =====
+.settings/
+.classpath
+.project
+bin/
+
+# ===== IDE - NetBeans =====
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+
+# ===== IDE - VS Code =====
+.vscode/
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Logs =====
+logs/
+
+# ===== Environment & Secrets =====
+.env
+.env.local
+.env.production
+*.env
+
+# ===== Temporary files =====
+*.tmp
+*.temp
+*.swp
+*~
+
+# ===== Package files =====
+node_modules/
