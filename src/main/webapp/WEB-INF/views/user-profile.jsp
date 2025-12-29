@@ -61,21 +61,22 @@
 <body>
 <c:choose>
     <c:when test="${user.roleName == 'Admin'}">
-        <link href="../../assets/css/admin.css" rel="stylesheet">
+        <link href="/assets/css/admin.css" rel="stylesheet">
         <jsp:include page="../views/include/admin-topbar.jsp" />
         <jsp:include page="../views/include/admin-sidebar.jsp" />
+        <div id="wrapper"> <div id="content">
     </c:when>
     <c:when test="${user.roleName == 'Instructor'}">
-        <link href="../../assets/css/admin.css" rel="stylesheet">
+        <link href="/assets/css/admin.css" rel="stylesheet">
         <jsp:include page="../views/include/instructor-topbar.jsp" />
         <jsp:include page="../views/include/instructor-sidebar.jsp" />
+        <div id="wrapper"> <div id="content">
     </c:when>
 
     <c:otherwise>
         <jsp:include page="../views/include/header.jsp" />
     </c:otherwise>
 </c:choose>
-
 
 <main>
     <div class="container">
@@ -169,6 +170,8 @@
         </div>
     </div>
 </main>
+</div>
+</div>
 
 <%-- Modal Username --%>
 <div class="modal fade" id="modalUsername" tabindex="-1">
@@ -210,6 +213,7 @@
     <jsp:include page="../views/include/footer.jsp" />
 </c:if>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/admin_scripts.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const fileInput = document.getElementById('avatarFile');
