@@ -69,14 +69,14 @@ public class AccountDetailServlet extends HttpServlet {
 
         int userId = Integer.parseInt(request.getParameter("userId"));
         User user = userDAO.getUserById(userId);
+
         String fullname = request.getParameter("fullname");
         String email = request.getParameter("email");
         String username = request.getParameter("username");
         String roleName = request.getParameter("roleName");
         String password = request.getParameter("password");
-        boolean status = "1".equals(request.getParameter("status"));
-
         String avatarUrl = request.getParameter("avatarUrl");
+        boolean status = "1".equals(request.getParameter("status"));
 
         Part avatarPart = request.getPart("avatar");
         if (avatarPart != null && avatarPart.getSize() > 0) {
@@ -122,7 +122,6 @@ public class AccountDetailServlet extends HttpServlet {
             return;
         }
 
-        user.setId(userId);
         user.setFullname(fullname);
         user.setUsername(username);
         user.setEmail(email);
