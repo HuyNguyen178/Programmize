@@ -140,7 +140,7 @@ public class UserProfileServlet extends HttpServlet {
                 return;
             }
 
-            String uploadDir = getServletContext().getRealPath("/assets/img/user_avt");
+            String uploadDir = "C:/uploads/user_avt";
             File uploadFolder = new File(uploadDir);
             if (!uploadFolder.exists()) {
                 uploadFolder.mkdirs();
@@ -153,7 +153,7 @@ public class UserProfileServlet extends HttpServlet {
             // Lưu file
             avatarPart.write(uploadDir + File.separator + newFileName);
 
-            String avatarUrl = "assets/img/user_avt/" + newFileName;
+            String avatarUrl = "/user_avt/" + newFileName;
             user.setAvatarUrl(avatarUrl);
 
             updated = true;
