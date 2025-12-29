@@ -12,15 +12,10 @@
     if (loginUser != null) {
         if (loginUser.getFullname() != null) fullName = loginUser.getFullname();
         if (loginUser.getAvatarUrl() != null) avtUrl = loginUser.getAvatarUrl();
+        UserDAO userDAO = new UserDAO();
+        loginUser = userDAO.getUserById(loginUser.getId());
+        session.setAttribute(SessionConfig.ATTR_LOGIN_USER, loginUser);
     }
-    else {
-        response.sendRedirect("login");
-        return;
-    }
-
-    UserDAO userDAO = new UserDAO();
-    loginUser = userDAO.getUserById(loginUser.getId());
-    session.setAttribute(SessionConfig.ATTR_LOGIN_USER, loginUser);
 %>
 
 
