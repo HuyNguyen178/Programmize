@@ -11,21 +11,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-// Map servlet này với đường dẫn gốc hoặc /home
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {
+    private final Logger logger = LogManager.getLogger(HomeServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CourseDAO courseDAO = new CourseDAO();
 
-        // 1. Lấy danh sách khóa học
         List<Course> highlightedCourses = courseDAO.getHighlightedCourses();
 
-        // 2. Đẩy dữ liệu vào request attribute
         request.setAttribute("highlightedCourses", highlightedCourses);
 
-        // 3. Forward về trang home.jsp
         request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
     }
 }
