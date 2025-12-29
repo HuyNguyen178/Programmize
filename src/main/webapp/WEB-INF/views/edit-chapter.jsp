@@ -238,7 +238,7 @@
                 <div class="col-12 pt-3 border-top">
                     <div class="d-flex justify-content-between">
                         <%-- NÚT BACK TO LIST --%>
-                        <a href="${pageContext.request.contextPath}/chapter-detail?courseId=${chapter.courseId}" class="btn btn-outline-secondary">
+                        <a href="${pageContext.request.contextPath}/chapter-details?courseId=${chapter.courseId}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back to Chapter List
                         </a>
 

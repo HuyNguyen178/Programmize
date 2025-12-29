@@ -237,7 +237,7 @@
                 <div class="col-12 pt-3 border-top">
                     <div class="d-flex justify-content-between">
                         <%-- BACK BUTTON --%>
-                        <a href="${pageContext.request.contextPath}/chapter-detail?id=${lesson.chapterId}" class="btn btn-outline-secondary">
+                        <a href="${pageContext.request.contextPath}/chapter-details?id=${lesson.chapterId}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back to Chapter
                         </a>
 

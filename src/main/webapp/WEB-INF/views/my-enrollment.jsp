@@ -201,7 +201,7 @@
 
                                 <c:choose>
                                     <c:when test="${not empty firstLessonMap[e.courseId]}">
-                                        <a href="${pageContext.request.contextPath}/lesson-detail?id=${firstLessonMap[e.courseId]}" class="btn-action">GO TO LEARN</a>
+                                        <a href="${pageContext.request.contextPath}/lesson-details?id=${firstLessonMap[e.courseId]}" class="btn-action">GO TO LEARN</a>
                                     </c:when>
                                     <c:otherwise>
                                         <a href="${pageContext.request.contextPath}/${e.type == 'COURSE' ? 'public-course-details' : 'public-class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>

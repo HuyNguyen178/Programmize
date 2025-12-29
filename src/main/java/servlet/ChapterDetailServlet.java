@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Chapter;
 import model.Lesson;
 
-@WebServlet(name = "ChapterDetailServlet", urlPatterns = {"/chapter-detail"})
+@WebServlet(name = "ChapterDetailServlet", urlPatterns = {"/chapter-details"})
 public class ChapterDetailServlet extends HttpServlet {
 
     private ChapterDAO chapterDAO;
@@ -97,7 +97,7 @@ public class ChapterDetailServlet extends HttpServlet {
             request.setAttribute("currentStatus", statusFilter);
             request.setAttribute("currentSearch", searchQuery);
 
-            request.getRequestDispatcher("/WEB-INF/views/chapter-detail.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/chapter-details.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
             System.err.println("ChapterDetailServlet: Invalid chapter ID format - " + idParam);
@@ -130,11 +130,11 @@ public class ChapterDetailServlet extends HttpServlet {
                 if (deleted) {
                     System.out.println("ChapterDetailServlet: Chapter deleted successfully - ID: " + chapterId);
                     request.getSession().setAttribute("successMessage", "Chapter deleted successfully!");
-                    response.sendRedirect(request.getContextPath() + "/course-detail?id=" + courseId);
+                    response.sendRedirect(request.getContextPath() + "/course-content");
                 } else {
                     System.err.println("ChapterDetailServlet: Failed to delete chapter - ID: " + chapterId);
                     request.getSession().setAttribute("errorMessage", "Failed to delete chapter.");
-                    response.sendRedirect(request.getContextPath() + "/chapter-detail?id=" + chapterId);
+                    response.sendRedirect(request.getContextPath() + "/chapter-details?id=" + chapterId);
                 }
             } else if ("deleteLesson".equals(action)) {
                 // lesson deletion
@@ -149,9 +149,9 @@ public class ChapterDetailServlet extends HttpServlet {
                         request.getSession().setAttribute("errorMessage", "Failed to delete lesson.");
                     }
                 }
-                response.sendRedirect(request.getContextPath() + "/chapter-detail?id=" + chapterId);
+                response.sendRedirect(request.getContextPath() + "/chapter-details?id=" + chapterId);
             } else {
-                response.sendRedirect(request.getContextPath() + "/chapter-detail?id=" + chapterId);
+                response.sendRedirect(request.getContextPath() + "/chapter-details?id=" + chapterId);
             }
 
         } catch (NumberFormatException e) {
