@@ -59,8 +59,24 @@
     </style>
 </head>
 <body>
+<c:choose>
+    <c:when test="${user.roleName == 'Admin'}">
+        <link href="../../assets/css/admin.css" rel="stylesheet">
+        <jsp:include page="../views/include/admin-topbar.jsp" />
+        <jsp:include page="../views/include/admin-sidebar.jsp" />
+    </c:when>
 
-<jsp:include page="../views/include/header.jsp" />
+    <c:when test="${user.roleName == 'Instuctor'}">
+        <link href="../../assets/css/admin.css" rel="stylesheet">
+        <jsp:include page="../views/include/instructor-topbar.jsp" />
+        <jsp:include page="../views/include/instructor-sidebar.jsp" />
+    </c:when>
+
+    <c:otherwise>
+        <jsp:include page="../views/include/header.jsp" />
+    </c:otherwise>
+</c:choose>
+
 
 <main>
     <div class="container">
@@ -183,8 +199,9 @@
         </form>
     </div>
 </div>
-
-<jsp:include page="../views/include/footer.jsp" />
+<c:if test="${user.roleName != 'Admin' && user.roleName != 'Instuctor'}">
+    <jsp:include page="../views/include/footer.jsp" />
+</c:if>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
