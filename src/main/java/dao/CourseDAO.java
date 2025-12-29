@@ -984,22 +984,31 @@ public class CourseDAO {
         return false;
     }
     // Enroll user in a course
-    public boolean enrollUser(int userId, int courseId) {
-        String sql = "INSERT INTO course_enrollment (user_id, course_id, enrolled_at) VALUES (?, ?, NOW())";
+    public boolean enrollUserInCourse(int userId, int courseId, double pricePaid, String paymentMethod) {
+        String sql = "INSERT INTO course_enrollment (user_id, course_id, price_paid, payment_method, enrolled_at, status) " +
+                "VALUES (?, ?, ?, ?, NOW(), 1)";
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, userId);
             stmt.setInt(2, courseId);
+            stmt.setDouble(3, pricePaid);
+            stmt.setString(4, paymentMethod);
+
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("Enrolled user " + userId + " in course " + courseId + ": " + rowsAffected + " rows affected");
+            System.out.println("Enrolled user " + userId + " in course " + courseId +
+                    " (FREE) - " + rowsAffected + " rows affected");
             return rowsAffected > 0;
+
         } catch (SQLException e) {
-            System.err.println("Error enrolling user: " + e.getMessage());
+            System.err.println("Error enrolling user in course: " + e.getMessage());
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
-// ==================== INSTRUCTOR SPECIFIC METHODS (Added) ====================
+
+// ==================== INSTRUCTOR SPECIFIC METHODS  ====================
 
     public List<Course> getCoursesByInstructor(int instructorId, Integer categoryId, String keyword, Boolean status) {
         List<Course> courses = new ArrayList<>();

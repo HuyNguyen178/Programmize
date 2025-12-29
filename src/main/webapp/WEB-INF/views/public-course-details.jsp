@@ -540,23 +540,35 @@
 
                         <%-- user not enrolled --%>
                         <c:otherwise>
-                            <form action="${pageContext.request.contextPath}/enrollment" method="get">
-                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                                <input type="hidden" name="type" value="course">
-                                <input type="hidden" name="id" value="${course.courseId}">
+                            <c:choose>
+                                <%-- free course --%>
+                                <c:when test="${priceDisplay == 'FREE' or (course.salePrice != null and course.salePrice == 0) or (course.salePrice == null and course.listedPrice != null and course.listedPrice == 0)}">
+                                    <form action="${pageContext.request.contextPath}/enrollment" method="post">
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                        <input type="hidden" name="type" value="course">
+                                        <input type="hidden" name="id" value="${course.courseId}">
+                                        <input type="hidden" name="pricePaid" value="0">
+                                        <input type="hidden" name="paymentMethod" value="FREE">
 
-                                <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
-                                    <i class="fas fa-shopping-cart me-2"></i>
-                                    <c:choose>
-                                        <c:when test="${priceDisplay == 'FREE'}">
-                                            Enroll for Free
-                                        </c:when>
-                                        <c:otherwise>
-                                            Buy Course Now
-                                        </c:otherwise>
-                                    </c:choose>
-                                </button>
-                            </form>
+                                        <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
+                                            <i class="fas fa-plus-circle me-2"></i> Enroll for Free
+                                        </button>
+                                    </form>
+                                </c:when>
+
+                                <%-- paid course --%>
+                                <c:otherwise>
+                                    <form action="${pageContext.request.contextPath}/enrollment" method="get">
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                        <input type="hidden" name="type" value="course">
+                                        <input type="hidden" name="id" value="${course.courseId}">
+
+                                        <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
+                                            <i class="fas fa-shopping-cart me-2"></i> Buy Course Now
+                                        </button>
+                                    </form>
+                                </c:otherwise>
+                            </c:choose>
                         </c:otherwise>
                     </c:choose>
 
