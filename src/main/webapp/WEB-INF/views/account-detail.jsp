@@ -159,7 +159,7 @@
                             <%= !isEditMode ? "required" : "" %>>
                         <div class="form-text <%= isEditMode ? "text-warning" : "text-danger" %>">
                             <%--chưa làm nút showpass--%>
-                            <%= isEditMode ? " Leave blank to keep current password. Minimum 8 characters if changed." : "Minimum 8 characters" %>
+                            <%= isEditMode ? " Leave blank to keep current password. Minimum 8 characters if changed." : "" %>
                         </div>
                     </div>
                 </div>
