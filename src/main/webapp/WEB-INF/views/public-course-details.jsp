@@ -515,6 +515,7 @@
 
                     <!-- Enrollment Buttons -->
                     <c:choose>
+                        <%-- guest --%>
                         <c:when test="${empty sessionScope.loginUser}">
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this course</p>
@@ -523,12 +524,24 @@
                                 </a>
                             </div>
                         </c:when>
-                        <c:otherwise>
 
-                            <!-- User is logged in -->
+                        <%-- user enrolled --%>
+                        <c:when test="${isEnrolled}">
+                            <div class="enrolled-status text-center">
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>You already own this course.</strong>
+                                </div>
+                                <a href="${pageContext.request.contextPath}/my-courses" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-book-open me-2"></i> Go to My Courses
+                                </a>
+                            </div>
+                        </c:when>
+
+                        <%-- user not enrolled --%>
+                        <c:otherwise>
                             <form action="${pageContext.request.contextPath}/enrollment" method="get">
                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-
                                 <input type="hidden" name="type" value="course">
                                 <input type="hidden" name="id" value="${course.courseId}">
 
