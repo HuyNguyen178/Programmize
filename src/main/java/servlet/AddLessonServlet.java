@@ -2,185 +2,137 @@ package servlet;
 
 import dao.LessonDAO;
 import model.Lesson;
-import model.Lesson.LessonType;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import service.FileValidationService;
+import service.FileValidationService.ValidationResult;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.List;
 
 @WebServlet("/add-lesson")
+@MultipartConfig(
+    maxFileSize = 104857600,     // 100MB for videos
+    maxRequestSize = 115343360   // 110MB
+)
 public class AddLessonServlet extends HttpServlet {
     private LessonDAO lessonDAO;
+    private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
         lessonDAO = new LessonDAO();
+        fileValidator = FileValidationService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        // Check if this is an AJAX request to get next order index
-        String action = request.getParameter("action");
-        if ("getNextOrder".equals(action)) {
-            handleGetNextOrderIndex(request, response);
+        String chapterIdParam = request.getParameter("chapterId");
+        if (chapterIdParam == null) {
+            response.sendRedirect(request.getContextPath() + "/courses");
             return;
         }
 
-        try {
-            // fetch chapter list to dropdown (Format: [chapter_id, chapter_name, course_name])
-            List<String[]> allChapters = lessonDAO.getAllChaptersForDropdown();
+        int chapterId = Integer.parseInt(chapterIdParam);
+        int nextOrder = lessonDAO.getNextOrderIndex(chapterId);
+        String chapterName = lessonDAO.getChapterNameById(chapterId);
 
-            // set attributes for JSP
-            request.setAttribute("allChapters", allChapters);
-
-            // if got chap id from course content, auto nextOrderIndex
-            String chapterIdParam = request.getParameter("chapterId");
-            if (chapterIdParam != null && !chapterIdParam.trim().isEmpty()) {
-                try {
-                    int chapterId = Integer.parseInt(chapterIdParam);
-                    int nextOrderIndex = lessonDAO.getNextOrderIndex(chapterId);
-                    request.setAttribute("nextOrderIndex", nextOrderIndex);
-                } catch (NumberFormatException e) {
-                    // Ignore invalid chapterId
-                }
-            } else {
-                // default order index
-                request.setAttribute("nextOrderIndex", 1);
-            }
-
-            // Forward
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp");
-            dispatcher.forward(request, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.getSession().setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/course-content");
-        }
+        request.setAttribute("chapterId", chapterId);
+        request.setAttribute("chapterName", chapterName);
+        request.setAttribute("nextOrderIndex", nextOrder);
+        request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // chapterId for redirect
-        int chapterId = 0;
-
         try {
-            // fetch parameters from form
+            int chapterId = Integer.parseInt(request.getParameter("chapterId"));
             String lessonName = request.getParameter("lessonName");
-            String lessonTypeStr = request.getParameter("lessonType");
             String content = request.getParameter("content");
+            String lessonType = request.getParameter("lessonType");
             String videoUrl = request.getParameter("videoUrl");
-            String pdfUrl = request.getParameter("pdfUrl");
 
-            // fetch chapter ID
-            chapterId = Integer.parseInt(request.getParameter("chapterId"));
+            int orderNumber = lessonDAO.getNextOrderIndex(chapterId);
+            String orderStr = request.getParameter("orderNumber");
+            if (orderStr != null && !orderStr.trim().isEmpty()) {
+                orderNumber = Integer.parseInt(orderStr);
+            }
 
-            // duration
             int duration = 0;
             String durationStr = request.getParameter("duration");
             if (durationStr != null && !durationStr.trim().isEmpty()) {
                 duration = Integer.parseInt(durationStr);
             }
 
-            // fetch order index
-            int orderIndex = 1;
-            String orderIndexStr = request.getParameter("orderIndex");
-            if (orderIndexStr != null && !orderIndexStr.trim().isEmpty()) {
-                orderIndex = Integer.parseInt(orderIndexStr);
-            } else {
-                // auto fetch next index if not assigned
-                orderIndex = lessonDAO.getNextOrderIndex(chapterId);
+            boolean isPreview = "true".equals(request.getParameter("isPreview"));
+            boolean status = "true".equals(request.getParameter("status"));
+
+            // Handle file upload with validation
+            Part filePart = request.getPart("lessonFile");
+
+            if (filePart != null && filePart.getSize() > 0) {
+                String filename = filePart.getSubmittedFileName();
+                String contentType = filePart.getContentType();
+                long fileSize = filePart.getSize();
+
+                ValidationResult validationResult = fileValidator.validate(
+                    filename, contentType, fileSize, filePart.getInputStream()
+                );
+
+                if (!validationResult.isValid()) {
+                    request.setAttribute("error", "File upload failed: " + validationResult.getMessage());
+                    request.setAttribute("chapterId", chapterId);
+                    request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
+                    return;
+                }
+
+                String subDir = contentType.startsWith("video/") ? "videos" : "documents";
+                String safeFilename = fileValidator.sanitizeFilename(filename);
+                String uploadDir = getServletContext().getRealPath("/uploads/lessons/" + subDir);
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                filePart.write(uploadDir + File.separator + safeFilename);
+                videoUrl = "uploads/lessons/" + subDir + "/" + safeFilename;
             }
 
-            // fetch status
-            boolean status = Boolean.parseBoolean(request.getParameter("status"));
-
-            // fetch isPreview
-            boolean isPreview = "true".equals(request.getParameter("isPreview"));
-
-            // create new lesson object
+            // Create new lesson object
             Lesson lesson = new Lesson();
             lesson.setChapterId(chapterId);
             lesson.setLessonName(lessonName);
-            lesson.setLessonType(LessonType.fromString(lessonTypeStr));
             lesson.setContent(content);
+            lesson.setLessonTypeFromString(lessonType);
             lesson.setVideoUrl(videoUrl);
-            lesson.setPdfUrl(pdfUrl);
+            lesson.setOrderIndex(orderNumber);
             lesson.setDuration(duration);
-            lesson.setOrderIndex(orderIndex);
             lesson.setPreview(isPreview);
             lesson.setStatus(status);
-            lesson.setCreatedAt(new Date());
-            lesson.setUpdatedAt(new Date());
+            lesson.setCreatedAt(new java.util.Date());
+            lesson.setUpdatedAt(new java.util.Date());
 
-            // call dao add database
-            int newLessonId = lessonDAO.insertLesson(lesson);
+            int lessonId = lessonDAO.insertLesson(lesson);
 
-            if (newLessonId > 0) {
-                String chapterName = lessonDAO.getChapterNameById(chapterId);
-                request.getSession().setAttribute("successMessage",
-                        "Lesson '" + lessonName + "' added successfully to chapter '" + chapterName + "'!");
+            if (lessonId > 0) {
+                response.sendRedirect(request.getContextPath() + "/chapter?id=" + chapterId + "&success=lesson_added");
             } else {
-                request.getSession().setAttribute("errorMessage",
-                        "Failed to add lesson. Please try again.");
+                request.setAttribute("error", "Failed to add lesson");
+                request.setAttribute("chapterId", chapterId);
+                request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
             }
-
-            // Redirect
-            response.sendRedirect(request.getContextPath() + "/chapter-detail?id=" + chapterId);
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage",
-                    "Invalid input format. Please check your data.");
-            // redirect
-            if (chapterId > 0) {
-                response.sendRedirect(request.getContextPath() + "/add-lesson?chapterId=" + chapterId);
-            } else {
-                response.sendRedirect(request.getContextPath() + "/add-lesson");
-            }
+            request.setAttribute("error", "Invalid number format: " + e.getMessage());
+            request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage",
-                    "An error occurred: " + e.getMessage());
-            // redirect
-            if (chapterId > 0) {
-                response.sendRedirect(request.getContextPath() + "/add-lesson?chapterId=" + chapterId);
-            } else {
-                response.sendRedirect(request.getContextPath() + "/add-lesson");
-            }
+            request.setAttribute("error", "Error adding lesson: " + e.getMessage());
+            request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
         }
-    }
-
-    /**
-     * Handle AJAX request to get next order index for a chapter
-     */
-    private void handleGetNextOrderIndex(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        PrintWriter out = response.getWriter();
-
-        try {
-            String chapterIdParam = request.getParameter("chapterId");
-            if (chapterIdParam != null && !chapterIdParam.trim().isEmpty()) {
-                int chapterId = Integer.parseInt(chapterIdParam);
-                int nextOrderIndex = lessonDAO.getNextOrderIndex(chapterId);
-                out.print("{\"nextOrderIndex\": " + nextOrderIndex + "}");
-            } else {
-                out.print("{\"nextOrderIndex\": 1}");
-            }
-        } catch (NumberFormatException e) {
-            out.print("{\"error\": \"Invalid chapter ID\", \"nextOrderIndex\": 1}");
-        }
-
-        out.flush();
     }
 }

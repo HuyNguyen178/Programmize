@@ -1,155 +1,116 @@
 package servlet;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import dao.SettingDAO;
 import dao.UserDAO;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.Part;
 import model.User;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import utils.CloudinaryUtil;
-import utils.PasswordUtil;
+import jakarta.servlet.annotation.MultipartConfig;
+import service.FileValidationService;
+import service.FileValidationService.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 
 @WebServlet("/add-account")
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,
-        maxFileSize = 5 * 1024 * 1024,
-        maxRequestSize = 10 * 1024 * 1024
+    maxFileSize = 5242880,       // 5MB for avatar
+    maxRequestSize = 10485760    // 10MB
 )
 public class AddAccountServlet extends HttpServlet {
     private UserDAO userDAO;
-    private SettingDAO settingDAO;
+    private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
-        super.init();
-        settingDAO = new SettingDAO();
         userDAO = new UserDAO();
+        fileValidator = FileValidationService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        List<String> roles = settingDAO.getRoleNames();
-        request.setAttribute("roles", roles);
-
-        request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/admin/add-account.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String fullname = request.getParameter("fullname");
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String newRoleName = request.getParameter("roleName");
-        boolean status = "1".equals(request.getParameter("status"));
+        try {
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String email = request.getParameter("email");
+            String fullname = request.getParameter("fullname");
+            String roleName = request.getParameter("roleName");
+            String statusStr = request.getParameter("status");
 
-        String avatarUrl = "assets/img/user_avt/admin_avatar.png";
-        Part avatarPart = request.getPart("avatar");
-        if (avatarPart != null && avatarPart.getSize() > 0) {
-
-            String contentType = avatarPart.getContentType();
-            if (!contentType.startsWith("image/")) {
-                request.setAttribute("errorMsg", "Only image files can be accepted!");
-
-                request.setAttribute("fullnameValue", fullname);
-                request.setAttribute("emailValue", email);
-                request.setAttribute("roleValue", newRoleName);
-                request.setAttribute("statusValue", status ? "1" : "0");
-                request.setAttribute("avatarUrlValue", avatarUrl);
-
-                List<String> roles = settingDAO.getRoleNames();
-                request.setAttribute("roles", roles);
-                request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+            // Kiểm tra username hoặc email đã tồn tại
+            if (userDAO.checkUserOrEmailExists(username) || userDAO.checkUserOrEmailExists(email)) {
+                request.setAttribute("error", "Username or email already exists");
+                request.getRequestDispatcher("/views/admin/add-account.jsp").forward(request, response);
                 return;
             }
 
-            byte[] fileBytes = avatarPart.getInputStream().readAllBytes();
+            // Tạo user mới
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(password); // UserDAO.addUser() sẽ hash password
+            newUser.setEmail(email);
+            newUser.setFullname(fullname);
+            newUser.setRoleName(roleName);
+            newUser.setStatus(statusStr != null && statusStr.equals("1"));
 
-            Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
+            // Xử lý avatar upload với validation
+            Part avatarPart = request.getPart("avatar");
 
-            Map uploadResult = cloudinary.uploader().upload(
-                    fileBytes,
-                    ObjectUtils.asMap(
-                            "folder", "user_avt",
-                            "public_id", "user_" + "new_avt",
-                            "overwrite", true,
-                            "resource_type", "image"
-                    )
-            );
+            if (avatarPart != null && avatarPart.getSize() > 0) {
+                String filename = avatarPart.getSubmittedFileName();
+                String contentType = avatarPart.getContentType();
+                long fileSize = avatarPart.getSize();
 
-            avatarUrl = (String) uploadResult.get("secure_url");
+                // Only allow images for avatar
+                if (!contentType.startsWith("image/")) {
+                    request.setAttribute("error", "Avatar must be an image file (JPG, PNG, GIF)");
+                    request.getRequestDispatcher("/views/admin/add-account.jsp").forward(request, response);
+                    return;
+                }
+
+                // Validate file
+                ValidationResult validationResult = fileValidator.validate(
+                    filename, contentType, fileSize, avatarPart.getInputStream()
+                );
+
+                if (!validationResult.isValid()) {
+                    request.setAttribute("error", "Avatar upload failed: " + validationResult.getMessage());
+                    request.getRequestDispatcher("/views/admin/add-account.jsp").forward(request, response);
+                    return;
+                }
+
+                // Save avatar
+                String safeFilename = fileValidator.sanitizeFilename(filename);
+                String uploadDir = getServletContext().getRealPath("/uploads/avatars");
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                avatarPart.write(uploadDir + File.separator + safeFilename);
+                newUser.setAvatarUrl("uploads/avatars/" + safeFilename);
+            }
+
+            // Insert vào database
+            boolean success = userDAO.addUser(newUser);
+
+            if (success) {
+                response.sendRedirect(request.getContextPath() + "/accounts?success=added");
+            } else {
+                request.setAttribute("error", "Failed to create account");
+                request.getRequestDispatcher("/views/admin/add-account.jsp").forward(request, response);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error creating account: " + e.getMessage());
+            request.getRequestDispatcher("/views/admin/add-account.jsp").forward(request, response);
         }
-
-        if (userDAO.checkUserOrEmailExists(username) || userDAO.checkUserOrEmailExists(email)) {
-            request.setAttribute("errorMsg", "Username or Email already exists.");
-
-            request.setAttribute("fullnameValue", fullname);
-            request.setAttribute("emailValue", email);
-            request.setAttribute("roleValue", newRoleName);
-            request.setAttribute("statusValue", status ? "1" : "0");
-            request.setAttribute("avatarUrlValue", avatarUrl);
-
-            List<String> roles = settingDAO.getRoleNames();
-            request.setAttribute("roles", roles);
-            request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
-            return;
-        }
-
-        if (!PasswordUtil.isValidPassword(password)) {
-            request.setAttribute("errorMsg", "Password must be at least 8 characters, contain at least 1 uppercase, 1 lowercase and 1 special character!");
-
-            request.setAttribute("fullnameValue", fullname);
-            request.setAttribute("emailValue", email);
-            request.setAttribute("roleValue", newRoleName);
-            request.setAttribute("statusValue", status ? "1" : "0");
-            request.setAttribute("avatarUrlValue", avatarUrl);
-
-            List<String> roles = settingDAO.getRoleNames();
-            request.setAttribute("roles", roles);
-            request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
-            return;
-        }
-
-        User newUser = new User();
-        newUser.setFullname(fullname);
-        newUser.setUsername(username);
-        newUser.setEmail(email);
-        newUser.setPassword(password);
-        newUser.setStatus(status);
-        newUser.setAvatarUrl(avatarUrl);
-        newUser.setRoleName(newRoleName);
-
-        if (userDAO.addUser(newUser)) {
-            request.setAttribute("addSuccess", true);
-
-        } else {
-            request.setAttribute("errorMsg", "Failed to add new account! A database error occurred.");
-            request.setAttribute("addSuccess", false);
-
-            request.setAttribute("fullnameValue", fullname);
-            request.setAttribute("emailValue", email);
-            request.setAttribute("roleValue", newRoleName);
-            request.setAttribute("statusValue", status ? "1" : "0");
-            request.setAttribute("avatarUrlValue", avatarUrl);
-        }
-        List<String> roles = settingDAO.getRoleNames();
-        request.setAttribute("roles", roles);
-        response.sendRedirect("account-list?status=success");
     }
 }

@@ -1,157 +1,167 @@
 package servlet;
 
 import dao.CourseDAO;
-import dao.UserDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-import model.User;
+import jakarta.servlet.annotation.MultipartConfig;
+import service.FileValidationService;
+import service.FileValidationService.ValidationResult;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet("/edit-course")
+@MultipartConfig(
+    maxFileSize = 10485760,      // 10MB for images
+    maxRequestSize = 20971520    // 20MB total
+)
 public class EditCourseServlet extends HttpServlet {
-    private CourseDAO publicCourseDAO;
-    private UserDAO userDAO;
+    private CourseDAO courseDAO;
+    private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
-        publicCourseDAO = new CourseDAO();
-        userDAO = new UserDAO();
+        courseDAO = new CourseDAO();
+        fileValidator = FileValidationService.getInstance();
     }
 
-    // GET: Hiển thị form edit với dữ liệu course hiện tại
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        try {
-            // Lấy course ID từ parameter
-            String idParam = request.getParameter("id");
-
-            if (idParam == null || idParam.trim().isEmpty()) {
-                // Nếu không có ID, redirect về course list
-                response.sendRedirect(request.getContextPath() + "/course-list");
-                return;
-            }
-
-            int courseId = Integer.parseInt(idParam);
-
-            // Lấy thông tin course từ database
-            Course course = publicCourseDAO.getCourseById(courseId);
-
-            if (course == null) {
-                // Nếu không tìm thấy course, redirect về course list với error message
-                request.getSession().setAttribute("errorMessage", "Course not found!");
-                response.sendRedirect(request.getContextPath() + "/course-list");
-                return;
-            }
-
-            // Lấy danh sách categories và instructors cho dropdown
-            List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
-            List<User> allInstructors = userDAO.getAllInstructors();
-
-            // Lấy categories hiện tại của course
-            List<String[]> courseCategories = publicCourseDAO.getCategoriesForCourse(courseId);
-
-            // Set attributes cho JSP
-            request.setAttribute("course", course);
-            request.setAttribute("allCategories", allCategories);      // List of [setting_id, setting_name]
-            request.setAttribute("allInstructors", allInstructors);    // List of [user_id, fullname]
-            request.setAttribute("courseCategories", courseCategories); // Current categories of this course
-
-            // Forward đến trang edit
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/edit-course.jsp");
-            dispatcher.forward(request, response);
-
-        } catch (NumberFormatException e) {
-            // Nếu ID không hợp lệ
-            request.getSession().setAttribute("errorMessage", "Invalid course ID!");
-            response.sendRedirect(request.getContextPath() + "/course-list");
+        String idParam = request.getParameter("id");
+        if (idParam == null) {
+            response.sendRedirect(request.getContextPath() + "/courses");
+            return;
         }
+
+        int courseId = Integer.parseInt(idParam);
+        Course course = courseDAO.getCourseById(courseId);
+
+        List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();
+        List<String[]> courseCategories = courseDAO.getCategoriesForCourse(courseId);
+        List<String[]> instructors = courseDAO.getAllUsersAsInstructors();
+
+        request.setAttribute("course", course);
+        request.setAttribute("allCategories", allCategories);
+        request.setAttribute("courseCategories", courseCategories);
+        request.setAttribute("instructors", instructors);
+        request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
     }
 
-    // POST: Xử lý submit form edit (cập nhật database)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // Lấy tất cả parameters từ form
             int courseId = Integer.parseInt(request.getParameter("courseId"));
+            Course course = courseDAO.getCourseById(courseId);
+
+            if (course == null) {
+                response.sendRedirect(request.getContextPath() + "/courses?error=notfound");
+                return;
+            }
+
             String courseName = request.getParameter("courseName");
-            String thumbnailUrl = request.getParameter("thumbnailUrl");
             String description = request.getParameter("description");
-            String statusStr = request.getParameter("status");
+            boolean status = "1".equals(request.getParameter("status")) || "true".equals(request.getParameter("status"));
 
-            boolean status = "1".equals(statusStr);
+            int instructorId = 0;
+            String instructorIdStr = request.getParameter("instructorId");
+            if (instructorIdStr != null && !instructorIdStr.trim().isEmpty()) {
+                instructorId = Integer.parseInt(instructorIdStr);
+            }
 
-            // Lấy instructor ID (thay vì instructor name)
-            int instructorId = Integer.parseInt(request.getParameter("instructorId"));
-
-            // Lấy category IDs (có thể chọn nhiều)
-            String[] categoryIdStrings = request.getParameterValues("categoryIds");
+            // Parse category IDs
+            String[] categoryIdStrs = request.getParameterValues("categoryIds");
             int[] categoryIds = null;
-            if (categoryIdStrings != null && categoryIdStrings.length > 0) {
-                categoryIds = new int[categoryIdStrings.length];
-                for (int i = 0; i < categoryIdStrings.length; i++) {
-                    categoryIds[i] = Integer.parseInt(categoryIdStrings[i]);
+            if (categoryIdStrs != null && categoryIdStrs.length > 0) {
+                categoryIds = new int[categoryIdStrs.length];
+                for (int i = 0; i < categoryIdStrs.length; i++) {
+                    categoryIds[i] = Integer.parseInt(categoryIdStrs[i]);
                 }
             }
 
-            // Lấy duration
             int duration = 0;
             String durationStr = request.getParameter("duration");
             if (durationStr != null && !durationStr.trim().isEmpty()) {
                 duration = Integer.parseInt(durationStr);
             }
 
-            // Parse prices
-            BigDecimal listedPrice = new BigDecimal(request.getParameter("listedPrice"));
-            BigDecimal salePrice = new BigDecimal(request.getParameter("salePrice"));
+            BigDecimal listedPrice = new BigDecimal("0");
+            BigDecimal salePrice = new BigDecimal("0");
 
-            // Tạo Course object với dữ liệu mới
-            Course course = new Course();
-            course.setCourseId(courseId);
+            String listedPriceStr = request.getParameter("listedPrice");
+            String salePriceStr = request.getParameter("salePrice");
+
+            if (listedPriceStr != null && !listedPriceStr.trim().isEmpty()) {
+                listedPrice = new BigDecimal(listedPriceStr);
+            }
+            if (salePriceStr != null && !salePriceStr.trim().isEmpty()) {
+                salePrice = new BigDecimal(salePriceStr);
+            }
+
+            // Handle thumbnail upload with validation
+            String thumbnailUrl = request.getParameter("thumbnailUrl");
+            Part thumbnailPart = request.getPart("thumbnailFile");
+
+            if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
+                String filename = thumbnailPart.getSubmittedFileName();
+                String contentType = thumbnailPart.getContentType();
+                long fileSize = thumbnailPart.getSize();
+
+                ValidationResult validationResult = fileValidator.validate(
+                    filename, contentType, fileSize, thumbnailPart.getInputStream()
+                );
+
+                if (!validationResult.isValid()) {
+                    request.setAttribute("error", "Thumbnail upload failed: " + validationResult.getMessage());
+                    request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+                    return;
+                }
+
+                String safeFilename = fileValidator.sanitizeFilename(filename);
+                String uploadDir = getServletContext().getRealPath("/uploads/courses");
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                thumbnailPart.write(uploadDir + File.separator + safeFilename);
+                thumbnailUrl = "uploads/courses/" + safeFilename;
+            } else if (thumbnailUrl == null || thumbnailUrl.trim().isEmpty()) {
+                thumbnailUrl = course.getThumbnailUrl();
+            }
+
+            // Update course object
             course.setCourseName(courseName);
             course.setThumbnailUrl(thumbnailUrl);
             course.setDescription(description);
+            course.setStatus(status);
+            course.setInstructorId(instructorId);
+            course.setDuration(duration);
             course.setListedPrice(listedPrice);
             course.setSalePrice(salePrice);
-            course.setStatus(status);
-            course.setDuration(duration);
-            course.setInstructorId(instructorId);
 
-            // Gọi DAO để update database (bao gồm cả categories)
-            boolean success = publicCourseDAO.updateCourseWithCategories(course, categoryIds);
+            // Use the correct DAO method
+            boolean updated = courseDAO.updateCourseWithCategories(course, categoryIds);
 
-            if (success) {
-                // Nếu update thành công, set success message
-                request.getSession().setAttribute("successMessage",
-                        "Course '" + courseName + "' updated successfully!");
+            if (updated) {
+                response.sendRedirect(request.getContextPath() + "/courses?success=updated");
             } else {
-                // Nếu update thất bại, set error message
-                request.getSession().setAttribute("errorMessage",
-                        "Failed to update course. Please try again.");
+                request.setAttribute("error", "Failed to update course");
+                request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
             }
 
-            // Redirect về course list
-            response.sendRedirect(request.getContextPath() + "/course-list");
-
         } catch (NumberFormatException e) {
-            // Nếu có lỗi parse number
-            request.getSession().setAttribute("errorMessage",
-                    "Invalid input format. Please check your data.");
-            response.sendRedirect(request.getContextPath() + "/course-list");
-        } catch (Exception e) {
-            // Nếu có lỗi khác
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage",
-                    "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/course-list");
+            request.setAttribute("error", "Invalid number format: " + e.getMessage());
+            request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error updating course: " + e.getMessage());
+            request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
         }
     }
 }

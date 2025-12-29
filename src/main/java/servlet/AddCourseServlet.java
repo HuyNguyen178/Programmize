@@ -1,92 +1,84 @@
 package servlet;
 
 import dao.CourseDAO;
-import dao.UserDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-import model.User;
+import jakarta.servlet.annotation.MultipartConfig;
+import service.FileValidationService;
+import service.FileValidationService.ValidationResult;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
 
 @WebServlet("/add-course")
+@MultipartConfig(
+    maxFileSize = 10485760,      // 10MB for images
+    maxRequestSize = 20971520    // 20MB
+)
 public class AddCourseServlet extends HttpServlet {
-    private CourseDAO publicCourseDAO;
-    private UserDAO userDAO;
+    private CourseDAO courseDAO;
+    private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
-        publicCourseDAO = new CourseDAO();
-        userDAO = new UserDAO();
+        courseDAO = new CourseDAO();
+        fileValidator = FileValidationService.getInstance();
     }
 
-    // GET: Hiển thị form add course
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        try {
-            // Lấy danh sách categories và instructors cho dropdown
-            List<String[]> allCategories = publicCourseDAO.getAllCategoriesFromSettings();
-            List<User> allInstructors = userDAO.getAllInstructors();
-
-            // Set attributes cho JSP
-            request.setAttribute("allCategories", allCategories);      // List of [setting_id, setting_name]
-            request.setAttribute("allInstructors", allInstructors);    // List of [user_id, fullname]
-
-            // Forward đến trang add
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/add-course.jsp");
-            dispatcher.forward(request, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.getSession().setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/course-list");
-        }
+        // Load categories and instructors for the form
+        request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
+        request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
+        request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
     }
 
-    // POST: Xử lý submit form add (thêm vào database)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // Lấy tất cả parameters từ form
+            // Get form parameters
             String courseName = request.getParameter("courseName");
-            String thumbnailUrl = request.getParameter("thumbnailUrl");
             String description = request.getParameter("description");
-            String status = request.getParameter("status");
+            String statusStr = request.getParameter("status");
+            String instructorIdStr = request.getParameter("instructorId");
+            String durationStr = request.getParameter("duration");
+            String listedPriceStr = request.getParameter("listedPrice");
+            String salePriceStr = request.getParameter("salePrice");
+            String[] categoryIdStrs = request.getParameterValues("categoryIds");
 
-            // Lấy instructor ID
-            int instructorId = Integer.parseInt(request.getParameter("instructorId"));
+            // Parse status
+            boolean status = "1".equals(statusStr) || "true".equalsIgnoreCase(statusStr);
 
-            // Lấy category IDs (có thể chọn nhiều)
-            String[] categoryIdStrings = request.getParameterValues("categoryIds");
-            int[] categoryIds = null;
-            if (categoryIdStrings != null && categoryIdStrings.length > 0) {
-                categoryIds = new int[categoryIdStrings.length];
-                for (int i = 0; i < categoryIdStrings.length; i++) {
-                    categoryIds[i] = Integer.parseInt(categoryIdStrings[i]);
-                }
+            // Parse instructor ID
+            int instructorId = 0;
+            if (instructorIdStr != null && !instructorIdStr.trim().isEmpty()) {
+                instructorId = Integer.parseInt(instructorIdStr);
             }
 
-            // Lấy duration
+            // Parse duration
             int duration = 0;
-            String durationStr = request.getParameter("duration");
             if (durationStr != null && !durationStr.trim().isEmpty()) {
                 duration = Integer.parseInt(durationStr);
             }
 
+            // Parse category IDs
+            int[] categoryIds = null;
+            if (categoryIdStrs != null && categoryIdStrs.length > 0) {
+                categoryIds = new int[categoryIdStrs.length];
+                for (int i = 0; i < categoryIdStrs.length; i++) {
+                    categoryIds[i] = Integer.parseInt(categoryIdStrs[i]);
+                }
+            }
+
             // Parse prices
-            BigDecimal listedPrice = new BigDecimal("0");
-            BigDecimal salePrice = new BigDecimal("0");
-
-            String listedPriceStr = request.getParameter("listedPrice");
-            String salePriceStr = request.getParameter("salePrice");
-
+            BigDecimal listedPrice = null;
+            BigDecimal salePrice = null;
             if (listedPriceStr != null && !listedPriceStr.trim().isEmpty()) {
                 listedPrice = new BigDecimal(listedPriceStr);
             }
@@ -94,44 +86,71 @@ public class AddCourseServlet extends HttpServlet {
                 salePrice = new BigDecimal(salePriceStr);
             }
 
-            // Tạo Course object với dữ liệu mới
+            // Handle thumbnail upload with validation
+            String thumbnailUrl = request.getParameter("thumbnailUrl");
+            Part thumbnailPart = request.getPart("thumbnailFile");
+
+            if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
+                String filename = thumbnailPart.getSubmittedFileName();
+                String contentType = thumbnailPart.getContentType();
+                long fileSize = thumbnailPart.getSize();
+
+                ValidationResult validationResult = fileValidator.validate(
+                    filename, contentType, fileSize, thumbnailPart.getInputStream()
+                );
+
+                if (!validationResult.isValid()) {
+                    request.setAttribute("error", "Thumbnail upload failed: " + validationResult.getMessage());
+                    request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
+                    request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
+                    request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+                    return;
+                }
+
+                String safeFilename = fileValidator.sanitizeFilename(filename);
+                String uploadDir = getServletContext().getRealPath("/uploads/courses");
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                thumbnailPart.write(uploadDir + File.separator + safeFilename);
+                thumbnailUrl = "uploads/courses/" + safeFilename;
+            }
+
+            // Create course object
             Course course = new Course();
             course.setCourseName(courseName);
             course.setThumbnailUrl(thumbnailUrl);
             course.setDescription(description);
+            course.setStatus(status);
+            course.setInstructorId(instructorId);
+            course.setDuration(duration);
             course.setListedPrice(listedPrice);
             course.setSalePrice(salePrice);
-            course.setStatus(Boolean.parseBoolean(status));
-            course.setDuration(duration);
-            course.setInstructorId(instructorId);
 
-            // Gọi DAO để thêm vào database (bao gồm cả categories)
-            int newCourseId = publicCourseDAO.addCourseWithCategories(course, categoryIds);
+            // Use the correct DAO method
+            int courseId = courseDAO.addCourseWithCategories(course, categoryIds);
 
-            if (newCourseId > 0) {
-                // Nếu thêm thành công, set success message
-                request.getSession().setAttribute("successMessage",
-                        "Course '" + courseName + "' added successfully!");
+            if (courseId > 0) {
+                response.sendRedirect(request.getContextPath() + "/courses?success=added");
             } else {
-                // Nếu thêm thất bại, set error message
-                request.getSession().setAttribute("errorMessage",
-                        "Failed to add course. Please try again.");
+                request.setAttribute("error", "Failed to add course");
+                request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
+                request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
+                request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
             }
 
-            // Redirect về course list
-            response.sendRedirect(request.getContextPath() + "/course-list");
-
         } catch (NumberFormatException e) {
-            // Nếu có lỗi parse number
-            request.getSession().setAttribute("errorMessage",
-                    "Invalid input format. Please check your data.");
-            response.sendRedirect(request.getContextPath() + "/add-course");
-        } catch (Exception e) {
-            // Nếu có lỗi khác
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage",
-                    "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/add-course");
+            request.setAttribute("error", "Invalid number format: " + e.getMessage());
+            request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
+            request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
+            request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error adding course: " + e.getMessage());
+            request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
+            request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
+            request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
         }
     }
 }
