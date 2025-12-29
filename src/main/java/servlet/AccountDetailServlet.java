@@ -1,5 +1,7 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.SettingDAO;
 import dao.UserDAO;
 import jakarta.servlet.http.Part;
@@ -10,11 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import utils.CloudinaryUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/account-detail")
 public class AccountDetailServlet extends HttpServlet {
@@ -73,25 +77,26 @@ public class AccountDetailServlet extends HttpServlet {
             String contentType = avatarPart.getContentType();
             if (!contentType.startsWith("image/")) {
                 forwardWithError(request, response, userId,
-                        "Only img can be accepted!");
-                response.sendRedirect("account-detail");
+                        "Only image files can be accepted!");
+                response.sendRedirect("account-detail?id=" + userId);
                 return;
             }
 
-            String uploadDir = getServletContext().getRealPath("/assets/img/user_avt");
-            File uploadFolder = new File(uploadDir);
-            if (!uploadFolder.exists()) {
-                uploadFolder.mkdirs();
-            }
+            byte[] fileBytes = avatarPart.getInputStream().readAllBytes();
 
-            String fileName = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
-            String ext = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName = "user_" + userId + "_" + System.currentTimeMillis() + ext;
+            Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
 
-            // Lưu file
-            avatarPart.write(uploadDir + File.separator + newFileName);
+            Map uploadResult = cloudinary.uploader().upload(
+                    fileBytes,
+                    ObjectUtils.asMap(
+                            "folder", "user_avt",
+                            "public_id", "user_" + userId,
+                            "overwrite", true,
+                            "resource_type", "image"
+                    )
+            );
 
-            avatarUrl = "assets/img/user_avt/" + newFileName;
+            avatarUrl = (String) uploadResult.get("secure_url");
         }
 
         if (fullname == null || fullname.isBlank()

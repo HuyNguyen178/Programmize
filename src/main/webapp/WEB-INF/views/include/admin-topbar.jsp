@@ -1,7 +1,9 @@
 <%@ page import="model.User" %>
+<%@ page import="utils.SessionConfig" %>
+<%@ page import="dao.UserDAO" %>
 <%@ page session="true" %>
 <%
-    User loginUser = (User) session.getAttribute("loginUser");
+    User loginUser = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
     if (loginUser != null) {
         if(loginUser.getRoleName().equals("Student")) response.sendRedirect("home");
         if(loginUser.getRoleName().equals("Instructor")) response.sendRedirect("student-list");
@@ -9,6 +11,10 @@
         response.sendRedirect("login");
         return;
     }
+
+    UserDAO userDAO = new UserDAO();
+    loginUser = userDAO.getUserById(loginUser.getId());
+    session.setAttribute(SessionConfig.ATTR_LOGIN_USER, loginUser);
 %>
 <nav class="navbar navbar-light bg-white shadow-sm px-4 topbar" id="topbar">
 
