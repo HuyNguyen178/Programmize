@@ -40,7 +40,7 @@
         <% } %>
 
         <%-- FORM CHÍNH --%>
-        <form action="setting-detail" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="setting-details" method="post" class="p-4 bg-white rounded shadow-lg">
 
             <%--            add csrftoken--%>
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">

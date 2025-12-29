@@ -178,7 +178,7 @@
                             <td class="action-btn">
                                 <div class="btn-group" role="group">
                                     <%-- Nút Edit (biểu tượng bút chì) --%>
-                                    <a href="setting-detail?id=<%= s.getId() %>"
+                                    <a href="setting-details?id=<%= s.getId() %>"
                                        class="btn btn-sm btn-outline-primary"
                                        title="Edit">
                                         <i class="fas fa-pencil-alt"></i>

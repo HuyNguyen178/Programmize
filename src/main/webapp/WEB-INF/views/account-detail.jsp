@@ -58,7 +58,7 @@
 
     String pageTitle = isEditMode ? "Account Detail - " + finalUsername : "Add New Account";
     String headerTitle = isEditMode ? "Account Detail" : "Add New Account";
-    String formAction = isEditMode ? "account-detail" : "add-account";
+    String formAction = isEditMode ? "account-details" : "add-account";
 %>
 <!DOCTYPE html>
 <html>

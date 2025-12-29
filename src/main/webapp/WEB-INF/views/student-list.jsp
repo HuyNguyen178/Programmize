@@ -186,7 +186,7 @@
                             <td>
                                 <div class="btn-group" role="group">
                                     <%-- Nút Detail (Xem chi tiết) --%>
-                                    <a href="student-detail?id=<%= student.getId() %>"
+                                    <a href="student-details?id=<%= student.getId() %>"
                                        class="btn btn-sm btn-outline-secondary" title="View Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>

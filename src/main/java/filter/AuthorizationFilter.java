@@ -40,10 +40,10 @@ public class AuthorizationFilter implements Filter {
     private static final List<String> ADMIN_URLS = Arrays.asList(
             "/dashboard",
             "/account-list",
-            "/account-detail",
+            "/account-details",
             "/add-account",
             "/setting-list",
-            "/setting-detail",
+            "/setting-details",
             "/add-setting",
             "/course-list",
             "/course-details",
@@ -54,7 +54,7 @@ public class AuthorizationFilter implements Filter {
     private static final List<String> INSTRUCTOR_URLS = Arrays.asList(
             "/course-content",
             "/student-list",
-            "/student-detail",
+            "/student-details",
             "/add-student",
             "/add-chapter",
             "/edit-chapter",

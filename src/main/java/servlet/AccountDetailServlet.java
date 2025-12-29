@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/account-detail")
+@WebServlet("/account-details")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
         maxFileSize = 5 * 1024 * 1024,
@@ -54,7 +54,7 @@ public class AccountDetailServlet extends HttpServlet {
 
                 if (user != null) {
                     request.setAttribute("user", user);
-                    request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+                    request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
                     return;
                 }
             } catch (NumberFormatException ignored) {}
@@ -85,7 +85,7 @@ public class AccountDetailServlet extends HttpServlet {
             if (!contentType.startsWith("image/")) {
                 forwardWithError(request, response, userId,
                         "Only image files can be accepted!");
-                response.sendRedirect("account-detail?id=" + userId);
+                response.sendRedirect("account-details?id=" + userId);
                 return;
             }
 
@@ -133,7 +133,7 @@ public class AccountDetailServlet extends HttpServlet {
         }
 
         if (userDAO.updateUser(user) || userDAO.updatePassword(user, password)) {
-            response.sendRedirect("account-detail?id=" + userId + "&updated=true");
+            response.sendRedirect("account-details?id=" + userId + "&updated=true");
         } else {
             forwardWithError(request, response, userId,
                     "Update failed! Email may already exist.");
@@ -160,7 +160,7 @@ public class AccountDetailServlet extends HttpServlet {
         if (user != null) {
             request.setAttribute("user", user);
             request.setAttribute("roles", roles);
-            request.getRequestDispatcher("WEB-INF/views/account-detail.jsp")
+            request.getRequestDispatcher("WEB-INF/views/account-details.jsp")
                     .forward(request, response);
         } else {
             response.sendRedirect("account-list?error=notfound");
