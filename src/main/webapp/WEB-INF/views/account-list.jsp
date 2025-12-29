@@ -62,7 +62,7 @@
             <div class="card-body">
 
                 <% if ("success".equals(request.getParameter("status"))) { %>
-                <div class="alert alert-success">Add new account success!</div>
+                <div class="alert alert-success">New account added successfully!</div>
                 <% } %>
 
                 <%-- FILTER BAR --%>

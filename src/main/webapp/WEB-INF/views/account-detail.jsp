@@ -106,6 +106,10 @@
         <div class="alert alert-danger"><%= errorMsg %></div>
         <% } %>
 
+        <% if ("true".equals(request.getParameter("updated"))) { %>
+        <div class="alert alert-success">Account updated successfully!</div>
+        <% } %>
+
         <form action="<%= formAction %>" method="post" class="p-4 bg-white rounded shadow-lg" enctype="multipart/form-data">
 
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">

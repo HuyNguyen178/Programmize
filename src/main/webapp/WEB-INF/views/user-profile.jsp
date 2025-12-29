@@ -65,8 +65,7 @@
         <jsp:include page="../views/include/admin-topbar.jsp" />
         <jsp:include page="../views/include/admin-sidebar.jsp" />
     </c:when>
-
-    <c:when test="${user.roleName == 'Instuctor'}">
+    <c:when test="${user.roleName == 'Instructor'}">
         <link href="../../assets/css/admin.css" rel="stylesheet">
         <jsp:include page="../views/include/instructor-topbar.jsp" />
         <jsp:include page="../views/include/instructor-sidebar.jsp" />

@@ -134,7 +134,7 @@ public class AccountDetailServlet extends HttpServlet {
         }
 
         if (userDAO.updateUser(user) || userDAO.updatePassword(user, password)) {
-            response.sendRedirect("account-list?updated=true");
+            response.sendRedirect("account-detail?id=" + userId + "&updated=true");
         } else {
             forwardWithError(request, response, userId,
                     "Update failed! Email may already exist.");
