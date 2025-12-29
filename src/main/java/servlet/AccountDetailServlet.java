@@ -68,6 +68,7 @@ public class AccountDetailServlet extends HttpServlet {
             throws ServletException, IOException {
 
         int userId = Integer.parseInt(request.getParameter("userId"));
+        User user = userDAO.getUserById(userId);
         String fullname = request.getParameter("fullname");
         String email = request.getParameter("email");
         String username = request.getParameter("username");
@@ -103,6 +104,7 @@ public class AccountDetailServlet extends HttpServlet {
             );
 
             avatarUrl = (String) uploadResult.get("secure_url");
+            user.setAvatarUrl(avatarUrl);
         }
 
         if (fullname == null || fullname.isBlank()
@@ -120,14 +122,12 @@ public class AccountDetailServlet extends HttpServlet {
             return;
         }
 
-        User user = new User();
         user.setId(userId);
         user.setFullname(fullname);
         user.setUsername(username);
         user.setEmail(email);
         user.setRoleName(roleName);
         user.setStatus(status);
-        user.setAvatarUrl(avatarUrl);
 
         if (password != null && !password.isBlank()) {
             user.setPassword(password);
