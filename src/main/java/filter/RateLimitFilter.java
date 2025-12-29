@@ -41,7 +41,7 @@ public class RateLimitFilter implements Filter {
             httpRequest.setAttribute("lockoutMessage",
                 "Account locked due to too many failed attempts. " +
                 "Please try again in " + remainingMinutes + " minute(s).");
-            httpRequest.getRequestDispatcher("/login.jsp").forward(request, response);
+            httpRequest.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
             return;
         }
 
