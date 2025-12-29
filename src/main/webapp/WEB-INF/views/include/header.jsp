@@ -69,7 +69,7 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile?id=${sessionScope.loginUser.id}">Profile</a></li>
+                        <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile">Profile</a></li>
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-courses">My Courses</a></li>
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-classes">My Classes</a></li>
                         <li><a class="dropdown-item" href="<%=request.getContextPath()%>/my-enrollments">My Enrollments</a></li>

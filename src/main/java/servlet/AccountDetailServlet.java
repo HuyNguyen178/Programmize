@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import dao.SettingDAO;
 import dao.UserDAO;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import model.User;
 
@@ -21,6 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 @WebServlet("/account-detail")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 10 * 1024 * 1024
+)
 public class AccountDetailServlet extends HttpServlet {
 
     private UserDAO userDAO;
