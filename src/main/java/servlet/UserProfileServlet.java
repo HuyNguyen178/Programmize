@@ -1,17 +1,21 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.User;
+import utils.CloudinaryUtil;
 import utils.PasswordUtil;
 import utils.SessionConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @WebServlet("/profile")
 @MultipartConfig(
@@ -130,6 +134,7 @@ public class UserProfileServlet extends HttpServlet {
         }
 
         Part avatarPart = request.getPart("avatar");
+
         if (avatarPart != null && avatarPart.getSize() > 0) {
 
             String contentType = avatarPart.getContentType();
@@ -140,20 +145,21 @@ public class UserProfileServlet extends HttpServlet {
                 return;
             }
 
-            String uploadDir = "C:/uploads/user_avt";
-            File uploadFolder = new File(uploadDir);
-            if (!uploadFolder.exists()) {
-                uploadFolder.mkdirs();
-            }
+            byte[] fileBytes = avatarPart.getInputStream().readAllBytes();
 
-            String fileName = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
-            String ext = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName = "user_" + user.getId() + "_" + System.currentTimeMillis() + ext;
+            Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
 
-            // Lưu file
-            avatarPart.write(uploadDir + File.separator + newFileName);
+            Map uploadResult = cloudinary.uploader().upload(
+                    fileBytes,
+                    ObjectUtils.asMap(
+                            "folder", "user_avt",
+                            "public_id", "user_" + user.getId(),
+                            "overwrite", true,
+                            "resource_type", "image"
+                    )
+            );
 
-            String avatarUrl = "/user_avt/" + newFileName;
+            String avatarUrl = (String) uploadResult.get("secure_url");
             user.setAvatarUrl(avatarUrl);
 
             updated = true;
@@ -165,6 +171,9 @@ public class UserProfileServlet extends HttpServlet {
             session.setAttribute("message", "Updated successfully!");
             session.setAttribute("success", true);
             response.sendRedirect("profile");
+        }
+        else {
+            response.sendRedirect("profile?id=" + user.getId());
         }
     }
 }
