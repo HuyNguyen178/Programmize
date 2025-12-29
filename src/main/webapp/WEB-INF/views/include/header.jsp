@@ -1,16 +1,26 @@
 <%@ page import="model.User" %>
 <%@ page import="utils.CSRFUtil" %>
+<%@ page import="dao.UserDAO" %>
+<%@ page import="utils.SessionConfig" %>
 <%@ page session="true" %>
 <%
-    User user = (User) session.getAttribute("loginUser");
+    User loginUser = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
 
     String fullName = "";
     String avtUrl = "";
 
-    if (user != null) {
-        if (user.getFullname() != null) fullName = user.getFullname();
-        if (user.getAvatarUrl() != null) avtUrl = user.getAvatarUrl();
+    if (loginUser != null) {
+        if (loginUser.getFullname() != null) fullName = loginUser.getFullname();
+        if (loginUser.getAvatarUrl() != null) avtUrl = loginUser.getAvatarUrl();
     }
+    else {
+        response.sendRedirect("login");
+        return;
+    }
+
+    UserDAO userDAO = new UserDAO();
+    loginUser = userDAO.getUserById(loginUser.getId());
+    session.setAttribute(SessionConfig.ATTR_LOGIN_USER, loginUser);
 %>
 
 
@@ -55,7 +65,7 @@
                 <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
             </ul>
 
-            <% if(user == null) { %>
+            <% if(loginUser == null) { %>
             <div class="auth-buttons">
                 <a href="<%=request.getContextPath()%>/login" class="btn btn-outline-primary">Sign in</a>
                 <a href="<%=request.getContextPath()%>/register" class="btn btn-primary">Register</a>
