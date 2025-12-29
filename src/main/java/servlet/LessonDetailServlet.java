@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/lesson-detail")
+@WebServlet("/lesson-details")
 public class LessonDetailServlet extends HttpServlet {
 
     private LessonDAO lessonDAO;
@@ -149,7 +149,7 @@ public class LessonDetailServlet extends HttpServlet {
                     "' from chapter '" + chapter.getChapterName() + "'");
 
             // forward
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/lesson-detail.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/lesson-details.jsp");
             dispatcher.forward(request, response);
 
         } catch (NumberFormatException e) {

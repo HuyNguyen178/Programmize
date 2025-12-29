@@ -395,7 +395,7 @@
                                                     <c:choose>
                                                         <%-- allow to see --%>
                                                         <c:when test="${lesson.preview or isEnrolled or isAdminOrInstructor}">
-                                                            <a href="${pageContext.request.contextPath}/lesson-detail?id=${lesson.lessonId}"
+                                                            <a href="${pageContext.request.contextPath}/lesson-details?id=${lesson.lessonId}"
                                                                class="lesson-item text-decoration-none">
                                                                 <i class="lesson-icon ${lesson.typeIcon}"></i>
                                                                 <span class="lesson-title text-dark">

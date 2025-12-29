@@ -341,7 +341,7 @@
                                                 <li class="chapter-item">
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                                         <div>
-                                                            <a href="${pageContext.request.contextPath}/chapter-detail?id=${chapter.chapterId}"
+                                                            <a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}"
                                                                class="text-decoration-none">
                                                                 <strong class="text-primary">
                                                                         ${chapter.orderIndex}. ${chapter.chapterName}

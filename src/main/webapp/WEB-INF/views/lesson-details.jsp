@@ -464,7 +464,7 @@
                 <div class="lesson-controls d-flex justify-content-between align-items-center">
                     <c:choose>
                         <c:when test="${not empty prevLesson}">
-                            <a href="${pageContext.request.contextPath}/lesson-detail?id=${prevLesson.lessonId}" 
+                            <a href="${pageContext.request.contextPath}/lesson-details?id=${prevLesson.lessonId}"
                                class="btn btn-outline-primary">
                                 <i class="fas fa-chevron-left me-1"></i> Previous Lesson
                             </a>
@@ -478,7 +478,7 @@
                     
                     <c:choose>
                         <c:when test="${not empty nextLesson}">
-                            <a href="${pageContext.request.contextPath}/lesson-detail?id=${nextLesson.lessonId}" 
+                            <a href="${pageContext.request.contextPath}/lesson-details?id=${nextLesson.lessonId}"
                                class="btn btn-primary">
                                 Next Lesson <i class="fas fa-chevron-right ms-1"></i>
                             </a>
@@ -511,7 +511,7 @@
                     <c:choose>
                         <%-- allow clicking --%>
                         <c:when test="${lessonItem.preview or isEnrolled or isAdminOrInstructor}">
-                            <a href="${pageContext.request.contextPath}/lesson-detail?id=${lessonItem.lessonId}"
+                            <a href="${pageContext.request.contextPath}/lesson-details?id=${lessonItem.lessonId}"
                                class="lesson-item ${lessonItem.lessonId == lesson.lessonId ? 'active' : ''}">
                                 <div class="lesson-icon ${lessonItem.lessonType.value}">
                                     <i class="${lessonItem.typeIcon}"></i>

@@ -302,7 +302,7 @@
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <form class="row g-3 align-items-center" method="get"
-                  action="${pageContext.request.contextPath}/chapter-detail">
+                  action="${pageContext.request.contextPath}/chapter-details">
                 <input type="hidden" name="id" value="${chapter.chapterId}">
 
                 <div class="col-md-2">
@@ -334,7 +334,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    <a href="${pageContext.request.contextPath}/chapter-detail?id=${chapter.chapterId}"
+                    <a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}"
                        class="btn btn-outline-secondary w-100">
                         <i class="bi bi-x-circle me-1"></i> Clear
                     </a>
@@ -454,7 +454,7 @@
                                 </td>
                                 <td class="align-middle text-end">
                                     <div class="btn-group">
-                                        <a href="${pageContext.request.contextPath}/lesson-detail?id=${lesson.lessonId}"
+                                        <a href="${pageContext.request.contextPath}/lesson-details?id=${lesson.lessonId}"
                                            class="btn btn-sm btn-outline-primary action-btn" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
@@ -490,7 +490,7 @@
                                         </c:when>
                                         <c:otherwise>
                                             <p class="mb-2">No lessons match your filter criteria.</p>
-                                            <a href="${pageContext.request.contextPath}/chapter-detail?id=${chapter.chapterId}"
+                                            <a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}"
                                                class="btn btn-outline-secondary btn-sm mt-2">
                                                 <i class="bi bi-x-circle me-1"></i> Clear Filters
                                             </a>
@@ -527,7 +527,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="${pageContext.request.contextPath}/chapter-detail" method="post" style="display:inline;">
+                <form action="${pageContext.request.contextPath}/chapter-details" method="post" style="display:inline;">
 
                     <%--            add csrftoken--%>
                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
@@ -563,7 +563,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="${pageContext.request.contextPath}/chapter-detail" method="post" style="display:inline;">
+                <form action="${pageContext.request.contextPath}/chapter-details" method="post" style="display:inline;">
 
                     <%--            add csrftoken--%>
                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
