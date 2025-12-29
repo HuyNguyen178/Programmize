@@ -92,11 +92,11 @@ public class StudentDAO {
         StringBuilder baseSql = buildBaseSql(keyword, status, className);
 
         String finalSql = "SELECT u.user_id, u.fullname, u.email, "
-                + "ce.status AS enrollment_status, " // Chỉ định rõ lấy từ bảng class_enrollment
+                + "ce.status AS enrollment_status, "
                 + "u.avatar_url, "
                 + "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
                 + baseSql.toString()
-                + "GROUP BY u.user_id, u.fullname, u.email, ce.status, u.avatar_url " // Group by cột của ce
+                + "GROUP BY u.user_id, u.fullname, u.email, ce.status, u.avatar_url "
                 + "ORDER BY u.fullname ASC "
                 + "LIMIT ? OFFSET ?";
 
@@ -191,7 +191,7 @@ public class StudentDAO {
                 ps.setInt(2, classId);
                 ps.setBigDecimal(3, BigDecimal.ZERO);
                 ps.setString(4, "Teacher Added");
-                ps.setBoolean(5, false);
+                ps.setBoolean(5, true);
                 ps.executeUpdate();
             }
 
