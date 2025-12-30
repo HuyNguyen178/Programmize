@@ -321,6 +321,31 @@ public class ChapterDAO {
         return result;
     }
 
+    public List<String[]> getAllChaptersWithCourseName() {
+        List<String[]> chapters = new ArrayList<>();
+        String sql = "SELECT ch.chapter_id, ch.chapter_name, c.course_name " +
+                "FROM chapter ch " +
+                "JOIN course c ON ch.course_id = c.course_id " +
+                "WHERE ch.status = 1 AND c.status = 1 " +
+                "ORDER BY c.course_name, ch.order_index";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String[] chapter = new String[3];
+                chapter[0] = String.valueOf(rs.getInt("chapter_id"));
+                chapter[1] = rs.getString("chapter_name");
+                chapter[2] = rs.getString("course_name");
+                chapters.add(chapter);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return chapters;
+    }
+
 
     // Main method for testing
     public static void main(String[] args) {

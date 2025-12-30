@@ -38,7 +38,7 @@ public class EditCourseServlet extends HttpServlet {
             throws ServletException, IOException {
         String idParam = request.getParameter("id");
         if (idParam == null) {
-            response.sendRedirect(request.getContextPath() + "/courses");
+            response.sendRedirect(request.getContextPath() + "/course-list");
             return;
         }
 
@@ -65,7 +65,7 @@ public class EditCourseServlet extends HttpServlet {
             Course course = courseDAO.getCourseById(courseId);
 
             if (course == null) {
-                response.sendRedirect(request.getContextPath() + "/courses?error=notfound");
+                response.sendRedirect(request.getContextPath() + "/course-list?error=notfound");
                 return;
             }
 
@@ -152,7 +152,8 @@ public class EditCourseServlet extends HttpServlet {
             boolean updated = courseDAO.updateCourseWithCategories(course, categoryIds);
 
             if (updated) {
-                response.sendRedirect(request.getContextPath() + "/courses?success=updated");
+                response.sendRedirect(request.getContextPath() + "/course-list?success=updated");
+                request.getSession().setAttribute("successMessage", "Course updated successfully!");
             } else {
                 request.setAttribute("error", "Failed to update course");
                 request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);

@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.LessonDAO;
+import dao.ChapterDAO;
 import model.Lesson;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -11,6 +12,7 @@ import service.FileValidationService.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/add-lesson")
 @MultipartConfig(
@@ -19,30 +21,33 @@ import java.io.IOException;
 )
 public class AddLessonServlet extends HttpServlet {
     private LessonDAO lessonDAO;
+    private ChapterDAO chapterDAO;
     private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
         lessonDAO = new LessonDAO();
+        chapterDAO = new ChapterDAO();
         fileValidator = FileValidationService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        List<String[]> allChapters = chapterDAO.getAllChaptersWithCourseName();
+        request.setAttribute("allChapters", allChapters);
+
         String chapterIdParam = request.getParameter("chapterId");
-        if (chapterIdParam == null) {
-            response.sendRedirect(request.getContextPath() + "/courses");
-            return;
+        if (chapterIdParam != null && !chapterIdParam.isEmpty()) {
+            int chapterId = Integer.parseInt(chapterIdParam);
+            int nextOrder = lessonDAO.getNextOrderIndex(chapterId);
+            request.setAttribute("chapterId", chapterId);
+            request.setAttribute("nextOrderIndex", nextOrder);
+        } else {
+            request.setAttribute("nextOrderIndex", 1);
         }
 
-        int chapterId = Integer.parseInt(chapterIdParam);
-        int nextOrder = lessonDAO.getNextOrderIndex(chapterId);
-        String chapterName = lessonDAO.getChapterNameById(chapterId);
-
-        request.setAttribute("chapterId", chapterId);
-        request.setAttribute("chapterName", chapterName);
-        request.setAttribute("nextOrderIndex", nextOrder);
         request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
     }
 
@@ -118,7 +123,7 @@ public class AddLessonServlet extends HttpServlet {
             int lessonId = lessonDAO.insertLesson(lesson);
 
             if (lessonId > 0) {
-                response.sendRedirect(request.getContextPath() + "/chapter?id=" + chapterId + "&success=lesson_added");
+                response.sendRedirect(request.getContextPath() + "/chapter-details?id=" + chapterId + "&success=lesson_added");
             } else {
                 request.setAttribute("error", "Failed to add lesson");
                 request.setAttribute("chapterId", chapterId);

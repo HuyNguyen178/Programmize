@@ -116,7 +116,7 @@
             <c:remove var="errorMessage" scope="session"/>
         </c:if>
 
-        <form action="${pageContext.request.contextPath}/add-lesson" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="${pageContext.request.contextPath}/add-lesson" method="post" enctype="multipart/form-data" class="p-4 bg-white rounded shadow-lg">
 
             <%--            add csrftoken--%>
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
