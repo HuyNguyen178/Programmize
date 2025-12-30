@@ -1,11 +1,13 @@
 package servlet;
 
 import dao.CourseDAO;
+import dao.UserDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
+import model.User;
 import service.FileValidationService;
 import service.FileValidationService.ValidationResult;
 
@@ -21,11 +23,13 @@ import java.util.List;
 )
 public class EditCourseServlet extends HttpServlet {
     private CourseDAO courseDAO;
+    private UserDAO userDAO;
     private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
         courseDAO = new CourseDAO();
+        userDAO = new UserDAO();
         fileValidator = FileValidationService.getInstance();
     }
 
@@ -43,12 +47,12 @@ public class EditCourseServlet extends HttpServlet {
 
         List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();
         List<String[]> courseCategories = courseDAO.getCategoriesForCourse(courseId);
-        List<String[]> instructors = courseDAO.getAllUsersAsInstructors();
+        List<User> instructors = userDAO.getAllInstructors();
 
         request.setAttribute("course", course);
         request.setAttribute("allCategories", allCategories);
         request.setAttribute("courseCategories", courseCategories);
-        request.setAttribute("instructors", instructors);
+        request.setAttribute("allInstructors", instructors);
         request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
     }
 

@@ -50,7 +50,7 @@
             <c:remove var="errorMessage" scope="session"/>
         </c:if>
 
-        <form action="${pageContext.request.contextPath}/add-course" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="${pageContext.request.contextPath}/add-course" method="post" class="p-4 bg-white rounded shadow-lg" enctype="multipart/form-data">
 
 <%--            add csrftoken--%>
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">

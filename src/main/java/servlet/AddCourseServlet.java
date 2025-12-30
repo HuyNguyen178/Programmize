@@ -1,5 +1,7 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.CourseDAO;
 import dao.UserDAO;
 import model.Course;
@@ -9,10 +11,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
 import service.FileValidationService;
 import service.FileValidationService.ValidationResult;
+import utils.CloudinaryUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 
 @WebServlet("/add-course")
 @MultipartConfig(
@@ -94,29 +98,32 @@ public class AddCourseServlet extends HttpServlet {
             Part thumbnailPart = request.getPart("thumbnailFile");
 
             if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
-                String filename = thumbnailPart.getSubmittedFileName();
-                String contentType = thumbnailPart.getContentType();
-                long fileSize = thumbnailPart.getSize();
 
                 ValidationResult validationResult = fileValidator.validate(
-                    filename, contentType, fileSize, thumbnailPart.getInputStream()
+                        thumbnailPart.getSubmittedFileName(),
+                        thumbnailPart.getContentType(),
+                        thumbnailPart.getSize(),
+                        thumbnailPart.getInputStream()
                 );
 
                 if (!validationResult.isValid()) {
-                    request.setAttribute("error", "Thumbnail upload failed: " + validationResult.getMessage());
-                    request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
-                    request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
-                    request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
+                    request.setAttribute("error", validationResult.getMessage());
+                    request.getRequestDispatcher("WEB-INF/views/add-course.jsp")
+                            .forward(request, response);
                     return;
                 }
 
-                String safeFilename = fileValidator.sanitizeFilename(filename);
-                String uploadDir = getServletContext().getRealPath("/uploads/courses");
-                File dir = new File(uploadDir);
-                if (!dir.exists()) dir.mkdirs();
+                Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
 
-                thumbnailPart.write(uploadDir + File.separator + safeFilename);
-                thumbnailUrl = "uploads/courses/" + safeFilename;
+                Map uploadResult = cloudinary.uploader().upload(
+                        thumbnailPart.getInputStream(),
+                        ObjectUtils.asMap(
+                                "folder", "courses/thumbnails",
+                                "resource_type", "image"
+                        )
+                );
+
+                thumbnailUrl = uploadResult.get("secure_url").toString();
             }
 
             // Create course object
@@ -134,7 +141,8 @@ public class AddCourseServlet extends HttpServlet {
             int courseId = courseDAO.addCourseWithCategories(course, categoryIds);
 
             if (courseId > 0) {
-                response.sendRedirect(request.getContextPath() + "/courses?success=added");
+                response.sendRedirect(request.getContextPath() + "/course-list?success=added");
+                request.getSession().setAttribute("successMessage", "Course added successfully!");
             } else {
                 request.setAttribute("error", "Failed to add course");
                 request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
