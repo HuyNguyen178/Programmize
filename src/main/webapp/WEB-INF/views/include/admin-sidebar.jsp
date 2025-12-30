@@ -29,7 +29,7 @@
         </li>
         <li class="nav-item">
             <a href="setting-list" class="nav-link text-white">
-                <i class="fa fa-tags me-2"></i> <span class="label">Setting</span>
+                <i class="fa fa-tags me-2"></i> <span class="label">Settings</span>
             </a>
         </li>
 <%--        <li class="nav-item">--%>
