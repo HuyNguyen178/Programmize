@@ -25,7 +25,7 @@
 <%@ include file="include/admin-sidebar.jsp" %>
 <%@ include file="include/admin-topbar.jsp" %>
 
-<div id="content" class="content-wrapper">b
+<div id="content" class="content-wrapper">
     <div class="container-fluid-custom p-0">
 
         <%-- HEADER SECTION (TỐI GIẢN) --%>

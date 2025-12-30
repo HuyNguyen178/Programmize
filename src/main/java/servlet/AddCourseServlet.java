@@ -34,7 +34,7 @@ public class AddCourseServlet extends HttpServlet {
         // Load categories and instructors for the form
         request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
         request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
-        request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class AddCourseServlet extends HttpServlet {
                     request.setAttribute("error", "Thumbnail upload failed: " + validationResult.getMessage());
                     request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
                     request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
-                    request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+                    request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
                     return;
                 }
 
@@ -136,7 +136,7 @@ public class AddCourseServlet extends HttpServlet {
                 request.setAttribute("error", "Failed to add course");
                 request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
                 request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
-                request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
             }
 
         } catch (NumberFormatException e) {
@@ -144,13 +144,13 @@ public class AddCourseServlet extends HttpServlet {
             request.setAttribute("error", "Invalid number format: " + e.getMessage());
             request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
             request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
-            request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error adding course: " + e.getMessage());
             request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
             request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
-            request.getRequestDispatcher("/views/admin/add-course.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
         }
     }
 }

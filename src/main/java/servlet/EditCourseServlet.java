@@ -49,7 +49,7 @@ public class EditCourseServlet extends HttpServlet {
         request.setAttribute("allCategories", allCategories);
         request.setAttribute("courseCategories", courseCategories);
         request.setAttribute("instructors", instructors);
-        request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class EditCourseServlet extends HttpServlet {
 
                 if (!validationResult.isValid()) {
                     request.setAttribute("error", "Thumbnail upload failed: " + validationResult.getMessage());
-                    request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+                    request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
                     return;
                 }
 
@@ -151,17 +151,17 @@ public class EditCourseServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/courses?success=updated");
             } else {
                 request.setAttribute("error", "Failed to update course");
-                request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
             }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
             request.setAttribute("error", "Invalid number format: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error updating course: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/edit-course.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
         }
     }
 }
