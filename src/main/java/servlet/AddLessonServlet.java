@@ -43,7 +43,7 @@ public class AddLessonServlet extends HttpServlet {
         request.setAttribute("chapterId", chapterId);
         request.setAttribute("chapterName", chapterName);
         request.setAttribute("nextOrderIndex", nextOrder);
-        request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class AddLessonServlet extends HttpServlet {
                 if (!validationResult.isValid()) {
                     request.setAttribute("error", "File upload failed: " + validationResult.getMessage());
                     request.setAttribute("chapterId", chapterId);
-                    request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
                     return;
                 }
 
@@ -122,17 +122,17 @@ public class AddLessonServlet extends HttpServlet {
             } else {
                 request.setAttribute("error", "Failed to add lesson");
                 request.setAttribute("chapterId", chapterId);
-                request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
             }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
             request.setAttribute("error", "Invalid number format: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error adding lesson: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/add-lesson.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
         }
     }
 }
