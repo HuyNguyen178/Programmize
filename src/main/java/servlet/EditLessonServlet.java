@@ -39,7 +39,7 @@ public class EditLessonServlet extends HttpServlet {
         int lessonId = Integer.parseInt(idParam);
         Lesson lesson = lessonDAO.getLessonById(lessonId);  // Fixed method name
         request.setAttribute("lesson", lesson);
-        request.getRequestDispatcher("/views/admin/edit-lesson.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/edit-lesson.jsp").forward(request, response);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class EditLessonServlet extends HttpServlet {
 
                 if (!validationResult.isValid()) {
                     request.setAttribute("error", "File upload failed: " + validationResult.getMessage());
-                    request.getRequestDispatcher("/views/admin/edit-lesson.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/edit-lesson.jsp").forward(request, response);
                     return;
                 }
 
@@ -116,17 +116,17 @@ public class EditLessonServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/chapter?id=" + lesson.getChapterId() + "&success=lesson_updated");
             } else {
                 request.setAttribute("error", "Failed to update lesson");
-                request.getRequestDispatcher("/views/admin/edit-lesson.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/edit-lesson.jsp").forward(request, response);
             }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
             request.setAttribute("error", "Invalid number format: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/edit-lesson.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/edit-lesson.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error updating lesson: " + e.getMessage());
-            request.getRequestDispatcher("/views/admin/edit-lesson.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/edit-lesson.jsp").forward(request, response);
         }
     }
 }
