@@ -134,7 +134,7 @@
                                 </div>
                             </c:forEach>
                         </div>
-                        <small class="text-muted">Select one or more categories</small>
+                        <small class="text-mut  ed">Select one or more categories</small>
                     </div>
 
                 </div>

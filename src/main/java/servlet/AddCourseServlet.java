@@ -35,8 +35,8 @@ public class AddCourseServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Load categories and instructors for the form
-        request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
-        request.setAttribute("instructors", userDAO.getAllInstructors());
+        request.setAttribute("allCategories", courseDAO.getAllCategoriesFromSettings());
+        request.setAttribute("allInstructors", userDAO.getAllInstructors());
         request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
     }
 
