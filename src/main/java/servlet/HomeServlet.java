@@ -14,7 +14,7 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-@WebServlet("/home")
+@WebServlet("/")
 public class HomeServlet extends HttpServlet {
     private final Logger logger = LogManager.getLogger(HomeServlet.class);
 
