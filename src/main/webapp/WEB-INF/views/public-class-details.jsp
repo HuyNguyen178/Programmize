@@ -366,13 +366,13 @@
                             <c:when test="${clazz.salePrice != null}">
                                 <c:if test="${clazz.listedPrice > clazz.salePrice}">
                                     <span class="original-price">
-                                        $<fmt:formatNumber value="${clazz.listedPrice}" pattern="#,##0.00"/>
+                                        ₫<fmt:formatNumber value="${clazz.listedPrice}" pattern="#,##0"/>
                                     </span>
                                 </c:if>
-                                $<fmt:formatNumber value="${clazz.salePrice}" pattern="#,##0.00"/>
+                                ₫<fmt:formatNumber value="${clazz.salePrice}" pattern="#,##0"/>
                             </c:when>
                             <c:when test="${clazz.listedPrice != null}">
-                                $<fmt:formatNumber value="${clazz.listedPrice}" pattern="#,##0.00"/>
+                                ₫<fmt:formatNumber value="${clazz.listedPrice}" pattern="#,##0"/>
                             </c:when>
                             <c:otherwise>
                                 FREE

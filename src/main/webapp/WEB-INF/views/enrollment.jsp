@@ -120,7 +120,7 @@
                         <hr>
                         <div class="d-flex justify-content-between align-items-center h4 fw-bold text-primary mb-0">
                             <span>Total:</span>
-                            <span>$<fmt:formatNumber value="${finalPrice}" pattern="#,##0.00"/></span>
+                            <span>₫<fmt:formatNumber value="${finalPrice}" pattern="#,##0"/></span>
                         </div>
                     </div>
                 </div>
@@ -142,7 +142,7 @@
             </div>
             <div class="modal-body text-center p-4">
                 <p>Please transfer the exact amount below:</p>
-                <h2 class="text-primary fw-bold mb-3">$<fmt:formatNumber value="${finalPrice}" pattern="#,##0.00"/></h2>
+                <h2 class="text-primary fw-bold mb-3">₫<fmt:formatNumber value="${finalPrice}" pattern="#,##0"/></h2>
 
                 <div class="text-start p-3 bg-light rounded mb-3 border">
                     <div class="mb-1"><strong>Bank:</strong> International Bank</div>
