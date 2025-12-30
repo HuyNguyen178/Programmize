@@ -669,7 +669,7 @@ public class CourseDAO {
         return list;
     }
 
-    public int countCoursesByUserId(int userId, String category, String keyword) {
+    public int countCoursesByUserId(int userId, Integer categoryId, String keyword) {
         try (Connection connection = DBUtil.getConnection()) {
 
             StringBuilder sql = new StringBuilder(
@@ -686,8 +686,8 @@ public class CourseDAO {
                 sql.append(" AND (c.course_name LIKE ? OR u.fullname LIKE ?) ");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ? ");
+            if (categoryId != null) {
+                sql.append(" AND cat.setting_id = ? ");
             }
 
             PreparedStatement ps = connection.prepareStatement(sql.toString());
@@ -700,8 +700,8 @@ public class CourseDAO {
                 ps.setString(idx++, "%" + keyword + "%");
             }
 
-            if (category != null && !category.trim().isEmpty()) {
-                ps.setString(idx++, category);
+            if (categoryId != null) {
+                ps.setInt(idx++, categoryId);
             }
 
             ResultSet rs = ps.executeQuery();
@@ -895,7 +895,7 @@ public class CourseDAO {
     /**
      * Returns all courses a user has enrolled/bought.
      */
-    public List<Course> getEnrolledCoursesByUser(int userId, String category, String keyword, int offset, int limit) {
+    public List<Course> getEnrolledCoursesByUser(int userId, Integer categoryId, String keyword, int offset, int limit) {
         List<Course> courses = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder("SELECT" +
@@ -919,8 +919,8 @@ public class CourseDAO {
             if (keyword != null && !keyword.trim().isEmpty()) {
                 sql.append(" AND (c.course_name LIKE ? OR u.fullname LIKE ?) ");
             }
-            if (category != null && !category.trim().isEmpty()) {
-                sql.append(" AND cat.setting_name = ?");
+            if (categoryId != null) {
+                sql.append(" AND cat.setting_id = ?");
             }
             sql.append(" GROUP BY " +
                     "    c.course_id, c.course_name, c.thumbnail_url, c.listed_price, " +
@@ -934,8 +934,8 @@ public class CourseDAO {
                 statement.setString(index++, "%" + keyword + "%");
                 statement.setString(index++, "%" + keyword + "%");
             }
-            if (category != null && !category.trim().isEmpty()) {
-                statement.setString(index++, category);
+            if (categoryId != null) {
+                statement.setInt(index++, categoryId);
             }
             statement.setInt(index++, limit);
             statement.setInt(index, offset);

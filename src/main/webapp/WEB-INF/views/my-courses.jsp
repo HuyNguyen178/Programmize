@@ -220,7 +220,7 @@
             <select name="category" class="filter-select" onchange=this.form.submit()>
                 <option value="">Category</option>
                 <c:forEach items="${allCategories}" var="cat">
-                    <option value="${cat}" ${category == cat ? 'selected' : ''}>${cat}</option>
+                    <option value="${cat.id}" ${category == cat.id ? 'selected' : ''}>${cat.name}</option>
                 </c:forEach>
 
             </select>

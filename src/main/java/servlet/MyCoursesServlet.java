@@ -1,18 +1,17 @@
 package servlet;
 
 import dao.CourseDAO;
+import dao.SettingDAO;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Course;
-import model.User;
+import model.*;
 import dao.ChapterDAO;
 import dao.LessonDAO;
-import model.Chapter;
-import model.Lesson;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ public class MyCoursesServlet extends HttpServlet {
     private CourseDAO courseDAO;
     private ChapterDAO chapterDAO;
     private LessonDAO lessonDAO;
+    private SettingDAO settingDAO;
     private static final int PAGE_SIZE = 12;
 
     @Override
@@ -32,6 +32,7 @@ public class MyCoursesServlet extends HttpServlet {
         courseDAO = new CourseDAO();
         chapterDAO = new ChapterDAO();
         lessonDAO = new LessonDAO();
+        settingDAO = new SettingDAO();
     }
 
     @Override
@@ -47,7 +48,11 @@ public class MyCoursesServlet extends HttpServlet {
         int userId = user.getId();
 
         String keyword = request.getParameter("search");
-        String category = request.getParameter("category");
+        String categoryIdStr = request.getParameter("category");
+        Integer categoryId = null;
+        if (categoryIdStr != null) {
+            categoryId = Integer.parseInt(categoryIdStr);
+        }
         String pageParam = request.getParameter("page");
 
         int page = 1;
@@ -62,8 +67,8 @@ public class MyCoursesServlet extends HttpServlet {
         List<Course> courses;
         int totalCourses;
 
-        courses = courseDAO.getEnrolledCoursesByUser(userId, category, keyword, offset, PAGE_SIZE);
-        totalCourses = courseDAO.countCoursesByUserId(userId, category, keyword);
+        courses = courseDAO.getEnrolledCoursesByUser(userId, categoryId, keyword, offset, PAGE_SIZE);
+        totalCourses = courseDAO.countCoursesByUserId(userId, categoryId, keyword);
 
         // after fetch course líst courses
         Map<Integer, Integer> firstLessonMap = new HashMap<>();
@@ -85,11 +90,11 @@ public class MyCoursesServlet extends HttpServlet {
 
         int totalPages = (int) Math.ceil((double) totalCourses / PAGE_SIZE);
 
-        List<String[]> allCategories = courseDAO.getAllCategoriesFromSettings();
+        List<Setting> allCategories = settingDAO.getAllCategories();
 
         request.setAttribute("allCategories", allCategories);
         request.setAttribute("courses", courses);
-        request.setAttribute("category", category);
+        request.setAttribute("category", categoryId);
         request.setAttribute("search", keyword);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);

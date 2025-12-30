@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.CourseDAO;
+import dao.UserDAO;
 import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -21,11 +22,13 @@ import java.math.BigDecimal;
 public class AddCourseServlet extends HttpServlet {
     private CourseDAO courseDAO;
     private FileValidationService fileValidator;
+    private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         courseDAO = new CourseDAO();
         fileValidator = FileValidationService.getInstance();
+        userDAO = new UserDAO();
     }
 
     @Override
@@ -33,7 +36,7 @@ public class AddCourseServlet extends HttpServlet {
             throws ServletException, IOException {
         // Load categories and instructors for the form
         request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
-        request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
+        request.setAttribute("instructors", userDAO.getAllInstructors());
         request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
     }
 

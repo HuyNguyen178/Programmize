@@ -32,10 +32,5 @@
                 <i class="fa fa-tags me-2"></i> <span class="label">Settings</span>
             </a>
         </li>
-<%--        <li class="nav-item">--%>
-<%--            <a href="#" class="nav-link text-white">--%>
-<%--                <i class="fa fa-clipboard-list me-2"></i> <span class="label">Enrollments</span>--%>
-<%--            </a>--%>
-<%--        </li>--%>
     </ul>
 </div>
