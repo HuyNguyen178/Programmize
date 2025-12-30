@@ -30,7 +30,7 @@ public class AddAccountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AddAccountServlet extends HttpServlet {
             // Kiểm tra username hoặc email đã tồn tại
             if (userDAO.checkUserOrEmailExists(username) || userDAO.checkUserOrEmailExists(email)) {
                 request.setAttribute("error", "Username or email already exists");
-                request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
                 return;
             }
 
@@ -72,7 +72,7 @@ public class AddAccountServlet extends HttpServlet {
                 // Only allow images for avatar
                 if (!contentType.startsWith("image/")) {
                     request.setAttribute("error", "Avatar must be an image file (JPG, PNG, GIF)");
-                    request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+                    request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
                     return;
                 }
 
@@ -83,7 +83,7 @@ public class AddAccountServlet extends HttpServlet {
 
                 if (!validationResult.isValid()) {
                     request.setAttribute("error", "Avatar upload failed: " + validationResult.getMessage());
-                    request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+                    request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
                     return;
                 }
 
@@ -104,13 +104,13 @@ public class AddAccountServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/accounts?success=added");
             } else {
                 request.setAttribute("error", "Failed to create account");
-                request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error creating account: " + e.getMessage());
-            request.getRequestDispatcher("WEB-INF/views/account-detail.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
         }
     }
 }

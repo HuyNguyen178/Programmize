@@ -98,7 +98,7 @@
 
     </dependencies>
     <build>
-        <finalName>MyWebApp</finalName>
+        <finalName>ROOT</finalName>
         <plugins>
             <!-- Maven Compiler Plugin -->
             <plugin>
