@@ -244,7 +244,7 @@ public class StudentDAO {
     }
 
     public boolean updateStudentStatus(int userId, boolean newStatus) {
-        String sql = "UPDATE user SET status = ? WHERE user_id = ?";
+        String sql = "UPDATE class_enrollment SET status = ? WHERE user_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
