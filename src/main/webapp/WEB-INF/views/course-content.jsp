@@ -138,7 +138,8 @@
             padding: 10px 0;
         }
         #content {
-            margin-left: 260px; /* Default position when Sidebar is open */
+            margin-left: 260px;
+            margin-top: 64px;
             transition: margin-left 0.25s ease;
             min-height: 100vh;
             padding: 20px;

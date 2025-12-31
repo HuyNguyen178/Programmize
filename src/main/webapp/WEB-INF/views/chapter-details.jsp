@@ -58,7 +58,8 @@
             font-size: 0.8rem;
         }
         #content {
-            margin-left: 260px; /* Default position when Sidebar is open */
+            margin-left: 260px;
+            margin-top: 64px;   /* ⭐ FIX CHÍNH */
             transition: margin-left 0.25s ease;
             min-height: 100vh;
             padding: 20px;
@@ -306,7 +307,7 @@
                 <input type="hidden" name="id" value="${chapter.chapterId}">
 
                 <div class="col-md-2">
-                    <select class="form-select" id="filterType" name="type">
+                    <select class="form-select" id="filterType" name="type" onchange="this.form.submit()">
                         <option value="">All Types</option>
                         <option value="video" ${currentType == 'video' ? 'selected' : ''}>
                             <i class="fas fa-video"></i> Video
@@ -318,7 +319,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    <select class="form-select" id="filterStatus" name="status">
+                    <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
                         <option value="">All Statuses</option>
                         <option value="1" ${currentStatus == '1' ? 'selected' : ''}>Published</option>
                         <option value="0" ${currentStatus == '0' ? 'selected' : ''}>Draft</option>
@@ -327,7 +328,7 @@
 
                 <div class="col-md-4 d-flex">
                     <input type="text" class="form-control me-2" name="search"
-                           placeholder="Search lessons by title..." value="${currentSearch}">
+                           placeholder="Search lessons by title..." value="${currentSearch}" onchange="this.form.submit()">
                     <button type="submit" class="btn filter-search-btn">
                         <i class="bi bi-search"></i>
                     </button>

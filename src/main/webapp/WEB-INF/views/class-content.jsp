@@ -112,7 +112,8 @@
     }
 
     #content {
-      margin-left: 260px; /* Default position when Sidebar is open */
+      margin-left: 260px;
+      margin-top: 64px;
       transition: margin-left 0.25s ease;
       min-height: 100vh;
       padding: 20px;
@@ -133,8 +134,16 @@
 
 <body class="bg-light">
 
-<%@ include file="include/instructor-topbar.jsp" %>
-<%@ include file="include/instructor-sidebar.jsp" %>
+<c:choose>
+    <c:when test="${sessionScope.loginUser.roleName == 'Admin'}">
+        <jsp:include page="include/admin-topbar.jsp" />
+        <jsp:include page="include/admin-sidebar.jsp" />
+    </c:when>
+    <c:otherwise>
+        <jsp:include page="include/instructor-topbar.jsp" />
+        <jsp:include page="include/instructor-sidebar.jsp" />
+    </c:otherwise>
+</c:choose>
 
 <div id="content" class="py-4">
 

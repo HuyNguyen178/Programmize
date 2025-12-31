@@ -1,5 +1,7 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.LessonDAO;
 import dao.ChapterDAO;
 import model.Lesson;
@@ -9,26 +11,26 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
 import service.FileValidationService;
 import service.FileValidationService.ValidationResult;
+import utils.CloudinaryUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/add-lesson")
 @MultipartConfig(
-    maxFileSize = 104857600,     // 100MB for videos
-    maxRequestSize = 115343360   // 110MB
+    maxFileSize = 104857600,
+    maxRequestSize = 115343360
 )
 public class AddLessonServlet extends HttpServlet {
     private LessonDAO lessonDAO;
     private ChapterDAO chapterDAO;
-    private FileValidationService fileValidator;
 
     @Override
     public void init() throws ServletException {
         lessonDAO = new LessonDAO();
         chapterDAO = new ChapterDAO();
-        fileValidator = FileValidationService.getInstance();
     }
 
     @Override
@@ -61,7 +63,6 @@ public class AddLessonServlet extends HttpServlet {
             String content = request.getParameter("content");
             String lessonType = request.getParameter("lessonType");
             String videoUrl = request.getParameter("videoUrl");
-            String pdfUrl = request.getParameter("pdfUrl");
 
             int orderNumber = lessonDAO.getNextOrderIndex(chapterId);
             String orderStr = request.getParameter("orderNumber");
@@ -78,33 +79,35 @@ public class AddLessonServlet extends HttpServlet {
             boolean isPreview = "true".equals(request.getParameter("isPreview"));
             boolean status = "true".equals(request.getParameter("status"));
 
-            // Handle file upload with validation
-            Part filePart = request.getPart("lessonFile");
+            String pdfUrl = null;
 
-            if (filePart != null && filePart.getSize() > 0) {
-                String filename = filePart.getSubmittedFileName();
-                String contentType = filePart.getContentType();
-                long fileSize = filePart.getSize();
+            Part pdfPart = request.getPart("pdfFile");
+            if (pdfPart != null && pdfPart.getSize() > 0) {
 
-                ValidationResult validationResult = fileValidator.validate(
-                    filename, contentType, fileSize, filePart.getInputStream()
-                );
-
-                if (!validationResult.isValid()) {
-                    request.setAttribute("error", "File upload failed: " + validationResult.getMessage());
-                    request.setAttribute("chapterId", chapterId);
+                if (!"application/pdf".equals(pdfPart.getContentType())) {
+                    request.getSession().setAttribute("errorMessage", "Only PDF files are allowed");
+                    request.setAttribute("lessonName", lessonName);
+                    request.setAttribute("content", content);
+                    request.setAttribute("lessonType", lessonType);
+                    request.setAttribute("videoUrl", videoUrl);
                     request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
                     return;
                 }
 
-                String subDir = contentType.startsWith("video/") ? "videos" : "documents";
-                String safeFilename = fileValidator.sanitizeFilename(filename);
-                String uploadDir = getServletContext().getRealPath("/uploads/lessons/" + subDir);
-                File dir = new File(uploadDir);
-                if (!dir.exists()) dir.mkdirs();
+                Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
 
-                filePart.write(uploadDir + File.separator + safeFilename);
-                videoUrl = "uploads/lessons/" + subDir + "/" + safeFilename;
+                byte[] fileBytes = pdfPart.getInputStream().readAllBytes();
+
+                Map uploadResult = cloudinary.uploader().upload(
+                        fileBytes,
+                        ObjectUtils.asMap(
+                                "resource_type", "raw",     // BẮT BUỘC cho PDF
+                                "folder", "lessons/pdfs",
+                                "public_id", System.currentTimeMillis() + "_lesson_pdf"
+                        )
+                );
+
+                pdfUrl = uploadResult.get("secure_url").toString();
             }
 
             // Create new lesson object
@@ -127,8 +130,11 @@ public class AddLessonServlet extends HttpServlet {
             if (lessonId > 0) {
                 response.sendRedirect(request.getContextPath() + "/chapter-details?id=" + chapterId + "&success=lesson_added");
             } else {
-                request.setAttribute("error", "Failed to add lesson");
-                request.setAttribute("chapterId", chapterId);
+                request.getSession().setAttribute("errorMessage", "Failed to add lesson");
+                request.setAttribute("lessonName", lessonName);
+                request.setAttribute("content", content);
+                request.setAttribute("lessonType", lessonType);
+                request.setAttribute("videoUrl", videoUrl);
                 request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
             }
 

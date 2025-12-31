@@ -98,13 +98,19 @@
             <h2 class="text-primary fw-bold">📝 Add New Lesson</h2>
         </div>
 
-        <%-- SUCCESS MESSAGE --%>
         <c:if test="${not empty sessionScope.successMessage}">
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <c:remove var="successMessage" scope="session"/>
+        </c:if>
+        <c:if test="${not empty sessionScope.errorMessage}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-times-circle"></i> ${sessionScope.errorMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <c:remove var="errorMessage" scope="session"/>
         </c:if>
 
         <%-- ERROR MESSAGE --%>
@@ -160,11 +166,13 @@
                     </div>
 
                     <%-- pdf url field --%>
-                    <div class="form-group conditional-field active" id="videoUrlGroup">
-                        <label for="pdfUrl" class="form-label">PDF URL</label>
-                        <input type="text" id="pdfUrl" name="pdfUrl" class="form-control"
-                               placeholder="">
-                        <small class="text-muted">Link .pdf file</small>
+                    <div class="form-group conditional-field active" id="pdfFileGroup">
+                        <label for="pdfFile" class="form-label">PDF File</label>
+                        <input type="file"
+                               id="pdfFile"
+                               name="pdfFile"
+                               class="form-control"
+                               accept="application/pdf">
                     </div>
 
                 </div>
@@ -175,8 +183,7 @@
 
                     <div class="form-group">
                         <label for="chapterId" class="form-label">Chapter <span class="text-danger">*</span></label>
-                        <select id="chapterId" name="chapterId" class="form-select" required onchange="updateOrderIndex()">
-                            <option value="">-- Select Chapter --</option>
+                        <select id="chapterId" name="chapterId" class="form-select" disabled onchange="updateOrderIndex()">
                             <c:forEach items="${allChapters}" var="chapter">
                                 <option value="${chapter[0]}"
                                     ${param.chapterId == chapter[0] ? 'selected' : ''}>
@@ -184,6 +191,7 @@
                                 </option>
                             </c:forEach>
                         </select>
+                        <input type="hidden" name="chapterId" value="${param.chapterId}">
                         <small class="text-muted">Chapter name (Course name)</small>
                     </div>
 

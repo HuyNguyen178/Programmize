@@ -303,7 +303,7 @@
     <div class="learning-header">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <a href="${pageContext.request.contextPath}/public-course-details?id=${courseId}" 
+                <a href="${pageContext.request.contextPath}/my-courses"
                    class="btn btn-outline-light btn-sm me-3">
                     <i class="fas fa-arrow-left"></i> Back to Course
                 </a>
@@ -379,7 +379,9 @@
                                             </span>
                                         </div>
                                         <div class="card-body p-0" id="pdfContainer" style="height: 600px; position: relative;">
-                                            <iframe src="${lesson.pdfUrl}"></iframe>
+                                            <iframe src="https://docs.google.com/gview?url=${lesson.pdfUrl}&embedded=true"
+                                                    style="width:100%; height:100%; border:none;">
+                                            </iframe>
                                         </div>
                                     </div>
                                 </c:if>
@@ -401,6 +403,22 @@
                                 <div class="text-content mb-4">
                                     ${lesson.content}
                                 </div>
+
+                                <c:if test="${not empty lesson.pdfUrl}">
+                                    <div class="card mt-4">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <strong>Slides</strong>
+                                            </span>
+                                        </div>
+                                        <div class="card-body p-0" id="pdfContainer" style="height: 600px; position: relative;">
+                                            <iframe src="https://docs.google.com/gview?url=${lesson.pdfUrl}&embedded=true"
+                                                    style="width:100%; height:100%; border:none;">
+                                            </iframe>
+                                        </div>
+                                    </div>
+                                </c:if>
                             </c:when>
                             <c:otherwise>
                                 <div class="no-content">
