@@ -125,7 +125,7 @@
                         <h5 class="text-warning">Monthly Revenue</h5>
                         <h3 class="mb-0">
                             <span class="text-dark">
-                                <fmt:formatNumber value="${monthlyRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                <fmt:formatNumber value="${monthlyRevenue}" type="currency" currencySymbol="VND" maxFractionDigits="0"/>
                             </span>
                         </h3>
                     </div>
@@ -223,7 +223,7 @@
                                             <td>${loop.index + 1}</td>
                                             <td><c:out value="${statArray[0].courseName}" default="N/A"/></td>
                                             <td><fmt:formatNumber value="${statArray[1]}" groupingUsed="true"/></td>
-                                            <td><fmt:formatNumber value="${statArray[2]}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></td>
+                                            <td><fmt:formatNumber value="${statArray[2]}" type="currency" currencySymbol="VND" maxFractionDigits="0"/></td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>
@@ -268,7 +268,7 @@
                                             <td>${loop.index + 1}</td>
                                             <td><c:out value="${classStats[0].name}" default="N/A"/></td>
                                             <td><fmt:formatNumber value="${classStats[1]}" groupingUsed="true"/></td>
-                                            <td><fmt:formatNumber value="${classStats[2]}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></td>
+                                            <td><fmt:formatNumber value="${classStats[2]}" type="currency" currencySymbol="VND" maxFractionDigits="0"/></td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>
@@ -357,7 +357,7 @@
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
-                    label: 'Revenue (₫)',
+                    label: 'Revenue (VND)',
                     data: [
                         <c:forEach items="${monthlyRevenueList}" var="value" varStatus="status">
                         ${value}${!status.last ? ',' : ''}
