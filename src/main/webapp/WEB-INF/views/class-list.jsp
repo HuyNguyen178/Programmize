@@ -45,13 +45,22 @@
                 </div>
                 <c:remove var="successMessage" scope="session"/>
             </c:if>
+            <c:if test="${not empty sessionScope.errorMessage}">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-2"></i>
+                        ${sessionScope.errorMessage}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <c:remove var="errorMessage" scope="session"/>
+            </c:if>
 
         <%-- Sử dụng card shadow-sm giống account-list.jsp --%>
         <div class="card shadow-sm">
             <div class="card-body">
 
                 <%-- FILTER BAR - Chuyển sang cấu trúc row g-3 của Bootstrap --%>
-                <form class="row g-3 align-items-center mb-4" action="${pageContext.request.contextPath}/class-list" method="get">
+                <form class="row g-3 align-items-center mb-4" action="class-list" method="get">
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
                     <%-- Thêm input hidden cho pageIndex giống account-list.jsp [cite: 15] --%>
                     <input type="hidden" name="pageIndex" value="1">
@@ -103,6 +112,9 @@
                     <%-- 5. ADD NEW BUTTON (col-md-3 d-flex ms-md-auto justify-content-end) --%>
                     <div class="col-md-3 d-flex ms-md-auto justify-content-end">
                         <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
+                                <i class="fas fa-file-import me-1"></i> Import Classes
+                            </button>
                             <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
                             <a href="${pageContext.request.contextPath}/add-class" class="btn btn-success">
                                 <i class="fas fa-plus-circle me-1"></i> Add New Class
@@ -110,6 +122,15 @@
                         </div>
                     </div>
                 </form>
+                    <form id="importForm" action="import-class" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                        <input type="file"
+                               id="classFile"
+                               name="classFile"
+                               accept=".csv"
+                               onchange="submitImport()"
+                               style="display:none;">
+                    </form>
 
                 <%-- class Table --%>
                 <%-- Thay thế thẻ <p> Showing ${classs.size()} class(s)</p> bằng cấu trúc bảng --%>
@@ -269,5 +290,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/admin_scripts.js"></script>
+
+<script>
+    function triggerImport() {
+        document.getElementById("classFile").click();
+    }
+
+    function submitImport() {
+        if (confirm("Import this CSV file now?")) {
+            document.getElementById("importForm").submit();
+        }
+    }
+</script>
 </body>
 </html>

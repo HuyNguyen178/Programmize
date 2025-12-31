@@ -293,9 +293,7 @@ public class CourseDAO {
                 instructor[1] = rs.getString("fullname");
                 instructors.add(instructor);
             }
-            System.out.println("Retrieved " + instructors.size() + " instructors");
         } catch (SQLException e) {
-            System.err.println("Error getting instructors: " + e.getMessage());
             e.printStackTrace();
         }
         return instructors;

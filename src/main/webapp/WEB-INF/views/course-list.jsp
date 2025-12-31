@@ -44,6 +44,14 @@
                 </div>
                 <c:remove var="successMessage" scope="session"/>
             </c:if>
+            <c:if test="${not empty sessionScope.errorMessage}">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-2"></i>
+                        ${sessionScope.errorMessage}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <c:remove var="errorMessage" scope="session"/>
+            </c:if>
 
         <%-- Sử dụng card shadow-sm giống account-list.jsp --%>
         <div class="card shadow-sm">

@@ -17,9 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @WebServlet("/import-courses")
@@ -74,7 +72,9 @@ public class ImportCoursesServlet extends HttpServlet {
                     Integer categoryId = settingDAO.findCategoryIdByName(category);
 
                     if (categoryId == null) {
-                        throw new RuntimeException("Category not found: " + category);
+                        request.getSession().setAttribute("errorMessage", "Cannot find category " + category);
+                        response.sendRedirect("course-list?success=false");
+                        return;
                     }
                     categoryIds[i] = categoryId;
                 }
@@ -82,16 +82,23 @@ public class ImportCoursesServlet extends HttpServlet {
                 String instructorName = data[indexMap.get("courseInstructor")].trim();
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
-                    throw new RuntimeException("Instructor not found: " + instructorName);
+                    request.getSession().setAttribute("errorMessage", "Cannot find instructor " + instructorName);
+                    response.sendRedirect("course-list?success=false");
+                    return;
                 }
                 course.setInstructorId(instructor.getId());
-
                 course.setListedPrice(new BigDecimal(data[indexMap.get("listedPrice")].trim()));
                 course.setSalePrice(new BigDecimal(data[indexMap.get("salePrice")].trim()));
                 course.setThumbnailUrl(data[indexMap.get("thumbnailUrl")].trim());
                 course.setDescription(data[indexMap.get("description")].trim());
                 course.setStatus(Boolean.parseBoolean(data[indexMap.get("status")].trim()));
                 course.setDuration(Integer.parseInt(data[indexMap.get("duration")].trim()));
+
+                if (course.getListedPrice().compareTo(course.getSalePrice()) < 0) {
+                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price!");
+                    response.sendRedirect("course-list?success=false");
+                    return;
+                }
 
                 courseDAO.addCourse(course, categoryIds);
             }
