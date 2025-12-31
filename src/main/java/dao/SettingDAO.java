@@ -314,4 +314,19 @@ public class SettingDAO {
         return categories;
     }
 
+    public Integer findCategoryIdByName(String name) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT setting_id FROM setting WHERE setting_name = ? AND type_id = 5";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("setting_id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

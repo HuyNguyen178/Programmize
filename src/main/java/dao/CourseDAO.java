@@ -756,7 +756,7 @@ public class CourseDAO {
     }
 
     // Add new course
-    public int addCourse(Course course) {
+    public void addCourse(Course course, Integer[] categoryIds) {
         String sql = "INSERT INTO course (course_name, listed_price, sale_price, thumbnail_url, " +
                 "description, status, duration, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
@@ -769,20 +769,27 @@ public class CourseDAO {
             stmt.setBoolean(6, course.getStatus());
             stmt.setInt(7, course.getDuration() != null ? course.getDuration() : 0);
             stmt.setInt(8, course.getInstructorId() != null ? course.getInstructorId() : 0);
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int newId = generatedKeys.getInt(1);
-                    System.out.println("Added new course with ID: " + newId);
-                    return newId;
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                int courseId = rs.getInt(1);
+
+                if (categoryIds != null) {
+                    String sqlCat = "INSERT INTO course_category (course_id, category_id) VALUES (?, ?)";
+                    PreparedStatement psCat = conn.prepareStatement(sqlCat);
+
+                    for (Integer catId : categoryIds) {
+                        psCat.setInt(1, courseId);
+                        psCat.setInt(2, catId);
+                        psCat.addBatch();
+                    }
+                    psCat.executeBatch();
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error adding course: " + e.getMessage());
             e.printStackTrace();
         }
-        return -1;
     }
 
     // ==================== PUBLIC COURSE METHODS ====================
