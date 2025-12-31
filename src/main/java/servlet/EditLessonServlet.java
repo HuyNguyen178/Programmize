@@ -67,6 +67,7 @@ public class EditLessonServlet extends HttpServlet {
             String content = request.getParameter("content");
             String lessonType = request.getParameter("lessonType");
             String videoUrl = request.getParameter("videoUrl");
+            String pdfUrl = request.getParameter("pdfUrl");
 
             int orderNumber = lesson.getOrderIndex();  // Fixed: use getOrderIndex()
             String orderStr = request.getParameter("orderNumber");
@@ -115,6 +116,7 @@ public class EditLessonServlet extends HttpServlet {
             lesson.setContent(content);
             lesson.setLessonTypeFromString(lessonType);  // Fixed: use setLessonTypeFromString()
             lesson.setVideoUrl(videoUrl);
+            lesson.setPdfUrl(pdfUrl);
             lesson.setOrderIndex(orderNumber);  // Fixed: use setOrderIndex()
             lesson.setDuration(duration);
 
