@@ -9,6 +9,7 @@
     <title>${clazz.name} - E-Learning Platform</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <style>
         /* Tái sử dụng Style từ my-classes.jsp */
         body {
@@ -118,9 +119,21 @@
             <div class="detail-card">
                 <h4 class="fw-bold mb-3">Instructor</h4>
                 <div class="d-flex align-items-center mb-3">
-                    <div style="width: 45px; height: 45px; background: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center;" class="me-3">
-                        <i class="fa fa-user text-secondary"></i>
+                    <div class="me-3"
+                         style="width:45px; height:45px; border-radius:50%; overflow:hidden; background:#e9ecef; display:flex; align-items:center; justify-content:center;">
+
+                        <c:choose>
+                            <c:when test="${not empty clazz.instructor.avatarUrl}">
+                                <img src="${clazz.instructor.avatarUrl}"
+                                     alt="Instructor Avatar"
+                                     style="width:100%; height:100%; object-fit:cover;">
+                            </c:when>
+                            <c:otherwise>
+                                <i class="fa fa-user text-secondary"></i>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
+
                     <div>
                         <div class="fw-bold">${clazz.instructor.fullname}</div>
                         <div class="small text-muted">Class Expert</div>
