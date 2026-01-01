@@ -102,7 +102,7 @@ public class EnrollmentServlet extends HttpServlet {
             if ("VNPAY".equals(paymentMethod)) {
                 String vnp_TmnCode = "IOGQJ94Z";
                 String vnp_HashSecret = "GBJNFFG0MPLVPW5X2H892AO0WHLQUMGZ";
-                String vnp_Returnurl = "http://localhost:8080/vnpay-payment-return";
+                String vnp_Returnurl = "http://programmize.site/vnpay-payment-return";
 
                 Map<String, String> vnp_Params = new HashMap<>();
                 vnp_Params.put("vnp_Version", "2.1.0");
