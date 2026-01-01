@@ -18,6 +18,7 @@
         /* Content Shift Configuration (IDENTICAL to admin pages) */
         #content {
             margin-left: 260px;
+            margin-top: 64px;
             transition: margin-left 0.25s ease;
             min-height: 100vh;
             padding: 20px;
@@ -169,7 +170,7 @@
                                     String classes = student.getClassName();
                                     if (classes != null) {
                                         for (String cls : classes.split(", ")) {
-                                            out.println("<span class='badge bg-info me-1'>" + cls + "</span>");
+                                            out.println("<span class='badge  bg-info me-1'>" + cls + "</span>");
                                         }
                                     } else {
                                         out.println("-");
