@@ -124,7 +124,7 @@
                     <%-- 4. ADD NEW BUTTON  --%>
                     <div class="col-md-3 d-flex ms-md-auto justify-content-end">
                         <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                            <i class="fas fa-file-import me-1"></i> Import Accounts
+                            <i class="fas fa-file-import me-1"></i> Import File (.csv)
                         </button>
                         <a href="add-account" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
                     </div>

@@ -111,7 +111,7 @@
                     <div class="col-md-3 d-flex ms-md-auto justify-content-end">
                         <div class="d-flex justify-content-end">
                             <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                                <i class="fas fa-file-import me-1"></i> Import Courses
+                                <i class="fas fa-file-import me-1"></i> Import File (.csv)
                             </button>
                             <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
                             <a href="${pageContext.request.contextPath}/add-course" class="btn btn-success">

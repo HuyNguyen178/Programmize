@@ -143,7 +143,7 @@ public class EditClassServlet extends HttpServlet {
             }
 
             classDAO.updateClass(c, categoryIds);
-            request.getSession().setAttribute("successMessage", "Class added successfully!");
+            request.getSession().setAttribute("successMessage", "Class changed successfully!");
             response.sendRedirect(request.getContextPath() + "/class-list");
         } catch (Exception e) {
             e.printStackTrace();
