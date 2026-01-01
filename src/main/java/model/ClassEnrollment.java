@@ -22,6 +22,10 @@ public class ClassEnrollment {
         this.status = status;
     }
 
+    public ClassEnrollment() {
+
+    }
+
     public int getEnrollmentId() {
         return enrollmentId;
     }

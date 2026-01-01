@@ -89,7 +89,7 @@
 <br><br><br>
 
 <main class="page-wrapper container mt-4">
-    <h1>My Classes Detail</h1>
+    <h1>My Class Details</h1>
 
     <div class="row">
         <div class="col-lg-8">
@@ -111,22 +111,6 @@
                 <div class="mb-4 text-secondary" style="line-height: 1.7;">
                     ${clazz.description}
                 </div>
-
-                <h4 class="fw-bold mb-3 border-bottom pb-2">Course Syllabus</h4>
-                <div class="syllabus-content">
-                    <c:forEach items="${clazz.lessons}" var="lesson" varStatus="loop">
-                        <div class="syllabus-item">
-                            <i class="fa fa-play-circle me-3 text-primary"></i>
-                            <div>
-                                <div class="fw-bold">Lesson ${loop.count}: ${lesson.title}</div>
-                                <div class="small text-muted">${lesson.duration} mins</div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                    <c:if test="${empty clazz.lessons}">
-                        <p class="text-muted">No lessons available for this class.</p>
-                    </c:if>
-                </div>
             </div>
         </div>
 
@@ -139,26 +123,24 @@
                     </div>
                     <div>
                         <div class="fw-bold">${clazz.instructor.fullname}</div>
-                        <div class="small text-muted">Course Expert</div>
+                        <div class="small text-muted">Class Expert</div>
                     </div>
                 </div>
 
                 <div class="meta-info mb-4">
-                    <div class="mb-2"><i class="fa fa-tag me-2"></i> Category: ${clazz.category.name}</div>
-                    <div class="mb-2"><i class="fa fa-calendar-alt me-2"></i> Enrolled: <fmt:formatDate value="${clazz.enrolledDate}" pattern="dd/MM/yyyy"/></div>
+                    <div class="mb-2">
+                        <i class="fa fa-tag me-2"></i>
+                        Category:
+                        <c:forEach var="c" items="${categories}" varStatus="st">
+                            ${c.name}<c:if test="${!st.last}">, </c:if>
+                        </c:forEach>
+                    </div>
+                    <div class="mb-2"><i class="fa fa-calendar-alt me-2"></i> Enrolled at: <fmt:formatDate value="${classEnrollment.enrolledAt}" pattern="dd/MM/yyyy"/></div>
                 </div>
 
-                <a href="${pageContext.request.contextPath}/learn?id=${clazz.id}" class="btn-learn">
+                <a href="${pageContext.request.contextPath}/my-classes" class="btn-learn">
                     CONTINUE LEARNING
                 </a>
-            </div>
-
-            <div class="detail-card">
-                <h5 class="fw-bold mb-2">Your Progress</h5>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%"></div>
-                </div>
-                <div class="small mt-2 text-muted text-end">25% Complete</div>
             </div>
         </div>
     </div>

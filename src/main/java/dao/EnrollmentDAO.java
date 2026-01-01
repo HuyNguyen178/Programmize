@@ -126,4 +126,26 @@ public class EnrollmentDAO {
         } catch (Exception e) { e.printStackTrace(); }
         return enrollments;
     }
+
+    public ClassEnrollment getEnrollmentByUserIdAndClassId(Integer userId, Integer classId) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM class_enrollment WHERE user_id = ? AND class_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, userId);
+            statement.setInt(2, classId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                ClassEnrollment classEnrollment = new ClassEnrollment();
+                classEnrollment.setEnrollmentId(resultSet.getInt("enrollment_id"));
+                classEnrollment.setUserId(resultSet.getInt("user_id"));
+                classEnrollment.setClassId(resultSet.getInt("class_id"));
+                classEnrollment.setEnrolledAt(resultSet.getTimestamp("enrolled_at"));
+                return classEnrollment;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
