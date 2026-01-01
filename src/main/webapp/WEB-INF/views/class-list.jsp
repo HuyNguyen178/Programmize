@@ -122,7 +122,7 @@
                         </div>
                     </div>
                 </form>
-                    <form id="importForm" action="import-class" method="post" enctype="multipart/form-data">
+                    <form id="importForm" action="import-classes" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                         <input type="file"
                                id="classFile"

@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.User" %>
@@ -58,6 +59,23 @@
     <div class="container-fluid">
         <h2 class="fw-bold mb-4 text-primary">👥 Account List</h2>
 
+        <c:if test="${not empty sessionScope.successMessage}">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                    ${sessionScope.successMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="successMessage" scope="session"/>
+        </c:if>
+        <c:if test="${not empty sessionScope.errorMessage}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-times-circle me-2"></i>
+                    ${sessionScope.errorMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="errorMessage" scope="session"/>
+        </c:if>
+
         <div class="card shadow-sm">
             <div class="card-body">
 
@@ -105,8 +123,20 @@
 
                     <%-- 4. ADD NEW BUTTON  --%>
                     <div class="col-md-3 d-flex ms-md-auto justify-content-end">
+                        <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
+                            <i class="fas fa-file-import me-1"></i> Import Accounts
+                        </button>
                         <a href="add-account" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
                     </div>
+                </form>
+                <form id="importForm" action="import-accounts" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                    <input type="file"
+                           id="accountFile"
+                           name="accountFile"
+                           accept=".csv"
+                           onchange="submitImport()"
+                           style="display:none;">
                 </form>
 
                 <%-- DATA TABLE (8 COLUMNS) --%>
@@ -239,5 +269,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/admin_scripts.js"></script>
+
+<script>
+    function triggerImport() {
+        document.getElementById("accountFile").click();
+    }
+
+    function submitImport() {
+        if (confirm("Import this CSV file now?")) {
+            document.getElementById("importForm").submit();
+        }
+    }
+</script>
 </body>
 </html>

@@ -12,26 +12,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.Class;
-import model.Course;
 import model.User;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet("/import-class")
+@WebServlet("/import-classes")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,    // 1MB
         maxFileSize = 5 * 1024 * 1024,       // 5MB
         maxRequestSize = 10 * 1024 * 1024    // 10MB
 )
-public class ImportClassServlet extends HttpServlet {
+public class ImportClassesServlet extends HttpServlet {
     private UserDAO userDAO;
     private ClassDAO classDAO;
     private SettingDAO settingDAO;

@@ -14,7 +14,7 @@
         </li>
         <li class="nav-item">
             <a href="account-list" class="nav-link text-white">
-                <i class="fa fa-users me-2"></i> <span class="label">Account List</span>
+                <i class="fa fa-users me-2"></i> <span class="label">Accounts</span>
             </a>
         </li>
         <li class="nav-item">

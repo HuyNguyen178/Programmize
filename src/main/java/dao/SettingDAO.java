@@ -329,4 +329,22 @@ public class SettingDAO {
 
         return null;
     }
+
+    public Setting findRoleByName(String name) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM setting WHERE setting_name = ? AND type_id = 1";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Setting setting = new Setting();
+                setting.setId(resultSet.getInt("setting_id"));
+                setting.setName(resultSet.getString("setting_name"));
+                return setting;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
