@@ -18,6 +18,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 
+    <style>
+        .course-thumb-wrapper {
+            width: 150px;          /* Kích thước nhỏ hơn và tròn */
+            height: 150px;         /* Chiều cao = chiều rộng */
+            border-radius: 50%;    /* Làm tròn hoàn toàn */
+            border: 1px solid #ddd;
+            overflow: hidden;
+            background: #f5f5f5;
+            margin: 0 auto;        /* Căn giữa */
+        }
+
+        .course-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+
 </head>
 <body>
 
@@ -31,15 +49,6 @@
         <div class="d-flex justify-content-start align-items-center page-header">
             <h2 class="text-primary fw-bold">📚 Add New Course</h2>
         </div>
-
-        <%-- SUCCESS MESSAGE --%>
-        <c:if test="${not empty sessionScope.successMessage}">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <c:remove var="successMessage" scope="session"/>
-        </c:if>
 
         <%-- ERROR MESSAGE --%>
         <c:if test="${not empty sessionScope.errorMessage}">
@@ -67,10 +76,28 @@
                                placeholder="Enter course name" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-                        <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control"
-                               placeholder="Enter thumbnail image URL">
+                    <div class="form-group text-center">
+                        <label class="form-label">Course Thumbnail Image</label>
+
+                        <div class="course-thumb-wrapper mb-3">
+                            <img id="thumbnailPreview"
+                                 src="https://via.placeholder.com/300/4a90e2/ffffff?text=Course"
+                                 alt="Thumbnail"
+                                 class="course-thumb">
+                        </div>
+
+                        <input type="file"
+                               id="thumbnailInput"
+                               name="thumbnailImg"
+                               accept="image/*"
+                               hidden
+                               onchange="previewThumbnail(this)">
+
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                onclick="document.getElementById('thumbnailInput').click()">
+                            <i class="fa fa-image me-1"></i> Select Picture
+                        </button>
                     </div>
 
                     <div class="form-group">
@@ -196,6 +223,18 @@
             disableDragAndDrop: false
         });
     });
+</script>
+
+<script>
+    function previewThumbnail(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('thumbnailPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 
 </body>

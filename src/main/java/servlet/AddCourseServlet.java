@@ -9,11 +9,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
-import service.FileValidationService;
-import service.FileValidationService.ValidationResult;
 import utils.CloudinaryUtil;
-
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -25,13 +21,11 @@ import java.util.Map;
 )
 public class AddCourseServlet extends HttpServlet {
     private CourseDAO courseDAO;
-    private FileValidationService fileValidator;
     private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         courseDAO = new CourseDAO();
-        fileValidator = FileValidationService.getInstance();
         userDAO = new UserDAO();
     }
 
@@ -93,46 +87,40 @@ public class AddCourseServlet extends HttpServlet {
                 salePrice = new BigDecimal(salePriceStr);
             }
 
-            // Handle thumbnail upload with validation
-            String thumbnailUrl = request.getParameter("thumbnailUrl");
-            Part thumbnailPart = request.getPart("thumbnailFile");
+            String thumbnailUrl = "/assets/img/user_avt/admin_avatar.png";
+            Part thumbnailPart = request.getPart("thumbnailImg");
 
             if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
 
-                ValidationResult validationResult = fileValidator.validate(
-                        thumbnailPart.getSubmittedFileName(),
-                        thumbnailPart.getContentType(),
-                        thumbnailPart.getSize(),
-                        thumbnailPart.getInputStream()
-                );
-
-                if (!validationResult.isValid()) {
-                    request.setAttribute("error", validationResult.getMessage());
-                    request.getRequestDispatcher("WEB-INF/views/add-course.jsp")
-                            .forward(request, response);
+                String contentType = thumbnailPart.getContentType();
+                if (!contentType.startsWith("image/")) {
+                    request.getSession().setAttribute("errorMessage", "Only image files are allowed!");
+                    response.sendRedirect("add-course");
                     return;
                 }
+
+                byte[] fileBytes = thumbnailPart.getInputStream().readAllBytes();
 
                 Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
 
                 Map uploadResult = cloudinary.uploader().upload(
-                        thumbnailPart.getInputStream(),
+                        fileBytes,
                         ObjectUtils.asMap(
-                                "folder", "courses/thumbnails",
+                                "folder", "course_thumbnail",
                                 "resource_type", "image"
                         )
                 );
 
-                thumbnailUrl = uploadResult.get("secure_url").toString();
+                thumbnailUrl = (String) uploadResult.get("secure_url");
             }
 
             // Create course object
             Course course = new Course();
             course.setCourseName(courseName);
-            course.setThumbnailUrl(thumbnailUrl);
             course.setDescription(description);
             course.setStatus(status);
             course.setInstructorId(instructorId);
+            course.setThumbnailUrl(thumbnailUrl);
             course.setDuration(duration);
             course.setListedPrice(listedPrice);
             course.setSalePrice(salePrice);
@@ -152,13 +140,13 @@ public class AddCourseServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            request.setAttribute("error", "Invalid number format: " + e.getMessage());
+            request.setAttribute("errorMessage", "Invalid number format: " + e.getMessage());
             request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
             request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
             request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error adding course: " + e.getMessage());
+            request.setAttribute("errorMessage", "Error adding course: " + e.getMessage());
             request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
             request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
             request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);

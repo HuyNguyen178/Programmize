@@ -19,6 +19,24 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 
+  <style>
+    .class-thumb-wrapper {
+      width: 150px;          /* Kích thước nhỏ hơn và tròn */
+      height: 150px;         /* Chiều cao = chiều rộng */
+      border-radius: 50%;    /* Làm tròn hoàn toàn */
+      border: 1px solid #ddd;
+      overflow: hidden;
+      background: #f5f5f5;
+      margin: 0 auto;        /* Căn giữa */
+    }
+
+    .class-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+
 </head>
 <body>
 
@@ -40,7 +58,7 @@
       <c:remove var="errorMessage" scope="session"/>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/add-class" method="post" class="p-4 bg-white rounded shadow-lg">
+    <form action="${pageContext.request.contextPath}/add-class" method="post" class="p-4 bg-white rounded shadow-lg" enctype="multipart/form-data">
 
       <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
@@ -53,6 +71,30 @@
             <label for="className" class="form-label">Class Name <span class="text-danger">*</span></label>
             <input type="text" id="className" name="className" class="form-control" value="${clazz.name}"
                    placeholder="Enter class name" required>
+          </div>
+
+          <div class="form-group text-center">
+            <label class="form-label">Class Thumbnail Image</label>
+
+            <div class="class-thumb-wrapper mb-3">
+              <img id="thumbnailPreview"
+                   src="https://via.placeholder.com/300/4a90e2/ffffff?text=Course"
+                   alt="Thumbnail"
+                   class="class-thumb">
+            </div>
+
+            <input type="file"
+                   id="thumbnailInput"
+                   name="thumbnailImg"
+                   accept="image/*"
+                   hidden
+                   onchange="previewThumbnail(this)">
+
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    onclick="document.getElementById('thumbnailInput').click()">
+              <i class="fa fa-image me-1"></i> Select Picture
+            </button>
           </div>
 
           <div class="form-group">
@@ -134,12 +176,6 @@
         <div class="col-12">
 
           <div class="form-group">
-            <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-            <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control" value="${clazz.thumbnailUrl}"
-                   placeholder="Enter thumbnail image URL">
-          </div>
-
-          <div class="form-group">
             <label for="description" class="form-label">Description</label>
             <textarea id="description" name="description" class="form-control" rows="4"
                       placeholder="Enter class description">${clazz.description}</textarea>
@@ -191,6 +227,18 @@
       disableDragAndDrop: false
     });
   });
+</script>
+
+<script>
+  function previewThumbnail(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('thumbnailPreview').src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
 </script>
 
 </body>
