@@ -348,8 +348,18 @@
     </div>
 </div>
 
+<c:if test="${not empty sessionScope.errorMessage}">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> ${sessionScope.errorMessage}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <c:remove var="errorMessage" scope="session"/>
+</c:if>
+
 <div class="container create-post-container">
-    <form id="createPostForm" action="${pageContext.request.contextPath}/blog/create" method="post" enctype="multipart/form-data">
+    <form id="createPostForm" action="create-poster" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
         <!-- Basic Information -->
         <div class="form-card">
@@ -460,7 +470,7 @@
 
             <div class="status-options">
                 <div class="status-option">
-                    <input type="radio" id="statusDraft" name="status" value="draft" checked>
+                    <input type="radio" id="statusDraft" name="status" value="0" checked>
                     <label for="statusDraft" class="status-label">
                         <div class="status-icon">
                             <i class="fas fa-file-pen" style="color: #FFA500;"></i>
@@ -471,7 +481,7 @@
                 </div>
 
                 <div class="status-option">
-                    <input type="radio" id="statusPublish" name="status" value="published">
+                    <input type="radio" id="statusPublish" name="status" value="1">
                     <label for="statusPublish" class="status-label">
                         <div class="status-icon">
                             <i class="fas fa-globe" style="color: #4CAF50;"></i>

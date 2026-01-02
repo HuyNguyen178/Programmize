@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.Course;
+import model.Setting;
 import model.User;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -68,15 +69,15 @@ public class ImportCoursesServlet extends HttpServlet {
                 Integer[] categoryIds = new Integer[categories.length];
 
                 for (int i = 0; i < categories.length; i++) {
-                    String category = categories[i].trim();
-                    Integer categoryId = settingDAO.findCategoryIdByName(category);
+                    String categoryName = categories[i].trim();
+                    Setting category = settingDAO.findCategoryByName(categoryName);
 
-                    if (categoryId == null) {
-                        request.getSession().setAttribute("errorMessage", "Cannot find category " + category);
+                    if (category.getId() == null) {
+                        request.getSession().setAttribute("errorMessage", "Cannot find category " + categoryName + " at course " + course.getCourseName());
                         response.sendRedirect("course-list?success=false");
                         return;
                     }
-                    categoryIds[i] = categoryId;
+                    categoryIds[i] = category.getId();
                 }
 
                 String instructorName = data[indexMap.get("courseInstructor")].trim();

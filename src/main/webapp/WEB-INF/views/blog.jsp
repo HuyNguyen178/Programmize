@@ -152,6 +152,11 @@
       height: 100%;
     }
 
+    .sticky-sidebar {
+      position: sticky;
+      top: 100px;
+    }
+
     .blog-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 15px 30px rgba(0,0,0,0.15);
@@ -443,163 +448,33 @@
     <!-- Main Content -->
     <div class="col-lg-8">
       <div class="row g-4">
-        <!-- Blog Card 1 -->
-        <div class="col-md-6">
-          <div class="blog-card">
-            <div class="blog-card-img">
-              <span class="blog-category-tag">JavaScript</span>
-              <img src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=600" alt="Blog">
-            </div>
-            <div class="blog-card-body">
-              <h5 class="blog-card-title">React 19: Những Tính Năng Mới Đáng Chú Ý</h5>
-              <p class="blog-card-excerpt">
-                Tìm hiểu về các tính năng mới và cải tiến trong React 19 giúp tối ưu hóa hiệu suất ứng dụng...
-              </p>
-              <div class="blog-meta">
-                <div class="author-info">
-                  <img src="https://i.pravatar.cc/40?img=2" alt="Author" class="author-avatar">
-                  <span>Trần Thị B</span>
-                </div>
-                <div class="read-time">
-                  <i class="far fa-clock"></i>
-                  <span>5 phút</span>
+        <c:forEach items="${posters}" var="p">
+          <div class="col-md-6">
+            <div class="blog-card">
+              <div class="blog-card-img">
+                <span class="blog-category-tag">${p.category.name}</span>
+                <img src="${p.thumbnailUrl}" alt="Blog">
+              </div>
+              <div class="blog-card-body">
+                <h5 class="blog-card-title">${p.title}</h5>
+                <p class="blog-card-excerpt">
+                  ${p.excerpt}
+                </p>
+                <div class="blog-meta">
+                  <div class="author-info">
+                    <img src="${p.user.avatarUrl}" alt="Author" class="author-avatar">
+                    <span>${p.user.fullname}</span>
+                  </div>
+                  <div class="read-time">
+                    <i class="far fa-clock"></i>
+                    <span>${timeAgoMap[p.postId]}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Blog Card 2 -->
-        <div class="col-md-6">
-          <div class="blog-card">
-            <div class="blog-card-img">
-              <span class="blog-category-tag">Python</span>
-              <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=600" alt="Blog">
-            </div>
-            <div class="blog-card-body">
-              <h5 class="blog-card-title">Machine Learning Cơ Bản Với Python</h5>
-              <p class="blog-card-excerpt">
-                Hướng dẫn chi tiết về các khái niệm cơ bản trong Machine Learning và cách triển khai với Python...
-              </p>
-              <div class="blog-meta">
-                <div class="author-info">
-                  <img src="https://i.pravatar.cc/40?img=3" alt="Author" class="author-avatar">
-                  <span>Lê Văn C</span>
-                </div>
-                <div class="read-time">
-                  <i class="far fa-clock"></i>
-                  <span>12 phút</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 3 -->
-        <div class="col-md-6">
-          <div class="blog-card">
-            <div class="blog-card-img">
-              <span class="blog-category-tag">DevOps</span>
-              <img src="https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=600" alt="Blog">
-            </div>
-            <div class="blog-card-body">
-              <h5 class="blog-card-title">Docker & Kubernetes: Hướng Dẫn Toàn Tập</h5>
-              <p class="blog-card-excerpt">
-                Từ cơ bản đến nâng cao về containerization và orchestration với Docker và Kubernetes...
-              </p>
-              <div class="blog-meta">
-                <div class="author-info">
-                  <img src="https://i.pravatar.cc/40?img=4" alt="Author" class="author-avatar">
-                  <span>Phạm Thị D</span>
-                </div>
-                <div class="read-time">
-                  <i class="far fa-clock"></i>
-                  <span>15 phút</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 4 -->
-        <div class="col-md-6">
-          <div class="blog-card">
-            <div class="blog-card-img">
-              <span class="blog-category-tag">Web Dev</span>
-              <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=600" alt="Blog">
-            </div>
-            <div class="blog-card-body">
-              <h5 class="blog-card-title">Responsive Design: Best Practices 2025</h5>
-              <p class="blog-card-excerpt">
-                Các kỹ thuật và best practices để xây dựng website responsive hoàn hảo trên mọi thiết bị...
-              </p>
-              <div class="blog-meta">
-                <div class="author-info">
-                  <img src="https://i.pravatar.cc/40?img=5" alt="Author" class="author-avatar">
-                  <span>Hoàng Văn E</span>
-                </div>
-                <div class="read-time">
-                  <i class="far fa-clock"></i>
-                  <span>7 phút</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 5 -->
-        <div class="col-md-6">
-          <div class="blog-card">
-            <div class="blog-card-img">
-              <span class="blog-category-tag">Mobile Dev</span>
-              <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600" alt="Blog">
-            </div>
-            <div class="blog-card-body">
-              <h5 class="blog-card-title">Flutter vs React Native: So Sánh Chi Tiết</h5>
-              <p class="blog-card-excerpt">
-                Phân tích ưu nhược điểm của hai framework mobile phổ biến nhất hiện nay...
-              </p>
-              <div class="blog-meta">
-                <div class="author-info">
-                  <img src="https://i.pravatar.cc/40?img=6" alt="Author" class="author-avatar">
-                  <span>Đỗ Thị F</span>
-                </div>
-                <div class="read-time">
-                  <i class="far fa-clock"></i>
-                  <span>10 phút</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 6 -->
-        <div class="col-md-6">
-          <div class="blog-card">
-            <div class="blog-card-img">
-              <span class="blog-category-tag">Java</span>
-              <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600" alt="Blog">
-            </div>
-            <div class="blog-card-body">
-              <h5 class="blog-card-title">Spring Boot 3.0: Những Điều Cần Biết</h5>
-              <p class="blog-card-excerpt">
-                Tổng hợp những thay đổi quan trọng và tính năng mới trong Spring Boot 3.0...
-              </p>
-              <div class="blog-meta">
-                <div class="author-info">
-                  <img src="https://i.pravatar.cc/40?img=7" alt="Author" class="author-avatar">
-                  <span>Vũ Văn G</span>
-                </div>
-                <div class="read-time">
-                  <i class="far fa-clock"></i>
-                  <span>9 phút</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </c:forEach>
       </div>
-
       <!-- Pagination -->
       <nav>
         <ul class="pagination justify-content-center">
@@ -626,13 +501,13 @@
 
         <c:choose>
           <c:when test="${not empty sessionScope.loginUser}">
-            <a href="${pageContext.request.contextPath}/add-blog" class="btn-create-post">
+            <a href="${pageContext.request.contextPath}/create-poster" class="btn-create-post">
               <i class="fas fa-plus-circle me-2"></i>Create New Post
             </a>
           </c:when>
           <c:otherwise>
             <div class="login-prompt">
-              <a href="${pageContext.request.contextPath}/login?redirect=add-blog">
+              <a href="${pageContext.request.contextPath}/login?redirect=create-poster">
                 <i class="fas fa-right-to-bracket"></i> Login to continue
               </a>
             </div>

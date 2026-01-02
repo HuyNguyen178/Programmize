@@ -3,7 +3,7 @@ package model;
 import java.sql.Timestamp;
 
 public class Poster {
-    private int postId;
+    private Integer postId;
     private String title;
     private String slug;
     private String excerpt;
@@ -11,15 +11,34 @@ public class Poster {
     private String thumbnailUrl;
     private User user;
     private boolean status;
+    private Integer viewCount;
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    private Setting category;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Timestamp publishedAt;
 
-    public int getPostId() {
+    public Setting getCategory() {
+        return category;
+    }
+
+    public void setCategory(Setting category) {
+        this.category = category;
+    }
+
+    public Integer getPostId() {
         return postId;
     }
 
-    public void setPostId(int postId) {
+    public void setPostId(Integer postId) {
         this.postId = postId;
     }
 
