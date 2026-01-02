@@ -119,7 +119,7 @@
                     <%-- 2. FILTER BY STATUS --%>
                     <div class="col-md-2">
                         <select class="form-select" name="status">
-                            <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Status</option>
+                            <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Statuses</option>
                             <option value="1" <%= "1".equals(currentStatus) ? "selected" : "" %>>Active</option>
                             <option value="0" <%= "0".equals(currentStatus) ? "selected" : "" %>>Inactive</option>
                         </select>

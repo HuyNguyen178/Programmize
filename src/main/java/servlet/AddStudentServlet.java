@@ -51,7 +51,7 @@ public class AddStudentServlet extends HttpServlet {
             boolean success = studentDAO.addStudentToClass(identifier.trim(), isEmail, className.trim());
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/student-list?message=Add Success!");
+                response.sendRedirect(request.getContextPath() + "/student-list?success=true!");
             } else {
                 request.setAttribute("message", "Error: Can't find user or class.");
                 request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);

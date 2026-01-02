@@ -27,7 +27,7 @@ import java.util.Map;
         maxFileSize = 5 * 1024 * 1024,
         maxRequestSize = 10 * 1024 * 1024
 )
-public class AccountDetailServlet extends HttpServlet {
+public class    AccountDetailServlet extends HttpServlet {
 
     private UserDAO userDAO;
     private SettingDAO settingDAO;

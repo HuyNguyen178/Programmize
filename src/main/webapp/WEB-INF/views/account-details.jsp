@@ -220,12 +220,12 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" id="activeStatus" type="radio" name="status" value="1"
                                 <%= defaultIsActive ? "checked" : "" %> required>
-                            <label for="activeStatus" class="form-check-label text-success">Active</label>
+                            <label for="activeStatus" class="form-check-label">Active</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" id="inactiveStatus" type="radio" name="status" value="0"
                                 <%= !defaultIsActive ? "checked" : "" %> required>
-                            <label for="inactiveStatus" class="form-check-label text-danger">Inactive</label>
+                            <label for="inactiveStatus" class="form-check-label">Inactive</label>
                         </div>
                     </div>
 
