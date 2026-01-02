@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
 import service.AuditLogService;
-import utils.SessionConfig;
+import configuration.SessionConfig;
 
 import java.io.IOException;
 

@@ -7,7 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import model.User;
 import service.AuditLogService;
 import service.RateLimiterService;
-import utils.SessionConfig;
+import configuration.SessionConfig;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package model;
+package configuration;
 
 import java.util.ResourceBundle;
 

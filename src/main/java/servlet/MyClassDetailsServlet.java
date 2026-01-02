@@ -12,7 +12,7 @@ import model.Class;
 import model.ClassEnrollment;
 import model.Setting;
 import model.User;
-import utils.SessionConfig;
+import configuration.SessionConfig;
 
 import java.io.IOException;
 import java.util.List;

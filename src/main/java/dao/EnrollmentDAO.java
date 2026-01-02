@@ -3,8 +3,6 @@ package dao;
 import model.ClassEnrollment;
 import model.CourseEnrollment;
 import utils.DBUtil;
-
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;

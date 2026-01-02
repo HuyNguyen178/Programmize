@@ -1,5 +1,5 @@
 <%@ page import="model.User" %>
-<%@ page import="utils.SessionConfig" %>
+<%@ page import="configuration.SessionConfig" %>
 <%@ page import="dao.UserDAO" %>
 <%@ page session="true" %>
 <%

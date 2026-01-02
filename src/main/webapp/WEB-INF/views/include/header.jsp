@@ -1,7 +1,7 @@
 <%@ page import="model.User" %>
 <%@ page import="utils.CSRFUtil" %>
 <%@ page import="dao.UserDAO" %>
-<%@ page import="utils.SessionConfig" %>
+<%@ page import="configuration.SessionConfig" %>
 <%@ page session="true" %>
 <%
     User loginUser = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
@@ -57,7 +57,7 @@
                 <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/public-courses">Course</a></li>
                 <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/public-classes">Class</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Flashcard</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+                <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/blog">Blog</a></li>
             </ul>
 
             <% if(loginUser == null) { %>

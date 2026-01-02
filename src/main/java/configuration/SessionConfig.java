@@ -1,4 +1,4 @@
-package utils;
+package configuration;
 
 public class SessionConfig {
     // Session attribute names

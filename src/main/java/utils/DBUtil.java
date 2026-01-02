@@ -1,6 +1,6 @@
 package utils;
 
-import model.AppConfig;
+import configuration.AppConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

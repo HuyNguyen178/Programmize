@@ -10,11 +10,9 @@ import jakarta.servlet.http.*;
 import model.User;
 import utils.CloudinaryUtil;
 import utils.PasswordUtil;
-import utils.SessionConfig;
+import configuration.SessionConfig;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Map;
 
 @WebServlet("/profile")
