@@ -6,14 +6,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog - Programmize Learning Platform</title>
-
+  <title>Blog - Programmize E-Learning Platform</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
 
   <style>
     :root {
-      --primary-color: #5B4CFF;
+      --primary-color: #2F7AF7;
       --secondary-color: #FF6B6B;
       --accent-color: #4ECDC4;
       --dark-bg: #1a1a2e;
@@ -148,7 +148,7 @@
       overflow: hidden;
       box-shadow: 0 5px 15px rgba(0,0,0,0.08);
       transition: all 0.3s;
-      margin-bottom: 30px;
+      margin-bottom: 50px;
       height: 100%;
     }
 
@@ -199,6 +199,15 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+
+    .login-prompt {
+      background-color: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+      text-align: center;
     }
 
     .blog-card-excerpt {
@@ -337,24 +346,17 @@
       border-color: var(--primary-color);
     }
 
-    /* Newsletter */
-    .newsletter-widget {
+    /* Add New Post Widget */
+    .add-post-widget {
       background: linear-gradient(135deg, var(--primary-color), #7b68ee);
       color: white;
     }
 
-    .newsletter-widget h4 {
+    .add-post-widget h4 {
       color: white;
     }
 
-    .newsletter-widget input {
-      border-radius: 10px;
-      padding: 12px;
-      border: none;
-      margin-bottom: 10px;
-    }
-
-    .newsletter-widget button {
+    .add-post-widget .btn-create-post {
       width: 100%;
       padding: 12px;
       background: white;
@@ -363,9 +365,12 @@
       border-radius: 10px;
       font-weight: 600;
       transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+      text-align: center;
     }
 
-    .newsletter-widget button:hover {
+    .add-post-widget .btn-create-post:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
@@ -394,11 +399,11 @@
   <div class="container">
     <div class="text-center">
       <h1><i class="fas fa-blog"></i> Programming Blog</h1>
-      <p>Khám phá kiến thức, tips & tricks về lập trình từ các chuyên gia</p>
+      <p>Discover programming knowledge, tips, and tricks from experts</p>
 
       <!-- Search Box -->
       <div class="search-box">
-        <input type="text" class="form-control" placeholder="Tìm kiếm bài viết...">
+        <input type="text" class="form-control" placeholder="Search for posters...">
         <button type="submit"><i class="fas fa-search"></i></button>
       </div>
     </div>
@@ -409,14 +414,10 @@
   <!-- Category Filter -->
   <div class="category-filter">
     <div class="text-center">
-      <span class="category-badge active">Tất cả</span>
-      <span class="category-badge">JavaScript</span>
-      <span class="category-badge">Python</span>
-      <span class="category-badge">Java</span>
-      <span class="category-badge">Web Development</span>
-      <span class="category-badge">Mobile Dev</span>
-      <span class="category-badge">AI & ML</span>
-      <span class="category-badge">DevOps</span>
+      <span class="category-badge active">All</span>
+      <c:forEach items="${allCategories}" var="cat">
+        <span class="category-badge">${cat.name}</span>
+      </c:forEach>
     </div>
   </div>
 
@@ -441,7 +442,7 @@
   <div class="row">
     <!-- Main Content -->
     <div class="col-lg-8">
-      <div class="row">
+      <div class="row g-4">
         <!-- Blog Card 1 -->
         <div class="col-md-6">
           <div class="blog-card">
@@ -618,12 +619,25 @@
 
     <!-- Sidebar -->
     <div class="col-lg-4">
-      <!-- Newsletter Widget -->
-      <div class="sidebar-widget newsletter-widget">
-        <h4><i class="fas fa-envelope"></i> Newsletter</h4>
-        <p class="mb-3">Đăng ký để nhận bài viết mới nhất mỗi tuần!</p>
-        <input type="email" class="form-control" placeholder="Email của bạn">
-        <button type="submit">Đăng Ký Ngay</button>
+      <!-- Add New Post Widget -->
+      <div class="sidebar-widget add-post-widget">
+        <h4><i class="fas fa-pen-to-square"></i> Want to add new post?</h4>
+        <p class="mb-3">Share your knowledge and experience with the community!</p>
+
+        <c:choose>
+          <c:when test="${not empty sessionScope.loginUser}">
+            <a href="${pageContext.request.contextPath}/add-blog" class="btn-create-post">
+              <i class="fas fa-plus-circle me-2"></i>Create New Post
+            </a>
+          </c:when>
+          <c:otherwise>
+            <div class="login-prompt">
+              <a href="${pageContext.request.contextPath}/login?redirect=add-blog">
+                <i class="fas fa-right-to-bracket"></i> Login to continue
+              </a>
+            </div>
+          </c:otherwise>
+        </c:choose>
       </div>
 
       <!-- Popular Posts Widget -->

@@ -55,7 +55,7 @@ public class LogoutServlet extends HttpServlet {
         response.addCookie(sessionCookie);
 
         // Clear remember me cookie
-        Cookie rememberCookie = new Cookie("rememberToken", "");
+        Cookie rememberCookie = new Cookie(SessionConfig.REMEMBER_COOKIE_NAME, "");
         rememberCookie.setMaxAge(0);
         rememberCookie.setPath(request.getContextPath());
         rememberCookie.setHttpOnly(true);

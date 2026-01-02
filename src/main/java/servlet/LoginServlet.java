@@ -117,7 +117,7 @@ public class LoginServlet extends HttpServlet {
             if (remember != null) {
                 String token = user.getId() + "-" + System.currentTimeMillis();
 
-                Cookie c = new Cookie("rememberToken", token);
+                Cookie c = new Cookie(SessionConfig.REMEMBER_COOKIE_NAME, token);
                 c.setMaxAge(10 * 365 * 24 * 60 * 60);
                 c.setPath("/");
                 c.setHttpOnly(true);

@@ -28,7 +28,7 @@ public class AutoLoginFilter implements Filter {
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
             for (Cookie c : cookies) {
-                if (c.getName().equals("rememberToken")) {
+                if (c.getName().equals(SessionConfig.REMEMBER_COOKIE_NAME)) {
 
                     String token = c.getValue();
 
