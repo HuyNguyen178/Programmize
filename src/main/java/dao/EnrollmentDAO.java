@@ -45,26 +45,45 @@ public class EnrollmentDAO {
     }
 
     public boolean addEnrollment(ClassEnrollment enrollment) {
-        String sql = "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
-                "VALUES (?, ?, ?, ?, NOW(), ?)";
+        String insertEnrollmentSql =
+                "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
+                        "VALUES (?, ?, ?, ?, NOW(), ?)";
+
+        String updateClassSql =
+                "UPDATE class SET number_of_students = number_of_students + 1 WHERE class_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement insertStmt =
+                     conn.prepareStatement(insertEnrollmentSql, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement updateStmt =
+                     conn.prepareStatement(updateClassSql)) {
 
-            stmt.setInt(1, enrollment.getUserId());
-            stmt.setInt(2, enrollment.getClassId());
-            stmt.setBigDecimal(3, enrollment.getPricePaid());
-            stmt.setString(4, enrollment.getPaymentMethod());
-            stmt.setBoolean(5, enrollment.isStatus());
+            conn.setAutoCommit(false);
 
-            if (stmt.executeUpdate() > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        enrollment.setEnrollmentId(generatedKeys.getInt(1));
-                    }
-                }
-                return true;
+            // Insert enrollment
+            insertStmt.setInt(1, enrollment.getUserId());
+            insertStmt.setInt(2, enrollment.getClassId());
+            insertStmt.setBigDecimal(3, enrollment.getPricePaid());
+            insertStmt.setString(4, enrollment.getPaymentMethod());
+            insertStmt.setBoolean(5, enrollment.isStatus());
+
+            if (insertStmt.executeUpdate() == 0) {
+                conn.rollback();
+                return false;
             }
+
+            try (ResultSet rs = insertStmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    enrollment.setEnrollmentId(rs.getInt(1));
+                }
+            }
+
+            // Update number of students
+            updateStmt.setInt(1, enrollment.getClassId());
+            updateStmt.executeUpdate();
+
+            conn.commit();
+            return true;
 
         } catch (SQLIntegrityConstraintViolationException e) {
             return false;
@@ -74,6 +93,7 @@ public class EnrollmentDAO {
 
         return false;
     }
+
 
     public List<Object> getAllEnrollmentsWithDetails(int userId, String keyword, String type, String status) {
         List<Object> enrollments = new ArrayList<>();

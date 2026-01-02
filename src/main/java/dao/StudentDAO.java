@@ -149,8 +149,18 @@ public class StudentDAO {
                 ? "SELECT user_id, role_id FROM user WHERE email = ?"
                 : "SELECT user_id, role_id FROM user WHERE username = ?";
 
-        String sqlFindClass = "SELECT class_id FROM class WHERE class_name = ?";
-        String sqlInsertClassUser = "INSERT IGNORE INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " + "VALUES (?, ?, ?, ?, NOW(), ?) ";
+        String findClassSql =
+                "SELECT class_id FROM class WHERE class_name = ?";
+
+        String checkEnrollSql =
+                "SELECT 1 FROM class_enrollment WHERE user_id = ? AND class_id = ?";
+
+        String insertEnrollSql =
+                "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
+                        "VALUES (?, ?, ?, ?, NOW(), ?)";
+
+        String updateClassSql =
+                "UPDATE class SET number_of_students = number_of_students + 1 WHERE class_id = ?";
 
         Connection conn = null;
 
@@ -160,7 +170,7 @@ public class StudentDAO {
 
             int userId;
 
-            // 1. Lấy user
+            // 1. Find user
             try (PreparedStatement ps = conn.prepareStatement(findUserSql)) {
                 ps.setString(1, identifier);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -172,26 +182,44 @@ public class StudentDAO {
                 }
             }
 
-            // 2. Lấy class_id
+            // 2. Find class
             int classId;
-            try (PreparedStatement ps = conn.prepareStatement(sqlFindClass)) {
+            try (PreparedStatement ps = conn.prepareStatement(findClassSql)) {
                 ps.setString(1, className);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         conn.rollback();
                         return false;
                     }
-                    classId = rs.getInt(1);
+                    classId = rs.getInt("class_id");
                 }
             }
 
-            // 3. Thêm class_enrollment
-            try (PreparedStatement ps = conn.prepareStatement(sqlInsertClassUser)) {
+            // 3. Check already enrolled
+            try (PreparedStatement ps = conn.prepareStatement(checkEnrollSql)) {
+                ps.setInt(1, userId);
+                ps.setInt(2, classId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+            }
+
+            // 4. Insert enrollment
+            try (PreparedStatement ps = conn.prepareStatement(insertEnrollSql)) {
                 ps.setInt(1, userId);
                 ps.setInt(2, classId);
                 ps.setBigDecimal(3, BigDecimal.ZERO);
                 ps.setString(4, "Teacher Added");
                 ps.setBoolean(5, true);
+                ps.executeUpdate();
+            }
+
+            // 5. Update number of students
+            try (PreparedStatement ps = conn.prepareStatement(updateClassSql)) {
+                ps.setInt(1, classId);
                 ps.executeUpdate();
             }
 
@@ -201,11 +229,11 @@ public class StudentDAO {
         } catch (SQLException e) {
             if (conn != null) conn.rollback();
             throw e;
-
         } finally {
             if (conn != null) conn.close();
         }
     }
+
 
     public Student getStudentById(int id) {
         Student st = null;

@@ -422,13 +422,13 @@
                         <c:if test="${startDate != null}">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                Begin in <fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd"/>
+                                Begins in <fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd"/>
                             </li>
                         </c:if>
                         <c:if test="${endDate != null}">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                End in <fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd"/>
+                                Ends in <fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd"/>
                             </li>
                         </c:if>
                     </ul>
