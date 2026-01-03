@@ -37,14 +37,30 @@ public class PosterDAO {
         }
     }
 
-    public List<Poster> getAllPoster() {
+    public List<Poster> getAllPoster(Integer categoryId, String keyword) {
         List<Poster> posters = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder("SELECT p.*, u.fullname as user_name, u.avatar_url as user_avatar, s.setting_name as category_name FROM poster p " +
                     "JOIN user u ON u.user_id = p.user_id " +
-                    "JOIN setting s ON s.setting_id = p.category_id ");
-            sql.append("WHERE p.status = 1");
+                    "JOIN setting s ON s.setting_id = p.category_id " +
+                    "WHERE p.status = 1 ");
+            if (categoryId != null) {
+                sql.append("AND s.setting_id = ? ");
+            }
+
+            if (keyword != null && !keyword.isBlank()) {
+                sql.append(" AND (p.title LIKE ? OR p.excerpt LIKE ?) ");
+            }
+
             PreparedStatement statement = connection.prepareStatement(sql.toString());
+            int paramIndex = 1;
+            if (categoryId != null) {
+                statement.setInt(paramIndex++, categoryId);
+            }
+            if (keyword != null && !keyword.isBlank()) {
+                statement.setString(paramIndex++, "%" + keyword + "%");
+                statement.setString(paramIndex++, "%" + keyword + "%");
+            }
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Poster poster = new Poster();
@@ -72,6 +88,54 @@ public class PosterDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public List<Poster> getPopularPosters() {
+        List<Poster> posters = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM poster ORDER BY view_count DESC LIMIT 3";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setTitle(resultSet.getString("title"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setViewCount(resultSet.getInt("view_count"));
+
+                posters.add(poster);
+            }
+            return posters;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Poster getMostPopularPoster() {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT p.*, u.fullname as user_name FROM poster p JOIN user u ON p.user_id = u.user_id ORDER BY p.view_count DESC LIMIT 1";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setTitle(resultSet.getString("title"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setExcerpt(resultSet.getString("excerpt"));
+                poster.setViewCount(resultSet.getInt("view_count"));
+                poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+
+                User user = new User();
+                user.setFullname(resultSet.getString("user_name"));
+                poster.setUser(user);
+
+                return poster;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

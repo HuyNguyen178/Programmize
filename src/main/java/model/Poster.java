@@ -12,6 +12,10 @@ public class Poster {
     private User user;
     private boolean status;
     private Integer viewCount;
+    private Setting category;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private Timestamp publishedAt;
 
     public Integer getViewCount() {
         return viewCount;
@@ -20,11 +24,6 @@ public class Poster {
     public void setViewCount(Integer viewCount) {
         this.viewCount = viewCount;
     }
-
-    private Setting category;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    private Timestamp publishedAt;
 
     public Setting getCategory() {
         return category;

@@ -10,390 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-  <style>
-    :root {
-      --primary-color: #2F7AF7;
-      --secondary-color: #FF6B6B;
-      --accent-color: #4ECDC4;
-      --dark-bg: #1a1a2e;
-      --light-bg: #f8f9fa;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--light-bg);
-    }
-
-    /* Hero Section */
-    .blog-hero {
-      background: linear-gradient(135deg, var(--primary-color) 0%, #7b68ee 100%);
-      color: white;
-      padding: 80px 0 60px;
-      margin-bottom: 40px;
-    }
-
-    .blog-hero h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-
-    .blog-hero p {
-      font-size: 1.2rem;
-      opacity: 0.9;
-    }
-
-    /* Search Box */
-    .search-box {
-      position: relative;
-      max-width: 600px;
-      margin: 30px auto 0;
-    }
-
-    .search-box input {
-      padding: 15px 50px 15px 20px;
-      border-radius: 50px;
-      border: none;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    .search-box button {
-      position: absolute;
-      right: 5px;
-      top: 5px;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      background: var(--primary-color);
-      border: none;
-      color: white;
-    }
-
-    /* Category Filter */
-    .category-filter {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      margin-bottom: 30px;
-    }
-
-    .category-badge {
-      display: inline-block;
-      padding: 8px 20px;
-      margin: 5px;
-      border-radius: 20px;
-      background: var(--light-bg);
-      color: #333;
-      cursor: pointer;
-      transition: all 0.3s;
-      border: 2px solid transparent;
-    }
-
-    .category-badge:hover,
-    .category-badge.active {
-      background: var(--primary-color);
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    /* Featured Post */
-    .featured-post {
-      position: relative;
-      height: 500px;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    .featured-post img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .featured-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-      padding: 40px;
-      color: white;
-    }
-
-    .featured-overlay h2 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 15px;
-    }
-
-    .featured-badge {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: var(--secondary-color);
-      color: white;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    /* Blog Card */
-    .blog-card {
-      background: white;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-      transition: all 0.3s;
-      margin-bottom: 50px;
-      height: 100%;
-    }
-
-    .sticky-sidebar {
-      position: sticky;
-      top: 100px;
-    }
-
-    .blog-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-    }
-
-    .blog-card-img {
-      height: 220px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .blog-card-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
-
-    .blog-card:hover .blog-card-img img {
-      transform: scale(1.1);
-    }
-
-    .blog-category-tag {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: var(--primary-color);
-      color: white;
-      padding: 5px 15px;
-      border-radius: 15px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .blog-card-body {
-      padding: 25px;
-    }
-
-    .blog-card-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 15px;
-      color: #333;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .login-prompt {
-      background-color: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 5px;
-      padding: 15px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .blog-card-excerpt {
-      color: #666;
-      font-size: 0.95rem;
-      margin-bottom: 20px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .blog-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 15px;
-      border-top: 1px solid #eee;
-      font-size: 0.9rem;
-      color: #888;
-    }
-
-    .author-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .author-avatar {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .read-time {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    /* Sidebar */
-    .sidebar-widget {
-      background: white;
-      border-radius: 15px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .sidebar-widget h4 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .popular-post-item {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .popular-post-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .popular-post-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 10px;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-
-    .popular-post-info h6 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .popular-post-info small {
-      color: #888;
-      font-size: 0.85rem;
-    }
-
-    .tag-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .tag-item {
-      padding: 8px 16px;
-      background: var(--light-bg);
-      border-radius: 20px;
-      font-size: 0.9rem;
-      color: #555;
-      transition: all 0.3s;
-      text-decoration: none;
-    }
-
-    .tag-item:hover {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    /* Pagination */
-    .pagination {
-      margin-top: 40px;
-    }
-
-    .page-link {
-      border-radius: 10px;
-      margin: 0 5px;
-      border: none;
-      color: var(--primary-color);
-      padding: 10px 18px;
-    }
-
-    .page-link:hover {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .page-item.active .page-link {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
-    }
-
-    /* Add New Post Widget */
-    .add-post-widget {
-      background: linear-gradient(135deg, var(--primary-color), #7b68ee);
-      color: white;
-    }
-
-    .add-post-widget h4 {
-      color: white;
-    }
-
-    .add-post-widget .btn-create-post {
-      width: 100%;
-      padding: 12px;
-      background: white;
-      color: var(--primary-color);
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: block;
-      text-align: center;
-    }
-
-    .add-post-widget .btn-create-post:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    @media (max-width: 768px) {
-      .blog-hero h1 {
-        font-size: 2rem;
-      }
-
-      .featured-post {
-        height: 350px;
-      }
-
-      .featured-overlay h2 {
-        font-size: 1.5rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/blog.css">
 </head>
 <body>
 
@@ -407,10 +24,25 @@
       <p>Discover programming knowledge, tips, and tricks from experts</p>
 
       <!-- Search Box -->
-      <div class="search-box">
-        <input type="text" class="form-control" placeholder="Search for posters...">
-        <button type="submit"><i class="fas fa-search"></i></button>
-      </div>
+      <form class="search-box"
+            method="get"
+            action="${pageContext.request.contextPath}/blog">
+
+        <input type="text"
+               name="keyword"
+               class="form-control"
+               placeholder="Search for posters..."
+               value="${param.keyword}">
+
+        <!-- giữ category khi search -->
+        <c:if test="${not empty param.category}">
+          <input type="hidden" name="category" value="${param.category}">
+        </c:if>
+
+        <button type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
     </div>
   </div>
 </div>
@@ -419,30 +51,37 @@
   <!-- Category Filter -->
   <div class="category-filter">
     <div class="text-center">
-      <span class="category-badge active">All</span>
+      <a href="${pageContext.request.contextPath}/blog?keyword=${param.keyword}"
+         class="category-badge ${empty param.category ? 'active' : ''}">
+        All
+      </a>
       <c:forEach items="${allCategories}" var="cat">
-        <span class="category-badge">${cat.name}</span>
+        <a href="${pageContext.request.contextPath}/blog?category=${cat.id}&keyword=${param.keyword}"
+           class="category-badge ${param.category == cat.id ? 'active' : ''}">
+            ${cat.name}
+        </a>
       </c:forEach>
     </div>
   </div>
 
   <!-- Featured Post -->
-  <div class="featured-post">
-    <span class="featured-badge"><i class="fas fa-star"></i> Featured</span>
-    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200" alt="Featured">
-    <div class="featured-overlay">
-      <h2>10 Tips Để Trở Thành Full-Stack Developer Trong 2025</h2>
-      <p class="mb-3">Khám phá lộ trình học tập hiệu quả và các kỹ năng cần thiết để trở thành một Full-Stack Developer chuyên nghiệp...</p>
-      <div class="d-flex align-items-center gap-3">
-        <img src="https://i.pravatar.cc/40?img=1" alt="Author" class="author-avatar">
-        <span>By Nguyễn Văn A</span>
-        <span>•</span>
-        <span><i class="far fa-clock"></i> 8 phút đọc</span>
-        <span>•</span>
-        <span><i class="far fa-calendar"></i> 28 Dec 2024</span>
+  <c:if test="${not empty mostPopularPoster}">
+    <div class="featured-post">
+      <div class="featured-badge"><i class="fas fa-star"></i> Featured</div>
+      <img src="${mostPopularPoster.thumbnailUrl}" alt="Featured">
+      <div class="featured-overlay">
+        <h2>${mostPopularPoster.title}</h2>
+        <p class="mb-3">${mostPopularPoster.excerpt}</p>
+        <div class="d-flex align-items-center gap-3">
+          <span>By <b>${mostPopularPoster.user.fullname}</b></span>
+          <span>•</span>
+          <span><i class="far fa-calendar"></i> <fmt:formatDate value="${mostPopularPoster.publishedAt}" pattern="dd/MM/yyyy"/></span>
+          <span>•</span>
+          <span><i class="far fa-eye"></i> ${mostPopularPoster.viewCount} views</span>
+        </div>
       </div>
     </div>
-  </div>
+  </c:if>
 
   <div class="row">
     <!-- Main Content -->
@@ -517,33 +156,18 @@
 
       <!-- Popular Posts Widget -->
       <div class="sidebar-widget">
-        <h4><i class="fas fa-fire"></i> Bài Viết Phổ Biến</h4>
+        <h4><i class="fas fa-fire"></i> Popular Posters</h4>
 
-        <div class="popular-post-item">
-          <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=200" alt="Post" class="popular-post-img">
-          <div class="popular-post-info">
-            <h6>Top 10 VS Code Extensions Cho Developer</h6>
-            <small><i class="far fa-eye"></i> 1.2k views</small>
+        <c:forEach items="${popularPosters}" var="p">
+          <div class="popular-post-item">
+            <img src="${p.thumbnailUrl}" alt="Post" class="popular-post-img">
+            <div class="popular-post-info">
+              <h6>${p.title}</h6>
+              <small><i class="far fa-eye"></i> ${p.viewCount} views</small>
+            </div>
           </div>
-        </div>
-
-        <div class="popular-post-item">
-          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=200" alt="Post" class="popular-post-img">
-          <div class="popular-post-info">
-            <h6>Git Commands Mọi Developer Cần Biết</h6>
-            <small><i class="far fa-eye"></i> 980 views</small>
-          </div>
-        </div>
-
-        <div class="popular-post-item">
-          <img src="https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=200" alt="Post" class="popular-post-img">
-          <div class="popular-post-info">
-            <h6>Clean Code: Nguyên Tắc Vàng</h6>
-            <small><i class="far fa-eye"></i> 875 views</small>
-          </div>
-        </div>
+        </c:forEach>
       </div>
-
       <!-- Tags Widget -->
       <div class="sidebar-widget">
         <h4><i class="fas fa-tags"></i> Tags</h4>
@@ -594,22 +218,5 @@
 <jsp:include page="include/footer.jsp" />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  // Category filter functionality
-  document.querySelectorAll('.category-badge').forEach(badge => {
-    badge.addEventListener('click', function() {
-      document.querySelectorAll('.category-badge').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-
-  // Search functionality (example)
-  document.querySelector('.search-box button').addEventListener('click', function(e) {
-    e.preventDefault();
-    const searchTerm = document.querySelector('.search-box input').value;
-    console.log('Searching for:', searchTerm);
-    // Add your search logic here
-  });
-</script>
 </body>
 </html>

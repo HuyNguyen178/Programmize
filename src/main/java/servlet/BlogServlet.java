@@ -30,16 +30,28 @@ public class BlogServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Poster> posters = posterDAO.getAllPoster();
-        List<Setting> allCategories = settingDAO.getAllCategories();
-        Map<Integer, String> timeAgoMap = new HashMap<>();
+        String categoryIdStr = request.getParameter("category");
+        String keyword = request.getParameter("keyword");
+        Integer categoryId = null;
+        if (categoryIdStr != null) {
+            categoryId = Integer.parseInt(categoryIdStr);
+        }
 
+        List<Poster> posters = posterDAO.getAllPoster(categoryId, keyword);
+        List<Setting> allCategories = settingDAO.getAllCategories();
+        List<Poster> popularPosters = posterDAO.getPopularPosters();
+        Poster mostPopularPoster = posterDAO.getMostPopularPoster();
+
+        Map<Integer, String> timeAgoMap = new HashMap<>();
         for (Poster p : posters) {
             timeAgoMap.put(
                     p.getPostId(),
                     PosterUtil.timeAgo(p.getPublishedAt())
             );
         }
+
+        request.setAttribute("mostPopularPoster", mostPopularPoster);
+        request.setAttribute("popularPosters", popularPosters);
         request.setAttribute("timeAgoMap", timeAgoMap);
         request.setAttribute("posters", posters);
         request.setAttribute("allCategories", allCategories);
