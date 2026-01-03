@@ -182,13 +182,24 @@
           </c:when>
           <c:otherwise>
             <div class="login-prompt">
-              <a href="${pageContext.request.contextPath}/login?redirect=create-poster">
+              <a href="${pageContext.request.contextPath}/login?redirect=create-poster" style="color: black;">
                 <i class="fas fa-right-to-bracket"></i> Login to continue
               </a>
             </div>
           </c:otherwise>
         </c:choose>
       </div>
+
+      <c:if test="${not empty sessionScope.loginUser}">
+        <div class="sidebar-widget my-drafts-widget">
+          <h4><i class="fas fa-file-pen"></i> My Drafts</h4>
+          <p class="text-muted small mb-3">You have draft posts</p>
+
+          <a href="${pageContext.request.contextPath}/my-drafts" class="btn-view-drafts">
+            <i class="fas fa-folder-open me-2"></i>View All Drafts
+          </a>
+        </div>
+      </c:if>
 
       <!-- Popular Posts Widget -->
       <div class="sidebar-widget">
