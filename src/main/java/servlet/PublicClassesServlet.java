@@ -14,7 +14,6 @@ import java.util.List;
 
 @WebServlet("/public-classes")
 public class PublicClassesServlet extends HttpServlet {
-
     private ClassDAO classDAO;
     private SettingDAO settingDAO;
     private static final int CLASSES_PER_PAGE = 12;

@@ -115,20 +115,39 @@
         </c:forEach>
       </div>
       <!-- Pagination -->
-      <nav>
-        <ul class="pagination justify-content-center">
-          <li class="page-item disabled">
-            <a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a>
-          </li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">4</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
-          </li>
-        </ul>
-      </nav>
+      <c:if test="${totalPages > 1}">
+        <nav>
+          <ul class="pagination justify-content-center">
+
+            <!-- Prev -->
+            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+              <a class="page-link"
+                 href="?page=${currentPage - 1}&category=${param.category}&keyword=${param.keyword}">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            </li>
+
+            <!-- Pages -->
+            <c:forEach begin="1" end="${totalPages}" var="i">
+              <li class="page-item ${i == currentPage ? 'active' : ''}">
+                <a class="page-link"
+                   href="?page=${i}&category=${param.category}&keyword=${param.keyword}">
+                    ${i}
+                </a>
+              </li>
+            </c:forEach>
+
+            <!-- Next -->
+            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+              <a class="page-link"
+                 href="?page=${currentPage + 1}&category=${param.category}&keyword=${param.keyword}">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+      </c:if>
     </div>
 
     <!-- Sidebar -->
@@ -168,47 +187,16 @@
           </div>
         </c:forEach>
       </div>
-      <!-- Tags Widget -->
-      <div class="sidebar-widget">
-        <h4><i class="fas fa-tags"></i> Tags</h4>
-        <div class="tag-cloud">
-          <a href="#" class="tag-item">JavaScript</a>
-          <a href="#" class="tag-item">React</a>
-          <a href="#" class="tag-item">Python</a>
-          <a href="#" class="tag-item">Java</a>
-          <a href="#" class="tag-item">Node.js</a>
-          <a href="#" class="tag-item">Docker</a>
-          <a href="#" class="tag-item">AWS</a>
-          <a href="#" class="tag-item">MongoDB</a>
-          <a href="#" class="tag-item">TypeScript</a>
-          <a href="#" class="tag-item">Vue.js</a>
-        </div>
-      </div>
 
       <!-- Categories Widget -->
       <div class="sidebar-widget">
-        <h4><i class="fas fa-folder"></i> Danh Mục</h4>
+        <h4><i class="fas fa-folder"></i> Categories</h4>
         <div class="list-group">
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            Frontend Development
-            <span class="badge bg-primary rounded-pill">12</span>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            Backend Development
-            <span class="badge bg-primary rounded-pill">8</span>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            Mobile Development
-            <span class="badge bg-primary rounded-pill">6</span>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            DevOps & Cloud
-            <span class="badge bg-primary rounded-pill">5</span>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            AI & Machine Learning
-            <span class="badge bg-primary rounded-pill">7</span>
-          </a>
+          <c:forEach items="${allCategories}" var="cat">
+            <a href="${pageContext.request.contextPath}/blog?category=${cat.id}&keyword=${param.keyword}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              ${cat.name}
+            </a>
+          </c:forEach>
         </div>
       </div>
     </div>

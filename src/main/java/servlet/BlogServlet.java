@@ -21,6 +21,7 @@ import java.util.Map;
 public class BlogServlet extends HttpServlet {
     private SettingDAO settingDAO;
     private PosterDAO posterDAO;
+    private static final int POSTERS_PER_PAGE = 6;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -32,12 +33,21 @@ public class BlogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String categoryIdStr = request.getParameter("category");
         String keyword = request.getParameter("keyword");
+        String pageStr = request.getParameter("page");
         Integer categoryId = null;
         if (categoryIdStr != null) {
             categoryId = Integer.parseInt(categoryIdStr);
         }
 
-        List<Poster> posters = posterDAO.getAllPoster(categoryId, keyword);
+        int currentPage = 1;
+        if (pageStr != null) {
+            currentPage = Integer.parseInt(pageStr);
+        }
+
+        int totalPosters = posterDAO.countPoster(categoryId, keyword);
+        int totalPages = (int) Math.ceil((double) totalPosters / POSTERS_PER_PAGE);
+
+        List<Poster> posters = posterDAO.getAllPoster(categoryId, keyword, currentPage, POSTERS_PER_PAGE);
         List<Setting> allCategories = settingDAO.getAllCategories();
         List<Poster> popularPosters = posterDAO.getPopularPosters();
         Poster mostPopularPoster = posterDAO.getMostPopularPoster();
@@ -55,6 +65,8 @@ public class BlogServlet extends HttpServlet {
         request.setAttribute("timeAgoMap", timeAgoMap);
         request.setAttribute("posters", posters);
         request.setAttribute("allCategories", allCategories);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
         request.getRequestDispatcher("/WEB-INF/views/blog.jsp").forward(request, response);
     }
 }

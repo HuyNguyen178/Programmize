@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class PosterDAO {
     public void createPoster(Poster poster) {
@@ -37,7 +38,7 @@ public class PosterDAO {
         }
     }
 
-    public List<Poster> getAllPoster(Integer categoryId, String keyword) {
+    public List<Poster> getAllPoster(Integer categoryId, String keyword, int page, int pageSize) {
         List<Poster> posters = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
             StringBuilder sql = new StringBuilder("SELECT p.*, u.fullname as user_name, u.avatar_url as user_avatar, s.setting_name as category_name FROM poster p " +
@@ -52,6 +53,10 @@ public class PosterDAO {
                 sql.append(" AND (p.title LIKE ? OR p.excerpt LIKE ?) ");
             }
 
+            sql.append("ORDER BY p.published_at ASC LIMIT ? OFFSET ? ");
+
+            int offset = (page - 1) * pageSize;
+
             PreparedStatement statement = connection.prepareStatement(sql.toString());
             int paramIndex = 1;
             if (categoryId != null) {
@@ -61,6 +66,10 @@ public class PosterDAO {
                 statement.setString(paramIndex++, "%" + keyword + "%");
                 statement.setString(paramIndex++, "%" + keyword + "%");
             }
+
+            statement.setInt(paramIndex++, pageSize);
+            statement.setInt(paramIndex++, offset);
+
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Poster poster = new Poster();
@@ -94,7 +103,7 @@ public class PosterDAO {
     public List<Poster> getPopularPosters() {
         List<Poster> posters = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
-            String sql = "SELECT * FROM poster ORDER BY view_count DESC LIMIT 3";
+            String sql = "SELECT * FROM poster ORDER BY view_count DESC LIMIT 5";
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -111,6 +120,37 @@ public class PosterDAO {
         }
 
         return null;
+    }
+
+    public int countPoster(Integer categoryId, String keyword) {
+        try (Connection connection = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) " +
+                    "FROM poster WHERE status = 1 ");
+            if (categoryId != null) {
+                sql.append("AND category_id = ? ");
+            }
+            if (keyword != null && !keyword.isEmpty()) {
+                sql.append("AND (title LIKE ? OR excerpt LIKE ?)");
+            }
+
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            int paramIndex = 1;
+            if (categoryId != null) {
+                statement.setInt(paramIndex++, categoryId);
+            }
+            if (keyword != null && !keyword.isEmpty()) {
+                statement.setString(paramIndex++, "%" + keyword + "%");
+                statement.setString(paramIndex++, "%" + keyword + "%");
+            }
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public Poster getMostPopularPoster() {
