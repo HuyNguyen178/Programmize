@@ -61,6 +61,7 @@ public class EditCourseServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
+            request.setCharacterEncoding("UTF-8");
             int courseId = Integer.parseInt(request.getParameter("courseId"));
             Course course = courseDAO.getCourseById(courseId);
 

@@ -125,6 +125,7 @@ public class AddClassServlet extends HttpServlet {
                 request.getSession().setAttribute("errorMessage", "End date must be after start date!");
                 request.setAttribute("clazz", c);
                 request.setAttribute("instructors", userDAO.getAllInstructors());
+                request.setAttribute("description", description);
                 request.setAttribute("categories", settingDAO.getAllCategories());
                 request.getRequestDispatcher("/WEB-INF/views/add-class.jsp").forward(request, response);
                 return;
@@ -133,6 +134,7 @@ public class AddClassServlet extends HttpServlet {
             if (listedPrice.compareTo(salePrice) < 0) {
                 request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price!");
                 request.setAttribute("clazz", c);
+                request.setAttribute("description", description);
                 request.setAttribute("instructors", userDAO.getAllInstructors());
                 request.setAttribute("categories", settingDAO.getAllCategories());
                 request.getRequestDispatcher("/WEB-INF/views/add-class.jsp").forward(request, response);
@@ -142,6 +144,7 @@ public class AddClassServlet extends HttpServlet {
             if (classDAO.doesClassNameExist(className)) {
                 request.getSession().setAttribute("errorMessage", "Class name has already existed!");
                 request.setAttribute("clazz", c);
+                request.setAttribute("description", description);
                 request.setAttribute("instructors", userDAO.getAllInstructors());
                 request.setAttribute("categories", settingDAO.getAllCategories());
                 request.getRequestDispatcher("/WEB-INF/views/add-class.jsp").forward(request, response);

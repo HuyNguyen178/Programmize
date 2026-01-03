@@ -43,7 +43,7 @@ public class AddCourseServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            // Get form parameters
+            request.setCharacterEncoding("UTF-8");
             String courseName = request.getParameter("courseName");
             String description = request.getParameter("description");
             String statusStr = request.getParameter("status");
@@ -133,6 +133,7 @@ public class AddCourseServlet extends HttpServlet {
                 request.getSession().setAttribute("successMessage", "Course added successfully!");
             } else {
                 request.setAttribute("error", "Failed to add course");
+                request.setAttribute("description", description);
                 request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
                 request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
                 request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);

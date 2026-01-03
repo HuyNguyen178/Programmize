@@ -10,14 +10,10 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-  <link href="/assets/css/admin.css" rel="stylesheet">
+  <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-  <!-- Summernote Rich Text Editor -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 
   <style>
     .class-thumb-wrapper {
@@ -28,6 +24,10 @@
       overflow: hidden;
       background: #f5f5f5;
       margin: 0 auto;        /* Căn giữa */
+    }
+
+    #editor-container {
+      height: 400px;
     }
 
     .class-thumb {
@@ -177,8 +177,8 @@
 
           <div class="form-group">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description" class="form-control" rows="4"
-                      placeholder="Enter class description">${clazz.description}</textarea>
+            <div id="editor-container"></div>
+            <input type="hidden" id="description" name="description" value="${clazz.description}">
           </div>
         </div>
 
@@ -200,32 +200,30 @@
   </div>
 </div>
 
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
-  // Initialize Summernote
-  $(document).ready(function() {
-    $('#description').summernote({
-      height: 300,
-      fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto', 'Open Sans'],
-      fontNamesIgnoreCheck: ['Roboto', 'Open Sans'],
-      fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+  const quill = new Quill('#editor-container', {
+    theme: 'snow',
+    placeholder: 'Write your post content here...',
+    modules: {
       toolbar: [
-        ['style', ['style']],
-        ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
-        ['fontname', ['fontname']],
-        ['fontsize', ['fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']],
-        ['table', ['table']],
-        ['insert', ['link', 'picture', 'video']],
-        ['view', ['fullscreen', 'codeview', 'help']]
-      ],
-      placeholder: 'Enter class description...',
-      tabsize: 2,
-      disableDragAndDrop: false
-    });
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'align': [] }],
+        ['link', 'image', 'code-block'],
+        ['clean']
+      ]
+    }
+  });
+
+  const hiddenInput = document.getElementById('description');
+  const form = document.querySelector('form[action$="/add-class"]');
+  form.addEventListener('submit', function () {
+    hiddenInput.value = quill.root.innerHTML;
   });
 </script>
 

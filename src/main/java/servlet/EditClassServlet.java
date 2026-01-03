@@ -72,21 +72,20 @@ public class EditClassServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String className = request.getParameter("className");
-        String thumbnailUrl = request.getParameter("thumbnailUrl");
-        String description = request.getParameter("description");
-        BigDecimal listedPrice = new BigDecimal(request.getParameter("listedPrice"));
-        BigDecimal salePrice = new BigDecimal(request.getParameter("salePrice"));
-        String[] categoryIds = request.getParameterValues("categoryIds");
-        String instructorIdStr = request.getParameter("instructorId");
-        boolean status = "1".equals(request.getParameter("status"));
-        String startDateStr = request.getParameter("startDate");
-        String endDateStr = request.getParameter("endDate");
         try {
             request.setCharacterEncoding("UTF-8");
 
             int classId = Integer.parseInt(request.getParameter("classId"));
-            int instructorId = Integer.parseInt(instructorIdStr);
+            String className = request.getParameter("className");
+            String thumbnailUrl = request.getParameter("thumbnailUrl");
+            String description = request.getParameter("description");
+            BigDecimal listedPrice = new BigDecimal(request.getParameter("listedPrice"));
+            BigDecimal salePrice = new BigDecimal(request.getParameter("salePrice"));
+            String[] categoryIds = request.getParameterValues("categoryIds");
+            int instructorId = Integer.parseInt(request.getParameter("instructorId"));
+            boolean status = "1".equals(request.getParameter("status"));
+            String startDateStr = request.getParameter("startDate");
+            String endDateStr = request.getParameter("endDate");
 
             Date startDate = null;
             Date endDate = null;
@@ -118,8 +117,9 @@ public class EditClassServlet extends HttpServlet {
             if (startDate != null && endDate != null && endDate.before(startDate)) {
                 request.getSession().setAttribute("errorMessage", "End date must be after start date!");
                 request.setAttribute("clazz", c);
-                request.setAttribute("instructors", userDAO.getAllInstructors());
-                request.setAttribute("categories", settingDAO.getAllCategories());
+                request.setAttribute("allInstructors", userDAO.getAllInstructors());
+                request.setAttribute("allCategories", settingDAO.getAllCategories());
+                request.setAttribute("classCategories", classDAO.getCategoriesByClassId(classId));
                 request.getRequestDispatcher("/WEB-INF/views/edit-class.jsp").forward(request, response);
                 return;
             }
@@ -129,6 +129,7 @@ public class EditClassServlet extends HttpServlet {
                 request.setAttribute("clazz", c);
                 request.setAttribute("allInstructors", userDAO.getAllInstructors());
                 request.setAttribute("allCategories", settingDAO.getAllCategories());
+                request.setAttribute("classCategories", classDAO.getCategoriesByClassId(classId));
                 request.getRequestDispatcher("/WEB-INF/views/edit-class.jsp").forward(request, response);
                 return;
             }
@@ -138,15 +139,19 @@ public class EditClassServlet extends HttpServlet {
                 request.setAttribute("clazz", c);
                 request.setAttribute("allInstructors", userDAO.getAllInstructors());
                 request.setAttribute("allCategories", settingDAO.getAllCategories());
+                request.setAttribute("classCategories", classDAO.getCategoriesByClassId(classId));
                 request.getRequestDispatcher("/WEB-INF/views/edit-class.jsp").forward(request, response);
                 return;
             }
-
             classDAO.updateClass(c, categoryIds);
-            request.getSession().setAttribute("successMessage", "Class changed successfully!");
+
+            request.getSession().setAttribute("successMessage", "Class updated successfully!");
             response.sendRedirect(request.getContextPath() + "/class-list");
+
         } catch (Exception e) {
             e.printStackTrace();
+            request.getSession().setAttribute("errorMessage", "Error in updating class: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/class-list");
         }
     }
 }

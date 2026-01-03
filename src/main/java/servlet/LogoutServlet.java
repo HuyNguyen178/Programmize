@@ -62,7 +62,7 @@ public class LogoutServlet extends HttpServlet {
         rememberCookie.setSecure(SessionConfig.COOKIE_SECURE);
         response.addCookie(rememberCookie);
 
-        response.sendRedirect(request.getContextPath() + "/login");
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 
     private String getClientIp(HttpServletRequest request) {
