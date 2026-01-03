@@ -76,6 +76,7 @@ public class PosterDAO {
                 poster.setPostId(resultSet.getInt("post_id"));
                 poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
                 poster.setTitle(resultSet.getString("title"));
+                poster.setSlug(resultSet.getString("slug"));
                 poster.setExcerpt(resultSet.getString("excerpt"));
                 poster.setViewCount(resultSet.getInt("view_count"));
                 poster.setPublishedAt(resultSet.getTimestamp("published_at"));
@@ -100,6 +101,44 @@ public class PosterDAO {
         return null;
     }
 
+    public List<Poster> getRelatedPosters(Integer categoryId, Integer postId) {
+        List<Poster> posters = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT p.* FROM poster p " +
+                    "JOIN setting s ON p.category_id = s.setting_id " +
+                    "WHERE s.setting_id = ? AND post_id <> ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, categoryId);
+            statement.setInt(2, postId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setTitle(resultSet.getString("title"));
+                poster.setViewCount(resultSet.getInt("view_count"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+
+                posters.add(poster);
+            }
+            return posters;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void updateViewCountById(Integer id) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "UPDATE poster SET view_count = view_count + 1 WHERE post_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Poster> getPopularPosters() {
         List<Poster> posters = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
@@ -110,6 +149,7 @@ public class PosterDAO {
                 Poster poster = new Poster();
                 poster.setTitle(resultSet.getString("title"));
                 poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setSlug(resultSet.getString("slug"));
                 poster.setViewCount(resultSet.getInt("view_count"));
 
                 posters.add(poster);
@@ -162,6 +202,7 @@ public class PosterDAO {
                 Poster poster = new Poster();
                 poster.setTitle(resultSet.getString("title"));
                 poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setSlug(resultSet.getString("slug"));
                 poster.setExcerpt(resultSet.getString("excerpt"));
                 poster.setViewCount(resultSet.getInt("view_count"));
                 poster.setPublishedAt(resultSet.getTimestamp("published_at"));
@@ -169,6 +210,47 @@ public class PosterDAO {
                 User user = new User();
                 user.setFullname(resultSet.getString("user_name"));
                 poster.setUser(user);
+
+                return poster;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Poster getPosterBySlug(String slug) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT p.*,s.setting_id, s.setting_name AS category_name, u.fullname as user_name, u.avatar_url as user_avatar " +
+                    "FROM poster p " +
+                    "JOIN user u ON p.user_id = u.user_id " +
+                    "JOIN setting s ON p.category_id = s.setting_id " +
+                    "WHERE p.slug = ? AND p.status = 1 ";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, slug);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setPostId(resultSet.getInt("post_id"));
+                poster.setSlug(resultSet.getString("slug"));
+                poster.setTitle(resultSet.getString("title"));
+                poster.setExcerpt(resultSet.getString("excerpt"));
+                poster.setContent(resultSet.getString("content"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setViewCount(resultSet.getInt("view_count"));
+                poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+
+                User user = new User();
+                user.setFullname(resultSet.getString("user_name"));
+                user.setAvatarUrl(resultSet.getString("user_avatar"));
+                poster.setUser(user);
+
+                Setting category = new Setting();
+                category.setId(resultSet.getInt("setting_id"));
+                category.setName(resultSet.getString("category_name"));
+                poster.setCategory(category);
 
                 return poster;
             }

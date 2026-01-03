@@ -66,21 +66,36 @@
 
   <!-- Featured Post -->
   <c:if test="${not empty mostPopularPoster}">
-    <div class="featured-post">
-      <div class="featured-badge"><i class="fas fa-star"></i> Featured</div>
-      <img src="${mostPopularPoster.thumbnailUrl}" alt="Featured">
-      <div class="featured-overlay">
-        <h2>${mostPopularPoster.title}</h2>
-        <p class="mb-3">${mostPopularPoster.excerpt}</p>
-        <div class="d-flex align-items-center gap-3">
-          <span>By <b>${mostPopularPoster.user.fullname}</b></span>
-          <span>•</span>
-          <span><i class="far fa-calendar"></i> <fmt:formatDate value="${mostPopularPoster.publishedAt}" pattern="dd/MM/yyyy"/></span>
-          <span>•</span>
-          <span><i class="far fa-eye"></i> ${mostPopularPoster.viewCount} views</span>
+    <a href="${pageContext.request.contextPath}/poster-details/${mostPopularPoster.slug}"
+       class="featured-post-link">
+      <div class="featured-post">
+        <div class="featured-badge">
+          <i class="fas fa-star"></i> Featured
+        </div>
+        <img src="${mostPopularPoster.thumbnailUrl}"
+             alt="${mostPopularPoster.title}">
+
+        <div class="featured-overlay">
+          <h2>${mostPopularPoster.title}</h2>
+          <p class="mb-3">${mostPopularPoster.excerpt}</p>
+
+          <div class="d-flex align-items-center gap-3">
+            <span>By <b>${mostPopularPoster.user.fullname}</b></span>
+            <span>•</span>
+            <span>
+            <i class="far fa-calendar"></i>
+            <fmt:formatDate value="${mostPopularPoster.publishedAt}"
+                            pattern="dd/MM/yyyy"/>
+          </span>
+            <span>•</span>
+            <span>
+            <i class="far fa-eye"></i>
+            ${mostPopularPoster.viewCount} views
+          </span>
+          </div>
         </div>
       </div>
-    </div>
+    </a>
   </c:if>
 
   <div class="row">
@@ -89,28 +104,31 @@
       <div class="row g-4">
         <c:forEach items="${posters}" var="p">
           <div class="col-md-6">
-            <div class="blog-card">
-              <div class="blog-card-img">
-                <span class="blog-category-tag">${p.category.name}</span>
-                <img src="${p.thumbnailUrl}" alt="Blog">
-              </div>
-              <div class="blog-card-body">
-                <h5 class="blog-card-title">${p.title}</h5>
-                <p class="blog-card-excerpt">
-                  ${p.excerpt}
-                </p>
-                <div class="blog-meta">
-                  <div class="author-info">
-                    <img src="${p.user.avatarUrl}" alt="Author" class="author-avatar">
-                    <span>${p.user.fullname}</span>
-                  </div>
-                  <div class="read-time">
-                    <i class="far fa-clock"></i>
-                    <span>${timeAgoMap[p.postId]}</span>
+            <a href="${pageContext.request.contextPath}/poster-details/${p.slug}"
+               class="blog-card-link">
+              <div class="blog-card">
+                <div class="blog-card-img">
+                  <span class="blog-category-tag">${p.category.name}</span>
+                  <img src="${p.thumbnailUrl}" alt="${p.title}">
+                </div>
+                <div class="blog-card-body">
+                  <h5 class="blog-card-title">${p.title}</h5>
+                  <p class="blog-card-excerpt">
+                      ${p.excerpt}
+                  </p>
+                  <div class="blog-meta">
+                    <div class="author-info">
+                      <img src="${p.user.avatarUrl}" class="author-avatar">
+                      <span>${p.user.fullname}</span>
+                    </div>
+                    <div class="read-time">
+                      <i class="far fa-clock"></i>
+                      <span>${timeAgoMap[p.postId]}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </a>
           </div>
         </c:forEach>
       </div>
@@ -144,7 +162,6 @@
                 <i class="fas fa-chevron-right"></i>
               </a>
             </li>
-
           </ul>
         </nav>
       </c:if>
@@ -181,7 +198,7 @@
           <div class="popular-post-item">
             <img src="${p.thumbnailUrl}" alt="Post" class="popular-post-img">
             <div class="popular-post-info">
-              <h6>${p.title}</h6>
+              <a href="${pageContext.request.contextPath}/poster-details/${p.slug}"><h6>${p.title}</h6></a>
               <small><i class="far fa-eye"></i> ${p.viewCount} views</small>
             </div>
           </div>
