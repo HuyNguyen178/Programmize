@@ -754,7 +754,7 @@ public class CourseDAO {
     }
 
     // Add new course
-    public void addCourse(Course course, Integer[] categoryIds) {
+    public void addCourse(Course course, String[] categoryIds) {
         String sql = "INSERT INTO course (course_name, listed_price, sale_price, thumbnail_url, " +
                 "description, status, duration, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
@@ -777,9 +777,9 @@ public class CourseDAO {
                     String sqlCat = "INSERT INTO course_category (course_id, category_id) VALUES (?, ?)";
                     PreparedStatement psCat = conn.prepareStatement(sqlCat);
 
-                    for (Integer catId : categoryIds) {
+                    for (String catId : categoryIds) {
                         psCat.setInt(1, courseId);
-                        psCat.setInt(2, catId);
+                        psCat.setInt(2, Integer.parseInt(catId));
                         psCat.addBatch();
                     }
                     psCat.executeBatch();

@@ -14,6 +14,7 @@ import jakarta.servlet.http.Part;
 import model.Class;
 import model.Setting;
 import model.User;
+import utils.FileUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,24 +66,37 @@ public class ImportClassesServlet extends HttpServlet {
                 String[] data = line.split(",");
 
                 Class clazz = new Class();
-                clazz.setName(data[indexMap.get("className")].trim());
+                String className = FileUtil.getValue(indexMap, data, "class_name");
+                if (className == null) {
+                    request.getSession().setAttribute("errorMessage", "Class name cannot be null, please check your file again!");
+                    response.sendRedirect("class-list?success=false");
+                    return;
+                }
+                clazz.setName(className);
 
-                String[] categories = data[indexMap.get("classCategories")].trim().split("\\|");
-                String[] categoryIds = new String[categories.length];
+                String[] categories = FileUtil.parseClassCategories(indexMap, data);
+                String[] categoryIds = null;
 
-                for (int i = 0; i < categories.length; i++) {
-                    String categoryName = categories[i].trim();
-                    Setting category = settingDAO.findCategoryByName(categoryName);
+                if (categories != null && categories.length > 0) {
+                    categoryIds = new String[categories.length];
 
-                    if (category.getId() == null) {
-                        request.getSession().setAttribute("errorMessage", "Cannot find category " + categoryName + " at class " + clazz.getName());
-                        response.sendRedirect("class-list?success=false");
-                        return;
+                    for (int i = 0; i < categories.length; i++) {
+                        Setting category = settingDAO.findCategoryByName(categories[i]);
+
+                        if (category == null) {
+                            request.getSession().setAttribute(
+                                    "errorMessage",
+                                    "Cannot find category " + categories[i] + " at class " + clazz.getName()
+                            );
+                            response.sendRedirect("class-list?success=false");
+                            return;
+                        }
+
+                        categoryIds[i] = String.valueOf(category.getId());
                     }
-                    categoryIds[i] = String.valueOf(category.getId());
                 }
 
-                String instructorName = data[indexMap.get("classInstructor")].trim();
+                String instructorName = FileUtil.getValue(indexMap, data, "class_instructor");
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
                     request.getSession().setAttribute("errorMessage", "Cannot find instructor " + instructorName + " at class " + clazz.getName());
@@ -90,35 +104,59 @@ public class ImportClassesServlet extends HttpServlet {
                     return;
                 }
                 clazz.setInstructor(instructor);
-                clazz.setListedPrice(new BigDecimal(data[indexMap.get("listedPrice")].trim()));
-                clazz.setSalePrice(new BigDecimal(data[indexMap.get("salePrice")].trim()));
 
-                String startDateStr = data[indexMap.get("startDate")].trim();
-                String endDateStr = data[indexMap.get("endDate")].trim();
+                String listedPrice = FileUtil.getValue(indexMap, data, "listed_price");
+                if (listedPrice == null) {
+                    request.getSession().setAttribute("errorMessage", "Listed Price is null at class " + clazz.getName());
+                    response.sendRedirect("class-list?success=false");
+                    return;
+                }
+                clazz.setListedPrice(new BigDecimal(listedPrice));
+
+                String salePrice = FileUtil.getValue(indexMap, data, "sale_price");
+                if (salePrice == null) {
+                    request.getSession().setAttribute("errorMessage", "Sale Price is null at class " + clazz.getName());
+                    response.sendRedirect("class-list?success=false");
+                    return;
+                }
+                clazz.setSalePrice(new BigDecimal(salePrice));
+
+                String startDateStr = FileUtil.getValue(indexMap, data, "start_date");
+                String endDateStr = FileUtil.getValue(indexMap, data, "end_date");
+                if (startDateStr == null) {
+                    request.getSession().setAttribute("errorMessage", "Start date is null at class " + clazz.getName());
+                    response.sendRedirect("class-list?success=false");
+                    return;
+                }
+                if (endDateStr == null) {
+                    request.getSession().setAttribute("errorMessage", "End date is null at class " + clazz.getName());
+                    response.sendRedirect("class-list?success=false");
+                    return;
+                }
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy");
                 Date startDate = formatter.parse(startDateStr);
                 Date endDate = formatter.parse(endDateStr);
                 clazz.setStartDate(startDate);
                 clazz.setEndDate(endDate);
 
-                clazz.setThumbnailUrl(data[indexMap.get("thumbnailUrl")].trim());
-                clazz.setDescription(data[indexMap.get("description")].trim());
-                clazz.setStatus(Boolean.parseBoolean(data[indexMap.get("status")].trim()));
+                clazz.setDescription(FileUtil.getValue(indexMap, data, "description"));
+                clazz.setThumbnailUrl(FileUtil.getValue(indexMap, data, "thumbnail_url"));
+                clazz.setStatus(Boolean.parseBoolean(FileUtil.getValue(indexMap, data, "status")));
 
                 if (startDate != null && endDate != null && endDate.before(startDate)) {
-                    request.getSession().setAttribute("errorMessage", "End date must be after start date!");
+                    request.getSession().setAttribute("errorMessage", "End date must be after start date at class " + clazz.getName());
                     response.sendRedirect("class-list?success=false");
                     return;
                 }
 
                 if (clazz.getListedPrice().compareTo(clazz.getSalePrice()) < 0) {
-                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price!");
+                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price at class " + clazz.getName());
                     response.sendRedirect("class-list?success=false");
                     return;
                 }
 
                 if (classDAO.doesClassNameExist(clazz.getName())) {
-                    request.getSession().setAttribute("errorMessage", "Class name has already existed!");
+                    request.getSession().setAttribute("errorMessage", "Class name has already existed at class " + clazz.getName());
                     response.sendRedirect("class-list?success=false");
                     return;
                 }
@@ -126,7 +164,7 @@ public class ImportClassesServlet extends HttpServlet {
                 classDAO.insertClass(clazz, categoryIds);
             }
 
-            request.getSession().setAttribute("successMessage", "Import successfully!");
+            request.getSession().setAttribute("successMessage", "Imported successfully!");
             response.sendRedirect("class-list?success=true");
         } catch (Exception e) {
             e.printStackTrace();

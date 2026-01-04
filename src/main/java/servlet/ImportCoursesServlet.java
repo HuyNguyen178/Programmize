@@ -11,13 +11,18 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import model.Class;
 import model.Course;
 import model.Setting;
 import model.User;
+import utils.FileUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,40 +68,76 @@ public class ImportCoursesServlet extends HttpServlet {
                 String[] data = line.split(",");
 
                 Course course = new Course();
-                course.setCourseName(data[indexMap.get("courseName")].trim());
+                String courseName = FileUtil.getValue(indexMap, data, "course_name");
+                if (courseName == null) {
+                    request.getSession().setAttribute("errorMessage", "Course name cannot be null, please check your file again!");
+                    response.sendRedirect("course-list?success=false");
+                    return;
+                }
+                course.setCourseName(courseName);
 
-                String[] categories = data[indexMap.get("courseCategories")].trim().split("\\|");
-                Integer[] categoryIds = new Integer[categories.length];
+                String[] categories = FileUtil.parseCourseCategories(indexMap, data);
+                String[] categoryIds = null;
 
-                for (int i = 0; i < categories.length; i++) {
-                    String categoryName = categories[i].trim();
-                    Setting category = settingDAO.findCategoryByName(categoryName);
+                if (categories != null && categories.length > 0) {
+                    categoryIds = new String[categories.length];
 
-                    if (category.getId() == null) {
-                        request.getSession().setAttribute("errorMessage", "Cannot find category " + categoryName + " at course " + course.getCourseName());
-                        response.sendRedirect("course-list?success=false");
-                        return;
+                    for (int i = 0; i < categories.length; i++) {
+                        Setting category = settingDAO.findCategoryByName(categories[i]);
+
+                        if (category == null) {
+                            request.getSession().setAttribute(
+                                    "errorMessage",
+                                    "Cannot find category " + categories[i] + " at course " + course.getCourseName()
+                            );
+                            response.sendRedirect("course-list?success=false");
+                            return;
+                        }
+
+                        categoryIds[i] = String.valueOf(category.getId());
                     }
-                    categoryIds[i] = category.getId();
                 }
 
-                String instructorName = data[indexMap.get("courseInstructor")].trim();
+                String instructorName = FileUtil.getValue(indexMap, data, "course_instructor");
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
-                    request.getSession().setAttribute("errorMessage", "Cannot find instructor " + instructorName);
+                    request.getSession().setAttribute("errorMessage", "Cannot find instructor " + instructorName + " at course " + course.getCourseName());
                     response.sendRedirect("course-list?success=false");
                     return;
                 }
                 course.setInstructorId(instructor.getId());
-                course.setListedPrice(new BigDecimal(data[indexMap.get("listedPrice")].trim()));
-                course.setSalePrice(new BigDecimal(data[indexMap.get("salePrice")].trim()));
-                course.setThumbnailUrl(data[indexMap.get("thumbnailUrl")].trim());
-                course.setDescription(data[indexMap.get("description")].trim());
-                course.setStatus(Boolean.parseBoolean(data[indexMap.get("status")].trim()));
-                course.setDuration(Integer.parseInt(data[indexMap.get("duration")].trim()));
+
+                String listedPrice = FileUtil.getValue(indexMap, data, "listed_price");
+                if (listedPrice == null) {
+                    request.getSession().setAttribute("errorMessage", "Listed Price is null at course " + course.getCourseName());
+                    response.sendRedirect("course-list?success=false");
+                    return;
+                }
+                course.setListedPrice(new BigDecimal(listedPrice));
+
+                String salePrice = FileUtil.getValue(indexMap, data, "sale_price");
+                if (salePrice == null) {
+                    request.getSession().setAttribute("errorMessage", "Sale Price is null at course " + course.getCourseName());
+                    response.sendRedirect("course-list?success=false");
+                    return;
+                }
+                course.setSalePrice(new BigDecimal(salePrice));
+
+                String duration = FileUtil.getValue(indexMap, data, "duration");
+                if (duration == null) {
+                    request.getSession().setAttribute("errorMessage", "Duration is null at course " + course.getCourseName());
+                    response.sendRedirect("course-list?success=false");
+                    return;
+                }
+                course.setDuration(Integer.valueOf(duration));
+
+                course.setDescription(FileUtil.getValue(indexMap, data, "description"));
+                course.setThumbnailUrl(FileUtil.getValue(indexMap, data, "thumbnail_url"));
+                course.setStatus(Boolean.parseBoolean(FileUtil.getValue(indexMap, data, "status")));
+
 
                 if (course.getListedPrice().compareTo(course.getSalePrice()) < 0) {
-                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price!");
+                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price at course " + course.getCourseName());
                     response.sendRedirect("course-list?success=false");
                     return;
                 }
@@ -104,11 +145,9 @@ public class ImportCoursesServlet extends HttpServlet {
                 courseDAO.addCourse(course, categoryIds);
             }
 
-            request.getSession().setAttribute("successMessage", "Import successfully!");
+            request.getSession().setAttribute("successMessage", "Imported successfully!");
             response.sendRedirect("course-list?success=true");
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("course-list?error=ImportFailed");
         }
