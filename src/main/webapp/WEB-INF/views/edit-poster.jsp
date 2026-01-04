@@ -348,6 +348,7 @@
 <div class="page-header">
   <div class="container">
     <h1><i class="fas fa-pen-to-square"></i> Edit Poster</h1>
+    <p>Modify your poster's information</p>
   </div>
 </div>
 
@@ -518,7 +519,7 @@
         </a>
         <button type="submit" class="btn-custom btn-primary-custom">
           <i class="fas fa-check"></i>
-          Create Post
+          Save Changes
         </button>
       </div>
     </form>

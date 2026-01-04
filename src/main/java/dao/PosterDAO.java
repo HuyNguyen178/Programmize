@@ -141,7 +141,7 @@ public class PosterDAO {
     public List<Poster> getPopularPosters() {
         List<Poster> posters = new ArrayList<>();
         try (Connection connection = DBUtil.getConnection()) {
-            String sql = "SELECT * FROM poster ORDER BY view_count DESC LIMIT 5";
+            String sql = "SELECT * FROM poster WHERE status = 1 ORDER BY view_count DESC LIMIT 5";
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -194,7 +194,7 @@ public class PosterDAO {
 
     public Poster getMostPopularPoster() {
         try (Connection connection = DBUtil.getConnection()) {
-            String sql = "SELECT p.*, u.fullname as user_name FROM poster p JOIN user u ON p.user_id = u.user_id ORDER BY p.view_count DESC LIMIT 1";
+            String sql = "SELECT p.*, u.fullname as user_name FROM poster p JOIN user u ON p.user_id = u.user_id WHERE p.status = 1 ORDER BY p.view_count DESC LIMIT 1";
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {

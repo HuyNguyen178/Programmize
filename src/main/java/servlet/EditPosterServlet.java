@@ -41,4 +41,9 @@ public class EditPosterServlet extends HttpServlet {
         request.setAttribute("poster", poster);
         request.getRequestDispatcher("/WEB-INF/views/edit-poster.jsp").forward(request, response);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String title =
+    }
 }
