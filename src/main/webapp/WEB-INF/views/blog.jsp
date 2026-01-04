@@ -195,7 +195,7 @@
           <h4><i class="fas fa-file-pen"></i> My Drafts</h4>
           <p class="text-muted small mb-3">You have draft posts</p>
 
-          <a href="${pageContext.request.contextPath}/my-drafts" class="btn-view-drafts">
+          <a href="${pageContext.request.contextPath}/blog/my-drafts" class="btn-view-drafts">
             <i class="fas fa-folder-open me-2"></i>View All Drafts
           </a>
         </div>

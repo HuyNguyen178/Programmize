@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.Setting;
 import model.User;
+import utils.FileUtil;
 import utils.PasswordUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,9 +60,20 @@ public class ImportAccountsServlet extends HttpServlet {
                 String[] data = line.split(",");
 
                 User user = new User();
-                user.setFullname(data[indexMap.get("fullName")].trim());
+                String fullName = FileUtil.getValue(indexMap, data, "full_name");
+                if (fullName == null) {
+                    request.getSession().setAttribute("errorMessage", "Full name is null somewhere, please check your file again");
+                    response.sendRedirect("account-list?success=false");
+                    return;
+                }
+                user.setFullname(fullName);
 
-                String username = data[indexMap.get("username")].trim();
+                String username = FileUtil.getValue(indexMap, data, "username");
+                if (username == null) {
+                    request.getSession().setAttribute("errorMessage", "Username is null at user " + user.getFullname());
+                    response.sendRedirect("account-list?success=false");
+                    return;
+                }
                 if (userDAO.checkUserOrEmailExists(username)) {
                     request.getSession().setAttribute("errorMessage", "Username " + username + " has already existed at account " + user.getFullname());
                     response.sendRedirect("account-list?success=false");
@@ -69,7 +81,12 @@ public class ImportAccountsServlet extends HttpServlet {
                 }
                 user.setUsername(username);
 
-                String email = data[indexMap.get("email")].trim();
+                String email = FileUtil.getValue(indexMap, data, "email");
+                if (email == null) {
+                    request.getSession().setAttribute("errorMessage", "Email is null at user " + user.getFullname());
+                    response.sendRedirect("account-list?success=false");
+                    return;
+                }
                 if (userDAO.checkUserOrEmailExists(email)) {
                     request.getSession().setAttribute("errorMessage", "Email " + email + " has already existed at account " + user.getFullname());
                     response.sendRedirect("account-list?success=false");
@@ -77,7 +94,13 @@ public class ImportAccountsServlet extends HttpServlet {
                 }
                 user.setEmail(email);
 
-                String roleName = data[indexMap.get("role")].trim();
+                String roleName = FileUtil.getValue(indexMap, data, "role");
+                if (roleName == null) {
+                    request.getSession().setAttribute("errorMessage", "Role is null at user " + user.getFullname());
+                    response.sendRedirect("account-list?success=false");
+                    return;
+                }
+
                 Setting setting = settingDAO.findRoleByName(roleName);
                 if (setting == null) {
                     request.getSession().setAttribute("errorMessage", "Cannot find role " + roleName + " at account " + user.getFullname());
@@ -86,7 +109,12 @@ public class ImportAccountsServlet extends HttpServlet {
                 }
                 user.setRoleName(roleName);
 
-                String password = data[indexMap.get("password")].trim();
+                String password = FileUtil.getValue(indexMap, data, "password");
+                if (password == null) {
+                    request.getSession().setAttribute("errorMessage", "Password is null at user " + user.getFullname());
+                    response.sendRedirect("account-list?success=false");
+                    return;
+                }
                 if (!PasswordUtil.isValidPassword(password)) {
                     request.getSession().setAttribute("errorMessage", "Invalid password at account " + user.getFullname());
                     response.sendRedirect("account-list?success=false");
@@ -94,7 +122,8 @@ public class ImportAccountsServlet extends HttpServlet {
                 }
                 user.setPassword(PasswordUtil.hash(password));
 
-                user.setStatus(Boolean.parseBoolean(data[indexMap.get("status")].trim()));
+                user.setAvatarUrl(FileUtil.getValue(indexMap, data, "avatar_url"));
+                user.setStatus(Boolean.parseBoolean(FileUtil.getValue(indexMap, data, "status")));
 
                 userDAO.addUser(user);
             }
