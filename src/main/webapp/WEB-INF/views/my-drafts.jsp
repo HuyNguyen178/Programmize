@@ -70,39 +70,42 @@
       </button>
     </form>
 
-    <a href="${pageContext.request.contextPath}/create-poster" class="btn btn-edit">
+    <a href="${pageContext.request.contextPath}/blog/create-poster" class="btn btn-edit">
       <i class="fas fa-plus-circle me-2"></i>Create New Post
     </a>
   </div>
 
   <!-- Draft Cards -->
   <div class="row">
-    <!-- Draft 1 -->
     <c:forEach items="${allDrafts}" var="draft">
       <div class="col-lg-6">
         <div class="draft-card">
-          <div class="draft-card-body">
-          <span class="draft-badge">
-            <i class="fas fa-circle-dot"></i> DRAFT
-          </span>
+          <!-- Thêm thumbnail image -->
+          <div class="draft-card-img">
+        <span class="draft-badge-overlay">
+          <i class="fas fa-circle-dot"></i> DRAFT
+        </span>
+            <img src="${draft.thumbnailUrl}" alt="${draft.title}" class="draft-thumbnail">
+          </div>
 
+          <div class="draft-card-body">
             <h3 class="draft-title">${draft.title}</h3>
 
             <p class="draft-excerpt">${draft.excerpt}</p>
 
             <div class="draft-meta">
-            <span>
-              <i class="far fa-calendar"></i>
-              <fmt:formatDate value="${draft.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
-            </span>
+          <span>
+            <i class="far fa-calendar"></i>
+            <fmt:formatDate value="${draft.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
+          </span>
               <span>
-              <i class="far fa-clock"></i>
-              ${timeAgoMap[draft.postId]}
-            </span>
+            <i class="far fa-clock"></i>
+            ${timeAgoMap[draft.postId]}
+          </span>
             </div>
 
             <div class="draft-actions">
-              <a href="#" class="btn btn-edit">
+              <a href="${pageContext.request.contextPath}/blog/edit-poster/${draft.slug}" class="btn btn-edit">
                 <i class="fas fa-pen"></i> Edit
               </a>
 

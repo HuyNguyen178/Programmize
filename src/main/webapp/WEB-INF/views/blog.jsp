@@ -176,13 +176,13 @@
 
         <c:choose>
           <c:when test="${not empty sessionScope.loginUser}">
-            <a href="${pageContext.request.contextPath}/create-poster" class="btn-create-post">
+            <a href="${pageContext.request.contextPath}/blog/create-poster" class="btn-create-post">
               <i class="fas fa-plus-circle me-2"></i>Create New Post
             </a>
           </c:when>
           <c:otherwise>
             <div class="login-prompt">
-              <a href="${pageContext.request.contextPath}/login?redirect=create-poster" style="color: black;">
+              <a href="${pageContext.request.contextPath}/login?redirect=blog/create-poster" style="color: black;">
                 <i class="fas fa-right-to-bracket"></i> Login to continue
               </a>
             </div>
@@ -193,10 +193,19 @@
       <c:if test="${not empty sessionScope.loginUser}">
         <div class="sidebar-widget my-drafts-widget">
           <h4><i class="fas fa-file-pen"></i> My Drafts</h4>
-          <p class="text-muted small mb-3">You have draft posts</p>
+          <p class="text-muted small mb-3">Manage your draft posters</p>
 
           <a href="${pageContext.request.contextPath}/blog/my-drafts" class="btn-view-drafts">
             <i class="fas fa-folder-open me-2"></i>View All Drafts
+          </a>
+        </div>
+      </c:if>
+      <c:if test="${not empty sessionScope.loginUser}">
+        <div class="sidebar-widget my-drafts-widget">
+          <h4><i class="fas fa-newspaper"></i> My Posters</h4>
+          <p class="text-muted small mb-3">Manage your published posters</p>
+          <a href="${pageContext.request.contextPath}/blog/my-posters" class="btn-view-drafts">
+            <i class="fas fa-list-check me-2"></i>View All Posters
           </a>
         </div>
       </c:if>

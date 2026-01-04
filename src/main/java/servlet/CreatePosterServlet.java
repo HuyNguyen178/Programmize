@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/create-poster")
+@WebServlet("/blog/create-poster")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,     // 1MB
         maxFileSize = 5 * 1024 * 1024,        // 5MB

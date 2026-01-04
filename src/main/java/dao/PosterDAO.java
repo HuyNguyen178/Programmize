@@ -225,7 +225,7 @@ public class PosterDAO {
                     "FROM poster p " +
                     "JOIN user u ON p.user_id = u.user_id " +
                     "JOIN setting s ON p.category_id = s.setting_id " +
-                    "WHERE p.slug = ? AND p.status = 1 ";
+                    "WHERE p.slug = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, slug);
             ResultSet resultSet = statement.executeQuery();

@@ -28,6 +28,10 @@
             padding-top: 80px; /* Add space for fixed header */
         }
 
+        a {
+            text-decoration: none;
+        }
+
         /* Header */
         .page-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, #7b68ee 100%);
@@ -357,7 +361,7 @@
 </c:if>
 
 <div class="container create-post-container">
-    <form id="createPostForm" action="create-poster" method="post" enctype="multipart/form-data">
+    <form id="createPostForm" action="blog/create-poster" method="post" enctype="multipart/form-data">
 
         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
@@ -495,7 +499,7 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a href="${pageContext.request.contextPath}/blog" class="btn-custom btn-secondary-custom">
+            <a href="javascript:history.back()" class="btn-custom btn-secondary-custom">
                 <i class="fas fa-times"></i>
                 Cancel
             </a>
