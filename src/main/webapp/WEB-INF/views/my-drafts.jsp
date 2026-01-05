@@ -43,11 +43,6 @@
       <div class="stat-label">Total Drafts</div>
     </div>
     <div class="stat-item">
-      <div class="stat-icon"><i class="fas fa-clock"></i></div>
-      <div class="stat-value"><fmt:formatDate value="${lastUpdated}" pattern="dd/MM/yyyy" /></div>
-      <div class="stat-label">Last Updated</div>
-    </div>
-    <div class="stat-item">
       <div class="stat-icon"><i class="fas fa-pen-to-square"></i></div>
       <div class="stat-value">Ready</div>
       <div class="stat-label">To Publish</div>

@@ -67,7 +67,13 @@ public class EditPosterServlet extends HttpServlet {
         String title = request.getParameter("title");
         String excerpt = request.getParameter("excerpt");
         String content = request.getParameter("content");
-        boolean status = "1".equals(request.getParameter("status"));
+        boolean newStatus = poster.isStatus();
+        if (!poster.isStatus()) {
+            String statusParam = request.getParameter("status");
+            if (statusParam != null) {
+                newStatus = "1".equals(statusParam);
+            }
+        }
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
         boolean removeThumbnail = "true".equals(request.getParameter("removeThumbnail"));
         Part thumbnailPart = request.getPart("thumbnail");
@@ -125,18 +131,17 @@ public class EditPosterServlet extends HttpServlet {
         poster.setSlug(newSlug);
         poster.setExcerpt(excerpt);
         poster.setContent(content);
-        poster.setStatus(status);
         poster.setThumbnailUrl(thumbnailUrl);
         poster.setCategory(category);
         poster.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-        if (status) {
+        if (!poster.isStatus() && newStatus) {
             poster.setPublishedAt(new Timestamp(System.currentTimeMillis()));
-        } else {
-            poster.setPublishedAt(null);
         }
+        poster.setStatus(newStatus);
 
         posterDAO.updatePoster(poster);
 
-        response.sendRedirect(request.getContextPath() + "/blog");
+        request.getSession().setAttribute("successMessage", "Updated successfully!");
+        response.sendRedirect(request.getContextPath() + "/blog/edit-poster/" + poster.getSlug());
     }
 }

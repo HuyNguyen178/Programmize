@@ -3,7 +3,6 @@ package dao;
 import model.Poster;
 import model.Setting;
 import model.User;
-import org.eclipse.tags.shaded.org.apache.regexp.RE;
 import utils.DBUtil;
 import utils.PosterUtil;
 import java.sql.Connection;
@@ -14,6 +13,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PosterDAO {
+    public int getTotalPublishedPosterByUserId(Integer userId) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT COUNT(*) FROM poster WHERE status = 1 AND user_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Poster> getPublishedPostersByUserId(Integer userId, String keyword) {
+        List<Poster> posters = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder("SELECT p.*, s.setting_id, s.setting_name FROM poster p " +
+                    "JOIN setting s ON p.category_id = s.setting_id " +
+                    "WHERE p.user_id = ? AND p.status = 1 ");
+            if (keyword != null && !keyword.isEmpty()) {
+                sql.append("AND (p.title LIKE ? OR p.excerpt LIKE ?)");
+            }
+
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            statement.setInt(1, userId);
+
+            if (keyword != null && !keyword.isEmpty()) {
+                statement.setString(2, "%" + keyword + "%");
+                statement.setString(3, "%" + keyword + "%");
+            }
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setPostId(resultSet.getInt("post_id"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setTitle(resultSet.getString("title"));
+                poster.setSlug(resultSet.getString("slug"));
+                poster.setExcerpt(resultSet.getString("excerpt"));
+                poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+
+                Setting category = new Setting();
+                category.setId(resultSet.getInt("setting_id"));
+                category.setName(resultSet.getString("setting_name"));
+                poster.setCategory(category);
+
+                posters.add(poster);
+            }
+            return posters;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void createPoster(Poster poster) {
         try (Connection connection = DBUtil.getConnection()) {
             String sql = "INSERT INTO poster(user_id, title, slug, content, excerpt, thumbnail_url, status, category_id, view_count, created_at, updated_at, published_at) " +
@@ -241,6 +297,7 @@ public class PosterDAO {
                 poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
                 poster.setViewCount(resultSet.getInt("view_count"));
                 poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+                poster.setStatus(resultSet.getBoolean("status"));
 
                 User user = new User();
                 user.setFullname(resultSet.getString("user_name"));
@@ -304,6 +361,7 @@ public class PosterDAO {
                 poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
                 poster.setViewCount(resultSet.getInt("view_count"));
                 poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+                poster.setStatus(resultSet.getBoolean("status"));
 
                 User user = new User();
                 user.setFullname(resultSet.getString("user_name"));
@@ -433,7 +491,7 @@ public class PosterDAO {
         return slug;
     }
 
-    public void deleteDraft(Integer postId, Integer userId) {
+    public void deletePoster(Integer postId, Integer userId) {
         try (Connection connection = DBUtil.getConnection()) {
             String sql = "DELETE FROM poster WHERE post_id = ? AND user_id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);

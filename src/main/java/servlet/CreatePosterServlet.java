@@ -126,6 +126,7 @@ public class CreatePosterServlet extends HttpServlet {
         poster.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         posterDAO.createPoster(poster);
-        response.sendRedirect("blog");
+        request.getSession().setAttribute("successMessage", "Created successfully!");
+        response.sendRedirect("/blog/my-posters");
     }
 }

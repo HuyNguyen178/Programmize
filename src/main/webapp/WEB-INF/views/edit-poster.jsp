@@ -352,16 +352,23 @@
   </div>
 </div>
 
-<c:if test="${not empty sessionScope.errorMessage}">
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <i class="fas fa-exclamation-triangle"></i> ${sessionScope.errorMessage}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <c:remove var="errorMessage" scope="session"/>
-</c:if>
-
 <c:if test="${not empty poster}">
   <div class="container create-post-container">
+    <c:if test="${not empty sessionScope.errorMessage}">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-times-circle me-2"></i> ${sessionScope.errorMessage}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <c:remove var="errorMessage" scope="session"/>
+    </c:if>
+    <c:if test="${not empty sessionScope.successMessage}">
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+          ${sessionScope.successMessage}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <c:remove var="successMessage" scope="session"/>
+    </c:if>
     <form id="createPostForm" action="/blog/edit-poster/${poster.slug}" method="post" enctype="multipart/form-data">
 
       <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
@@ -480,36 +487,38 @@
       </div>
 
       <!-- Status Selection -->
-      <div class="form-card">
-        <h3 class="form-section-title">
-          <i class="fas fa-toggle-on"></i>
-          Publication Status
-        </h3>
+      <c:if test="${!poster.status}">
+        <div class="form-card">
+          <h3 class="form-section-title">
+            <i class="fas fa-toggle-on"></i>
+            Publication Status
+          </h3>
 
-        <div class="status-options">
-          <div class="status-option">
-            <input type="radio" id="statusDraft" name="status" value="0" checked>
-            <label for="statusDraft" class="status-label">
-              <div class="status-icon">
-                <i class="fas fa-file-pen" style="color: #FFA500;"></i>
-              </div>
-              <div class="status-title">Draft</div>
-              <div class="status-description">Save as draft, not visible to others</div>
-            </label>
-          </div>
+          <div class="status-options">
+            <div class="status-option">
+              <input type="radio" id="statusDraft" name="status" value="0" checked>
+              <label for="statusDraft" class="status-label">
+                <div class="status-icon">
+                  <i class="fas fa-file-pen" style="color: #FFA500;"></i>
+                </div>
+                <div class="status-title">Draft</div>
+                <div class="status-description">Save as draft</div>
+              </label>
+            </div>
 
-          <div class="status-option">
-            <input type="radio" id="statusPublish" name="status" value="1">
-            <label for="statusPublish" class="status-label">
-              <div class="status-icon">
-                <i class="fas fa-globe" style="color: #4CAF50;"></i>
-              </div>
-              <div class="status-title">Publish</div>
-              <div class="status-description">Make post public immediately</div>
-            </label>
+            <div class="status-option">
+              <input type="radio" id="statusPublish" name="status" value="1">
+              <label for="statusPublish" class="status-label">
+                <div class="status-icon">
+                  <i class="fas fa-globe" style="color: #4CAF50;"></i>
+                </div>
+                <div class="status-title">Publish</div>
+                <div class="status-description">Make post public</div>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      </c:if>
 
       <!-- Action Buttons -->
       <div class="action-buttons">

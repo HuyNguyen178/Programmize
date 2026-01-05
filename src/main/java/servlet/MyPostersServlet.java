@@ -11,15 +11,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Poster;
 import model.User;
 import utils.PosterUtil;
-
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/blog/my-drafts")
-public class MyDraftsServlet extends HttpServlet {
+@WebServlet("/blog/my-posters")
+public class MyPostersServlet extends HttpServlet {
     private PosterDAO posterDAO;
 
     @Override
@@ -31,54 +29,38 @@ public class MyDraftsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String keyword = request.getParameter("keyword");
         User user = (User) request.getSession().getAttribute(SessionConfig.ATTR_LOGIN_USER);
-        List<Poster> allDrafts = posterDAO.getDraftsByUserId(user.getId(), keyword);
-        int totalDrafts = posterDAO.getTotalDraftByUserId(user.getId());
-        Timestamp lastUpdated = posterDAO.getLastUpdatedByUserId(user.getId());
+        List<Poster> allPosters = posterDAO.getPublishedPostersByUserId(user.getId(), keyword);
+        int totalPosters = posterDAO.getTotalPublishedPosterByUserId(user.getId());
 
         Map<Integer, String> timeAgoMap = new HashMap<>();
-        for (Poster p : allDrafts) {
+        for (Poster p : allPosters) {
             timeAgoMap.put(
                     p.getPostId(),
-                    PosterUtil.timeAgo(p.getCreatedAt())
+                    PosterUtil.timeAgo(p.getPublishedAt())
             );
         }
 
-        request.setAttribute("lastUpdated", lastUpdated);
-        request.setAttribute("totalDrafts", totalDrafts);
+        request.setAttribute("totalPosters", totalPosters);
         request.setAttribute("timeAgoMap", timeAgoMap);
-        request.setAttribute("allDrafts", allDrafts);
-        request.getRequestDispatcher("/WEB-INF/views/my-drafts.jsp").forward(request, response);
+        request.setAttribute("allPosters", allPosters);
+        request.getRequestDispatcher("/WEB-INF/views/my-posters.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute(SessionConfig.ATTR_LOGIN_USER);
 
-        String action = request.getParameter("action");
         String postIdStr = request.getParameter("postId");
 
-        if (action == null || postIdStr == null) {
-            response.sendRedirect(request.getContextPath() + "/blog/my-drafts");
+        if (postIdStr == null) {
+            response.sendRedirect(request.getContextPath() + "/blog/my-posters");
             return;
         }
 
         int postId = Integer.parseInt(postIdStr);
 
-        switch (action) {
-            case "publish":
-                posterDAO.publishDraft(postId, user.getId());
-                request.getSession().setAttribute("successMessage", "Published successfully!");
-                break;
-
-            case "delete":
-                posterDAO.deletePoster(postId, user.getId());
-                request.getSession().setAttribute("successMessage", "Deleted successfully!");
-                break;
-
-            default:
-                break;
-        }
-
-        response.sendRedirect(request.getContextPath() + "/blog/my-drafts");
+        posterDAO.deletePoster(postId, user.getId());
+        request.getSession().setAttribute("successMessage", "Deleted successfully!");
+        response.sendRedirect(request.getContextPath() + "/blog/my-posters");
     }
 }

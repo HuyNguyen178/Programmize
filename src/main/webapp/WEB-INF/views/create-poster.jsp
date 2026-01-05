@@ -352,15 +352,14 @@
     </div>
 </div>
 
-<c:if test="${not empty sessionScope.errorMessage}">
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-triangle"></i> ${sessionScope.errorMessage}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <c:remove var="errorMessage" scope="session"/>
-</c:if>
-
 <div class="container create-post-container">
+    <c:if test="${not empty sessionScope.errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> ${sessionScope.errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <c:remove var="errorMessage" scope="session"/>
+    </c:if>
     <form id="createPostForm" action="blog/create-poster" method="post" enctype="multipart/form-data">
 
         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
