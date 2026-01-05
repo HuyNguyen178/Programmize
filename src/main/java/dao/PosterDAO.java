@@ -3,6 +3,7 @@ package dao;
 import model.Poster;
 import model.Setting;
 import model.User;
+import org.eclipse.tags.shaded.org.apache.regexp.RE;
 import utils.DBUtil;
 import utils.PosterUtil;
 import java.sql.Connection;
@@ -228,6 +229,69 @@ public class PosterDAO {
                     "WHERE p.slug = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, slug);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setPostId(resultSet.getInt("post_id"));
+                poster.setSlug(resultSet.getString("slug"));
+                poster.setTitle(resultSet.getString("title"));
+                poster.setExcerpt(resultSet.getString("excerpt"));
+                poster.setContent(resultSet.getString("content"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setViewCount(resultSet.getInt("view_count"));
+                poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+
+                User user = new User();
+                user.setFullname(resultSet.getString("user_name"));
+                user.setAvatarUrl(resultSet.getString("user_avatar"));
+                poster.setUser(user);
+
+                Setting category = new Setting();
+                category.setId(resultSet.getInt("setting_id"));
+                category.setName(resultSet.getString("category_name"));
+                poster.setCategory(category);
+
+                return poster;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void updatePoster(Poster poster) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "UPDATE poster SET title = ?, excerpt = ?, slug = ?, content = ?, thumbnail_url = ?, status = ?, category_id = ?, updated_at = ?, published_at = ? WHERE post_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, poster.getTitle());
+            statement.setString(2, poster.getExcerpt());
+            statement.setString(3, poster.getSlug());
+            statement.setString(4, poster.getContent());
+            statement.setString(5, poster.getThumbnailUrl());
+            statement.setBoolean(6, poster.isStatus());
+            statement.setInt(7, poster.getCategory().getId());
+            statement.setTimestamp(8, poster.getUpdatedAt());
+            statement.setTimestamp(9, poster.getPublishedAt());
+            statement.setInt(10, poster.getPostId());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Poster getPosterByUserIdAndSlug(Integer userId, String slug) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT p.*,s.setting_id, s.setting_name AS category_name, u.fullname as user_name, u.avatar_url as user_avatar " +
+                    "FROM poster p " +
+                    "JOIN user u ON p.user_id = u.user_id " +
+                    "JOIN setting s ON p.category_id = s.setting_id " +
+                    "WHERE p.slug = ? AND p.user_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, slug);
+            statement.setInt(2, userId);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
