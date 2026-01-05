@@ -12,36 +12,7 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-    <style>
-        body {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .success-card {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 400px;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        .success-card h3 {
-            color: #333;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .success-card p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .btn-login {
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset-success.css">
 </head>
 <body>
 <div class="success-card">

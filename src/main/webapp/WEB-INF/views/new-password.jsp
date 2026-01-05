@@ -7,27 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-    <style>
-        body {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .card {
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 400px;
-        }
-        .toggle-password {
-            cursor: pointer;
-            position: absolute;
-            right: 15px;
-            top: 10px;
-        }
-    </style>
+    <link rel="stylesheet", href="${pageContext.request.contextPath}/assets/css/new-password.css">
 </head>
 <body>
 <div class="card">

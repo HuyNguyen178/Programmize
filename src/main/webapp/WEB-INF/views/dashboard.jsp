@@ -11,60 +11,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="/assets/css/admin.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/dashboard.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-    <style>
-        /* CSS Layout chung */
-        body { margin: 0; background-color: #f8f9fa; }
-
-        #content {
-            margin-left: 260px; /* Độ rộng của Sidebar */
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #content.expanded {
-            margin-left: 72px;
-        }
-
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-        }
-
-        /* Dashboard Card Styles */
-        .stat-card {
-            border: none;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            position: relative;
-            background-color: #ffffff;
-        }
-        .stat-card .icon-box {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            opacity: 0.2;
-            font-size: 3.5rem;
-        }
-        .stat-card h5 {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        .stat-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-    </style>
 </head>
 <body class="bg-light">
 

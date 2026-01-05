@@ -10,53 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f9fa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column; }
-        main {
-            flex: 1;
-            padding-top: 20px;
-            padding-bottom: 40px; }
-        .profile-card { margin-top: 30px;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-            background-color: #ffffff;
-            border: 1px solid #e9ecef; }
-        .page-header {
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 15px;
-            margin-bottom: 30px; }
-        .avatar-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            border: 1px dashed #ced4da;
-            border-radius: 8px;
-            background-color: #fff; }
-        #currentAvatarImg {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #fff;
-            box-shadow: 0 0 0 2px #007bff;
-            margin-bottom: 15px; }
-        .form-label {
-            font-weight: 600;
-            color: #343a40; }
-        /* Style cho ô chỉ đọc */
-        .form-control[readonly] {
-            background-color: #f1f3f5 !important;
-            cursor: not-allowed;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-profile.css">
 </head>
 <body>
 <c:choose>

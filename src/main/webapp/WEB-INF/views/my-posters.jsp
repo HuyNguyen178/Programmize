@@ -9,7 +9,7 @@
     <title>My Posters - Programmize</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/my-drafts.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/my-posters.css">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
 </head>
 <body>
@@ -17,7 +17,7 @@
 <jsp:include page="include/header.jsp"/>
 
 <!-- Hero Section -->
-<div class="drafts-hero">
+<div class="posters-hero">
     <div class="container">
         <div class="text-center">
             <h1><i class="fas fa-file-pen"></i> My Posters</h1>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="action-bar">
-        <form class="search-box-drafts"
+        <form class="search-box-posters"
               action="${pageContext.request.contextPath}/blog/my-posters"
               method="get">
 
@@ -66,21 +66,20 @@
     <div class="row">
         <c:forEach items="${allPosters}" var="poster">
             <div class="col-lg-6">
-                <div class="draft-card">
-                    <!-- Thêm thumbnail image -->
-                    <div class="draft-card-img">
-        <span class="draft-badge-overlay">
+                <div class="poster-card">
+                    <div class="poster-card-img">
+        <span class="poster-badge-overlay">
           <i class="fas fa-circle-dot"></i> ${poster.category.name}
         </span>
-                        <img src="${poster.thumbnailUrl}" alt="${poster.title}" class="draft-thumbnail">
+                        <img src="${poster.thumbnailUrl}" alt="${poster.title}" class="poster-thumbnail">
                     </div>
 
-                    <div class="draft-card-body">
-                        <h3 class="draft-title">${poster.title}</h3>
+                    <div class="poster-card-body">
+                        <h3 class="poster-title">${poster.title}</h3>
 
-                        <p class="draft-excerpt">${poster.excerpt}</p>
+                        <p class="poster-excerpt">${poster.excerpt}</p>
 
-                        <div class="draft-meta">
+                        <div class="poster-meta">
           <span>
             <i class="far fa-calendar"></i>
             <fmt:formatDate value="${poster.publishedAt}" pattern="dd/MM/yyyy HH:mm"/>
@@ -91,7 +90,7 @@
           </span>
                         </div>
 
-                        <div class="draft-actions">
+                        <div class="poster-actions">
                             <a href="${pageContext.request.contextPath}/blog/edit-poster/${poster.slug}" class="btn btn-edit">
                                 <i class="fas fa-pen"></i> Edit
                             </a>

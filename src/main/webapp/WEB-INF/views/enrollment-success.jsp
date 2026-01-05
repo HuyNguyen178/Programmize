@@ -11,15 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; display: flex; align-items: center; min-height: 100vh; padding: 20px; }
-        .success-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 40px; max-width: 600px; width: 100%; text-align: center; margin: auto; }
-        .success-icon { font-size: 80px; color: #28a745; margin-bottom: 20px; animation: scaleUp 0.5s ease-out; }
-        .order-details { background: #f1f8f1; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: left; border: 1px dashed #28a745; }
-        .btn-home { background: #007bff; color: white; border-radius: 10px; padding: 12px 30px; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-block; }
-        .btn-home:hover { background: #0056b3; transform: translateY(-2px); color: white; }
-        @keyframes scaleUp { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/enrollment-success.css">
 </head>
 <body>
 

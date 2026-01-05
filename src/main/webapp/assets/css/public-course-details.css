@@ -1,0 +1,257 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+    padding-top: 75px;
+}
+
+/* Header Section */
+.header-section {
+    background-color: #007bff;
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.header-section h1 {
+    font-weight: 800;
+    font-size: 2.5rem;
+}
+
+.header-section .info-bar {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+/* Main Content */
+.content-area {
+    padding-top: 20px;
+}
+
+.card-custom {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    padding: 25px;
+}
+
+/* Accordion Styles */
+.accordion-button {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #007bff;
+    background-color: #e9f5ff;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #fff;
+    background-color: #007bff;
+}
+
+/* Lesson Item Styles */
+.lesson-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.lesson-item:last-child {
+    border-bottom: none;
+}
+
+.lesson-item:hover {
+    background-color: #f8f9fa;
+}
+
+.lesson-item i.lesson-icon {
+    width: 24px;
+    text-align: center;
+    margin-right: 15px;
+    font-size: 1rem;
+}
+
+.lesson-item i.lesson-icon.fa-video {
+    color: #dc3545;
+}
+
+.lesson-item i.lesson-icon.fa-file-alt {
+    color: #17a2b8;
+}
+
+.lesson-item i.lesson-icon.fa-question-circle {
+    color: #ffc107;
+}
+
+.lesson-item i.lesson-icon.fa-laptop-code {
+    color: #28a745;
+}
+
+.lesson-title {
+    flex-grow: 1;
+    font-size: 0.95rem;
+}
+
+.lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.lesson-duration {
+    white-space: nowrap;
+}
+
+.lesson-preview-badge {
+    background-color: #28a745;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+.lesson-locked {
+    color: #adb5bd;
+}
+
+/* Enrollment Card */
+.enroll-card {
+    position: sticky;
+    top: 100px;
+    background: white;
+    padding: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.enroll-card .media-placeholder {
+    height: 200px;
+    width: 100%;
+    background-color: #e6f0ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.enroll-card .media-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.enroll-card .card-content {
+    padding: 20px;
+}
+
+.enroll-card .price-tag {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.enroll-card .btn-buy, .enroll-card .btn-enroll {
+    width: 100%;
+    font-weight: 700;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.enroll-card .guarantee-box {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+    border-top: 1px dashed #e9ecef;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+/* Features List */
+.features-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.features-list li {
+    padding: 5px 0;
+    font-size: 1rem;
+}
+
+.features-list li i {
+    color: #28a745;
+    margin-right: 10px;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+.badge-category {
+    background-color: #ffc107;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.login-prompt {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.login-prompt a {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Course Content Summary */
+.course-content-summary {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+}
+
+/* Chapter description */
+.chapter-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* No content message */
+.no-content-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.no-content-message i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #dee2e6;
+}
+
+/* Chapter lesson count badge */
+.chapter-lesson-badge {
+    font-size: 0.75rem;
+    font-weight: normal;
+    margin-left: 10px;
+}

@@ -10,7 +10,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="/assets/css/admin.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/edit-lesson.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
@@ -18,72 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 
-    <style>
-        /* Layout and styling fixes */
-        body { margin: 0; background-color: #f8f9fa; }
-
-        /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
-        #content {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-
-            /* CSS CĂN GIỮA */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: calc(100% - 260px);
-            box-sizing: border-box;
-        }
-
-        #content.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-
-        /* Cấu hình Topbar Shift */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-        }
-
-        /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
-        .container-fluid-custom {
-            max-width: 900px;
-            width: 100%;
-        }
-
-        /* Cải thiện Header tối giản */
-        .page-header {
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e9ecef;
-            width: 100%;
-        }
-
-        /* Form styling */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            font-weight: 500;
-        }
-
-        /* Conditional fields styling */
-        .conditional-field {
-            display: none;
-        }
-        .conditional-field.active {
-            display: block;
-        }
-    </style>
 </head>
 <body>
 

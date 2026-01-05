@@ -11,41 +11,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="/assets/css/admin.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-    <style>
-        /* Content Shift Configuration (IDENTICAL to admin pages) */
-        #content {
-            margin-left: 260px;
-            margin-top: 64px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        #content.expanded {
-            margin-left: 72px;
-        }
-        /* Topbar Shift Configuration (IDENTICAL to admin pages) */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            width: calc(100% - 260px);
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-        /* Table alignment */
-        .table th, .table td {
-            vertical-align: middle;
-            text-align: center;
-        }
-        /* Full Name left-aligned */
-        .table td:nth-child(2) {
-            text-align: left;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student-list.css">
 </head>
 <body>
 

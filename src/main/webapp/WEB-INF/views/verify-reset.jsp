@@ -12,47 +12,7 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-    <style>
-        body {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .verify-card {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            width: 400px;
-            padding: 30px;
-        }
-        .verify-card h3 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .verify-card p {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .code-input {
-            font-size: 1.5rem;
-            letter-spacing: 0.5rem;
-            text-align: center;
-            font-weight: bold;
-        }
-        .resend-disabled {
-            pointer-events: none;
-            opacity: 0.6;
-            cursor: not-allowed !important;
-            color: #6c757d !important;
-            text-decoration: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/verify-reset.css">
 </head>
 <body>
 <div class="verify-card">

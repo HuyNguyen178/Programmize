@@ -7,28 +7,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%-- Dynamic title based on type --%>
     <title>Secure Checkout - ${type == 'course' ? item.courseName : item.name}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; padding-top: 100px; }
-        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .payment-radio { display: none; }
-        .payment-label {
-            cursor: pointer; border: 2px solid #eee; border-radius: 10px;
-            padding: 1.2rem; text-align: center; transition: 0.3s; display: block; height: 100%;
-        }
-        .payment-radio:checked + .payment-label { border-color: #007bff; background: #f0f7ff; }
-        .btn-checkout {
-            background: #007bff; color: white; padding: 15px; border-radius: 10px;
-            font-weight: bold; width: 100%; border: none; transition: 0.3s;
-        }
-        .btn-checkout:hover { background: #0056b3; transform: translateY(-2px); }
-        .summary-box { position: sticky; top: 110px; }
-        .info-badge { font-size: 0.8rem; padding: 5px 10px; border-radius: 5px; background: #eef6ff; color: #007bff; font-weight: 500; }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/enrollment.css">
 </head>
 <body>
 

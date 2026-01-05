@@ -30,69 +30,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="/assets/css/admin.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-
-    <style>
-        /* BASE STYLE: Body background */
-        body { margin: 0; background-color: #f8f9fa; }
-
-        #content {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-            /* NEW: Căn giữa nội dung chính */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: calc(100% - 260px);
-            box-sizing: border-box;
-        }
-
-        #content.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-
-        .container-fluid {
-            max-width: 850px;
-            width: 100%;
-        }
-
-        /* Cấu hình Topbar Shift  */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-        }
-
-        /* NEW: Header Styling */
-        .page-header {
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e9ecef;
-            width: 100%;
-        }
-        .page-header h2 {
-            font-size: 2rem;
-            margin-bottom: 0;
-        }
-
-        /* Avatar Preview Style */
-        .avatar-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #0d6efd;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student-details.css">
 </head>
 <body class="bg-light">
 
