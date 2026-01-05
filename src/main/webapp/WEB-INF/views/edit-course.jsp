@@ -19,6 +19,14 @@
         #editor-container {
             height: 400px;
         }
+
+        .checkbox-group {
+            max-height: 110px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 0.25rem;
+        }
     </style>
 
 </head>

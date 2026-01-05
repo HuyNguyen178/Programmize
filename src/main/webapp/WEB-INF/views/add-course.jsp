@@ -14,28 +14,7 @@
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-
-    <style>
-        .course-thumb-wrapper {
-            width: 150px;          /* Kích thước nhỏ hơn và tròn */
-            height: 150px;         /* Chiều cao = chiều rộng */
-            border-radius: 50%;    /* Làm tròn hoàn toàn */
-            border: 1px solid #ddd;
-            overflow: hidden;
-            background: #f5f5f5;
-            margin: 0 auto;        /* Căn giữa */
-        }
-
-        .course-thumb {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        #editor-container {
-            height: 400px;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/add-course.css">
 
 </head>
 <body>
@@ -198,13 +177,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
     const quill = new Quill('#editor-container', {
         theme: 'snow',
-        placeholder: 'Write your post content here...',
+        placeholder: 'Write course description here...',
         modules: {
             toolbar: [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
