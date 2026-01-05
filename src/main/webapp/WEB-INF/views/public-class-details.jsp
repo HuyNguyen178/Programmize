@@ -101,7 +101,6 @@
                 </div>
 
                 <div class="card-content">
-                    <!-- Price Display -->
                     <div class="price-tag">
                         <c:choose>
                             <c:when test="${clazz.salePrice != null}">
@@ -122,6 +121,7 @@
                     </div>
 
                     <c:choose>
+                        <%-- guest --%>
                         <c:when test="${empty sessionScope.loginUser}">
                             <div class="login-prompt">
                                 <p class="mb-2">Please login to enroll in this class</p>
@@ -130,26 +130,51 @@
                                 </a>
                             </div>
                         </c:when>
+
+                        <%-- user enrolled --%>
+                        <c:when test="${isEnrolled}">
+                            <div class="enrolled-status text-center">
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>You already joined this class.</strong>
+                                </div>
+                                <a href="${pageContext.request.contextPath}/my-classes" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-book-open me-2"></i> Go to My Classes
+                                </a>
+                            </div>
+                        </c:when>
+
+                        <%-- user not enrolled --%>
                         <c:otherwise>
+                            <c:choose>
+                                <%-- free Class --%>
+                                <c:when test="${priceDisplay == 'FREE' or (clazz.salePrice != null and clazz.salePrice == 0) or (clazz.salePrice == null and clazz.listedPrice != null and clazz.listedPrice == 0)}">
+                                    <form action="${pageContext.request.contextPath}/enrollment" method="post">
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                        <input type="hidden" name="type" value="class">
+                                        <input type="hidden" name="id" value="${clazz.id}">
+                                        <input type="hidden" name="pricePaid" value="0">
+                                        <input type="hidden" name="paymentMethod" value="FREE">
 
-                            <form action="${pageContext.request.contextPath}/enrollment" method="get">
-                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                        <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
+                                            <i class="fas fa-plus-circle me-2"></i> Join Class for Free
+                                        </button>
+                                    </form>
+                                </c:when>
 
-                                <input type="hidden" name="type" value="class">
-                                <input type="hidden" name="id" value="${clazz.id}">
+                                <%-- paid Class --%>
+                                <c:otherwise>
+                                    <form action="${pageContext.request.contextPath}/enrollment" method="get">
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                        <input type="hidden" name="type" value="class">
+                                        <input type="hidden" name="id" value="${clazz.id}">
 
-                                <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
-                                    <i class="fas fa-shopping-cart me-2"></i>
-                                    <c:choose>
-                                        <c:when test="${priceDisplay == 'FREE'}">
-                                            Enroll for Free
-                                        </c:when>
-                                        <c:otherwise>
-                                            Buy Class Now
-                                        </c:otherwise>
-                                    </c:choose>
-                                </button>
-                            </form>
+                                        <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
+                                            <i class="fas fa-shopping-cart me-2"></i> Buy Class Now
+                                        </button>
+                                    </form>
+                                </c:otherwise>
+                            </c:choose>
                         </c:otherwise>
                     </c:choose>
 

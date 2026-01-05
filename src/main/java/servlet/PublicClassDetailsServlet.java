@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
+import model.User;
 import java.io.IOException;
 import java.util.Date;
 
@@ -38,6 +39,24 @@ public class PublicClassDetailsServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+
+        String priceDisplay = "FREE";
+        if (clazz.getSalePrice() != null && clazz.getSalePrice().doubleValue() > 0) {
+            priceDisplay = "₫" + String.format("%.2f", clazz.getSalePrice());
+        } else if (clazz.getListedPrice() != null && clazz.getListedPrice().doubleValue() > 0) {
+            priceDisplay = "₫" + String.format("%.2f", clazz.getListedPrice());
+        }
+        request.setAttribute("priceDisplay", priceDisplay);
+
+        // check login + enroll stats
+        boolean isEnrolled = false;
+        User user = (User) request.getSession().getAttribute("loginUser");
+
+        if (user != null) {
+            // check enroll
+            isEnrolled = classDAO.isUserEnrolled(user.getId(), classId);
+        }
+        request.setAttribute("isEnrolled", isEnrolled);
 
         request.setAttribute("startDate", clazz.getStartDate());
         request.setAttribute("endDate", clazz.getEndDate());

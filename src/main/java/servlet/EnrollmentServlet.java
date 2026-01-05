@@ -95,6 +95,24 @@ public class EnrollmentServlet extends HttpServlet {
                     }
                 } else if ("class".equals(type)) {
                     ClassDAO classDAO = new ClassDAO();
+
+                    // check if enrolled
+                    if (classDAO.isUserEnrolled(user.getId(), id)) {
+                        request.getSession().setAttribute("message", "You are already enrolled in this class!");
+                        response.sendRedirect(request.getContextPath() + "/my-classes");
+                        return;
+                    }
+
+                    // free enroll
+                    boolean success = classDAO.enrollUserInClass(user.getId(), id, 0.0, "FREE");
+
+                    if (success) {
+                        request.getSession().setAttribute("successMessage", "Successfully enrolled in the class!");
+                        response.sendRedirect(request.getContextPath() + "/my-classes");
+                    } else {
+                        request.getSession().setAttribute("errorMessage", "Failed to enroll. Please try again.");
+                        response.sendRedirect(request.getContextPath() + "/public-class-details?id=" + id);
+                    }
                 }
                 return;
             }

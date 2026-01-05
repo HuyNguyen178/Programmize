@@ -785,4 +785,45 @@ public class ClassDAO {
 
         return false;
     }
+
+    public boolean isUserEnrolled(int userId, int classId) {
+        String sql = "SELECT COUNT(*) FROM class_enrollment WHERE user_id = ? AND class_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, classId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking class enrollment: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean enrollUserInClass(int userId, int classId, double pricePaid, String paymentMethod) {
+        String sql = "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
+                "VALUES (?, ?, ?, ?, NOW(), 1)";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, classId);
+            stmt.setDouble(3, pricePaid);
+            stmt.setString(4, paymentMethod);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error enrolling user in class: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
