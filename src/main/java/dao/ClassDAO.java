@@ -1,23 +1,14 @@
 package dao;
 
-import model.Course;
 import model.Setting;
 import model.User;
 import utils.DBUtil;
-
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Class;
 
 public class ClassDAO {
-    private UserDAO userDAO;
-
-    public ClassDAO() {
-        userDAO = new UserDAO();
-    }
-
     public List<Class> getClassesByUserId(int userId, Integer categoryId, String keyword, int offset, int limit) {
         List<Class> classes = new ArrayList<>();
 
@@ -246,6 +237,61 @@ public class ClassDAO {
         return null;
     }
 
+    public Class getClassByUserIdAndClassId(Integer classId, Integer userId) {
+        String sql = "SELECT c.*, u.avatar_url, u.user_id AS instructor_id, u.fullname AS instructor_name, " +
+                "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
+                "FROM class c " +
+                "LEFT JOIN user u ON c.instructor_id = u.user_id " +
+                "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
+                "LEFT JOIN setting s ON cc.category_id = s.setting_id AND s.type_id = 5 " +
+                "LEFT JOIN class_enrollment ce ON c.class_id = ce.class_id " +
+                "WHERE c.class_id = ? AND ce.user_id = ? " +
+                "GROUP BY c.class_id";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, classId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Class c = new Class();
+                c.setId(rs.getInt("class_id"));
+                c.setThumbnailUrl(rs.getString("thumbnail_url"));
+                c.setName(rs.getString("class_name"));
+
+                User instructor = new User();
+                instructor.setId(rs.getInt("instructor_id"));
+                instructor.setFullname(rs.getString("instructor_name"));
+                instructor.setAvatarUrl(rs.getString("avatar_url"));
+                c.setInstructor(instructor);
+
+                c.setStartDate(rs.getDate("start_date"));
+                c.setEndDate(rs.getDate("end_date"));
+                c.setListedPrice(rs.getBigDecimal("listed_price"));
+                c.setSalePrice(rs.getBigDecimal("sale_price"));
+                c.setNumberOfStudents(rs.getInt("number_of_students"));
+
+                String cats = rs.getString("category_names");
+                if (cats != null && !cats.isEmpty()) {
+                    c.setCategories(cats.split(", "));
+                } else {
+                    c.setCategories(new String[0]);
+                }
+
+                c.setDescription(rs.getString("description"));
+                c.setStatus(rs.getBoolean("status"));
+                return c;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public int countClassesByUserId(int userId, Integer categoryId, String keyword) {
         try (Connection connection = DBUtil.getConnection()) {
 
@@ -318,7 +364,7 @@ public class ClassDAO {
                             "LEFT JOIN class_category cc ON c.class_id = cc.class_id " +
                             "LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5 " +
                             "LEFT JOIN user u ON c.instructor_id = u.user_id " +
-                            "WHERE c.status = 1 "
+                            "WHERE c.status = 1 AND c.start_date > CURDATE() "
             );
 
             if (keyword != null && !keyword.trim().isEmpty()) {

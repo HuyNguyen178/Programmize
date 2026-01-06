@@ -15,6 +15,7 @@ import model.User;
 import configuration.SessionConfig;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet("/my-class-details")
@@ -32,7 +33,21 @@ public class MyClassDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute(SessionConfig.ATTR_LOGIN_USER);
         String classId = request.getParameter("id");
-        Class clazz = classDAO.getClassById(Integer.parseInt(classId));
+        Class clazz = classDAO.getClassByUserIdAndClassId(Integer.parseInt(classId), user.getId());
+        if (clazz == null) {
+            response.sendError(404);
+            return;
+        }
+        Date now = new Date();
+        if (now.before(clazz.getStartDate())) {
+            clazz.setClassStatus("Upcoming");
+        }
+        else if (now.after(clazz.getEndDate())) {
+            clazz.setClassStatus("Completed");
+        }
+        else {
+            clazz.setClassStatus("Ongoing");
+        }
         List<Setting> categories = classDAO.getCategoriesByClassId(Integer.parseInt(classId));
         ClassEnrollment classEnrollment = enrollmentDAO.getEnrollmentByUserIdAndClassId(user.getId(), Integer.parseInt(classId));
         request.setAttribute("clazz", clazz);

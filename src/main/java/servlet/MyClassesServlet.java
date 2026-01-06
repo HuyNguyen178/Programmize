@@ -13,6 +13,7 @@ import model.Setting;
 import model.User;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet("/my-classes")
@@ -68,8 +69,19 @@ public class MyClassesServlet extends HttpServlet {
             classes = classDAO.getClassesByInstructor(userId, categoryId, keyword, offset, PAGE_SIZE);
             totalClasses = classDAO.countClassesByInstructor(userId, categoryId, keyword);
         } else {
-            // Học viên: Xem lớp đã ghi danh
             classes = classDAO.getClassesByUserId(userId, categoryId, keyword, offset, PAGE_SIZE);
+            Date now = new Date();
+            for (Class c : classes) {
+                if (now.before(c.getStartDate())) {
+                    c.setClassStatus("Upcoming");
+                }
+                else if (now.after(c.getEndDate())) {
+                    c.setClassStatus("Completed");
+                }
+                else {
+                    c.setClassStatus("Ongoing");
+                }
+            }
             totalClasses = classDAO.countClassesByUserId(userId, categoryId, keyword);
         }
         // ----------------------------

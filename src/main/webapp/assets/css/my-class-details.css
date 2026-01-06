@@ -1,71 +1,413 @@
-/* Tái sử dụng Style từ my-classes.jsp */
 body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: #f8f9fa;
     color: #333;
+    .video-records-link {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .btn-google-drive {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
-h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-/* Khối nội dung trắng giống filter-bar */
-.detail-card {
+/* Header Section */
+.class-header {
     background: #fff;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    margin-bottom: 1.5rem;
-}
-
-.class-banner-wrapper {
-    height: 300px;
-    background: #eee;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
 }
 
-.class-banner-wrapper img {
+.class-thumbnail {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.class-thumbnail img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Button style giống btn-details */
-.btn-learn {
-    display: block;
-    width: 100%;
-    padding: 0.7rem;
-    background: #2d6cdf;
-    color: #fff;
-    border-radius: 6px;
-    text-align: center;
-    font-weight: 600;
-    text-decoration: none;
-    transition: 0.25s;
-    border: none;
+.status-badge-large {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    z-index: 10;
 }
 
-.btn-learn:hover {
-    background: #1e54b5;
+.status-ongoing {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+}
+
+.status-upcoming {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+}
+
+/* Class Info */
+.class-info {
+    padding: 2rem;
+}
+
+.class-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.class-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.meta-item i {
+    color: #2d6cdf;
+    font-size: 1.2rem;
+}
+
+.meta-item strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.category-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.class-description {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+/* Instructor Section */
+.instructor-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title i {
+    color: #2d6cdf;
+}
+
+.instructor-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.instructor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.instructor-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.instructor-info h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 0.3rem;
+}
+
+.instructor-info p {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Syllabus Section */
+.syllabus-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .syllabus-item {
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.syllabus-item:hover {
+    border-color: #2d6cdf;
+    box-shadow: 0 4px 12px rgba(45, 108, 223, 0.1);
+}
+
+.syllabus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.syllabus-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
     display: flex;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #f1f1f1;
+    gap: 10px;
 }
 
-.syllabus-item:last-child {
-    border-bottom: none;
-}
-
-.meta-info {
+.syllabus-number {
+    background: #2d6cdf;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.syllabus-duration {
     color: #666;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.syllabus-description {
+    color: #666;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.lesson-list {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.lesson-item {
+    padding: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.lesson-item:hover {
+    background: #f8f9fa;
+}
+
+.lesson-icon {
+    color: #2d6cdf;
+    font-size: 1.1rem;
+}
+
+.lesson-name {
+    flex: 1;
+    color: #333;
+    font-weight: 500;
+}
+
+.lesson-duration {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+/* Video Records Link */
+.video-records-link {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.video-records-link:hover {
+    border-color: #2d6cdf;
+    box-shadow: 0 6px 20px rgba(45, 108, 223, 0.15);
+}
+
+.video-link-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.video-link-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc05 75%, #ea4335 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.video-link-text h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 0.3rem 0;
+}
+
+.video-link-text p {
+    color: #666;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.btn-google-drive {
+    padding: 0.8rem 1.5rem;
+    background: #2d6cdf;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-google-drive:hover {
+    background: #1e54b5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 108, 223, 0.3);
+}
+
+/* Back Button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.7rem 1.5rem;
+    background: #fff;
+    color: #2d6cdf;
+    border: 2px solid #2d6cdf;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.back-button:hover {
+    background: #2d6cdf;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .class-thumbnail {
+        height: 250px;
+    }
+
+    .class-name {
+        font-size: 1.8rem;
+    }
+
+    .class-meta {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .instructor-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
 }
