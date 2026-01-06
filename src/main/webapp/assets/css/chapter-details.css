@@ -1,0 +1,97 @@
+.filter-search-btn {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+}
+.filter-search-btn:hover {
+    background-color: #0b5ed7;
+    color: white;
+}
+.lesson-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+.type-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+.type-video { background-color: #dc3545; color: white; }
+.type-text { background-color: #17a2b8; color: white; }
+.type-quiz { background-color: #ffc107; color: #212529; }
+.type-assignment { background-color: #28a745; color: white; }
+.preview-badge {
+    background-color: #6f42c1;
+    color: white;
+    font-size: 0.7rem;
+}
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.2s;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+.stat-card.video {
+    border-left-color: #dc3545;
+}
+.stat-card.text {
+    border-left-color: #17a2b8;
+}
+.stat-card.quiz {
+    border-left-color: #ffc107;
+}
+.stat-card.assignment {
+    border-left-color: #28a745; }
+.stat-card.published { border-left-color: #198754;
+}
+.stat-card.draft {
+    border-left-color: #6c757d;
+}
+.action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+#content {
+    margin-left: 260px;
+    margin-top: 64px;   /* ⭐ FIX CHÍNH */
+    transition: margin-left 0.25s ease;
+    min-height: 100vh;
+    padding: 20px;
+}
+#content.expanded {
+    margin-left: 72px; /* Position when Sidebar is closed */
+}
+/* Topbar Shift Configuration */
+#topbar {
+    margin-left: 260px;
+    transition: margin-left 0.25s ease;
+    width: calc(100% - 260px);
+}
+#topbar.expanded {
+    margin-left: 72px;
+    width: calc(100% - 72px);
+}
+
+/* Table alignment */
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+}
+/* Course Name (2nd column) left-aligned */
+.table td:nth-child(2) {
+    text-align: left;
+}
+
+/* Thumbnail style */
+.thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+/* Status badge styles */
+.status-active {
+    font-weight: bold;
+}
+.status-inactive {
+    font-weight: bold;
+}
