@@ -66,6 +66,10 @@
                     <i class="fas fa-users"></i>
                     <span><strong>Students:</strong> ${clazz.numberOfStudents}</span>
                 </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span><strong>Total Hours:</strong> ${clazz.totalHours}</span>
+                </div>
             </div>
 
             <!-- Description -->
@@ -79,7 +83,7 @@
     <div class="instructor-section">
         <h2 class="section-title">
             <i class="fas fa-chalkboard-teacher"></i>
-            Your Instructor
+            Instructor
         </h2>
         <div class="instructor-card">
             <div class="instructor-avatar">
@@ -103,7 +107,7 @@
                 <p>Access all recorded sessions and materials</p>
             </div>
         </div>
-        <a href="https://drive.google.com/drive/folders/your-folder-id" target="_blank" class="btn-google-drive">
+        <a href="${clazz.recordUrl}" target="_blank" class="btn-google-drive">
             <i class="fas fa-external-link-alt"></i>
             Open in Google Drive
         </a>

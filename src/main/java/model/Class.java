@@ -9,6 +9,7 @@ public class Class {
     private String name;
     private String thumbnailUrl;
     private int numberOfStudents;
+    private int totalHours;
     private String[] categories;
     private BigDecimal listedPrice;
     private BigDecimal salePrice;
@@ -19,6 +20,14 @@ public class Class {
     private User instructor;
     private String recordUrl;
     private String classStatus;
+
+    public int getTotalHours() {
+        return totalHours;
+    }
+
+    public void setTotalHours(int totalHours) {
+        this.totalHours = totalHours;
+    }
 
     public String getRecordUrl() {
         return recordUrl;

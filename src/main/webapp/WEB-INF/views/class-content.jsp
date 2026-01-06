@@ -6,130 +6,15 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Class Content | Programmize Admin</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Content | Programmize Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-  <style>
-    :root {
-      --primary-color: #0d6efd;
-      --bg-light: #f8f9fa;
-    }
-
-    body {
-      background-color: var(--bg-light);
-    }
-
-    .container {
-      padding-top: 1.5rem;
-      padding-bottom: 1.5rem;
-    }
-
-    .page-header h1 {
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 1.5rem !important;
-    }
-
-    .card {
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-      border: 1px solid #dee2e6;
-    }
-
-    .class-card {
-      border: none;
-      border-bottom: 1px solid #dee2e6;
-    }
-
-    .class-card:last-child {
-      border-bottom: none;
-    }
-
-    .class-header {
-      font-size: 1.15rem;
-      font-weight: 600;
-      background-color: #f8f9fa;
-      padding: 1rem 1.25rem;
-      color: #343a40;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background-color 0.2s;
-    }
-
-    .class-header:hover {
-      background-color: #e9ecef;
-    }
-
-    .class-header.active {
-      background-color: #e9ecef;
-    }
-
-    .class-header .toggle-icon {
-      transition: transform 0.2s;
-    }
-
-    .class-header.active .toggle-icon {
-      transform: rotate(180deg);
-    }
-
-    .class-body {
-        max-height: 0;
-        overflow: hidden;
-        opacity: 0;
-        transform: translateY(-6px);
-        transition:
-                max-height 0.45s ease,
-                opacity 0.3s ease,
-                transform 0.3s ease;
-        background-color: white;
-        border-top: 1px solid #dee2e6;
-        padding: 0 1rem;
-    }
-
-    .class-body.show {
-        max-height: 3000px; /* đủ lớn */
-        opacity: 1;
-        transform: translateY(0);
-        padding: 1rem;
-    }
-
-    .filter-search-btn {
-      background-color: #6c757d;
-      border-color: #6c757d;
-      color: white;
-    }
-
-    .filter-search-btn:hover {
-      background-color: #5c636a;
-      border-color: #565e64;
-      color: white;
-    }
-
-    #content {
-      margin-left: 260px;
-      margin-top: 64px;
-      transition: margin-left 0.25s ease;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    #content.expanded {
-      margin-left: 72px; /* Position when Sidebar is closed */
-    }
-
-    .table th, .table td {
-      vertical-align: middle;
-      text-align: center;
-    }
-    .table td:nth-child(2) {
-      text-align: left;
-    }
-  </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/class-content.css">
 </head>
 
 <body class="bg-light">
@@ -210,10 +95,7 @@
                 <c:when test="${empty classes}">
                     <div class="text-center py-5">
                         <i class="bi bi-inbox fs-1 text-muted"></i>
-                        <p class="text-muted mt-3">No classes found.</p>
-                        <a href="${pageContext.request.contextPath}/add-class" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> Add First Class
-                        </a>
+                        <p class="text-muted mt-3">No classes</p>
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -255,12 +137,6 @@
                                             <i class="bi bi-people"></i>
                                             <c:out value="${clazz.numberOfStudents} student(s)"  default="No students"/>
                                         </small>
-                                    </div>
-                                    <div>
-                                        <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="event.stopPropagation(); confirmDeleteClass(${clazz.id}, '${clazz.name}')">
-                                            Remove Class
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -310,13 +186,6 @@
 
     header.classList.toggle('active');
     body.classList.toggle('show');
-  }
-
-  function confirmDeleteClass(classId, className) {
-      document.getElementById('deleteClassId').value = classId;
-      document.getElementById('deleteClassName').textContent = '"' + className + '"';
-      var modal = new bootstrap.Modal(document.getElementById('deleteClassModal'));
-      modal.show();
   }
 </script>
 </body>

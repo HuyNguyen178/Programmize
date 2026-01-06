@@ -272,6 +272,7 @@ public class ClassDAO {
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
                 c.setNumberOfStudents(rs.getInt("number_of_students"));
+                c.setTotalHours(rs.getInt("total_hours"));
 
                 String cats = rs.getString("category_names");
                 if (cats != null && !cats.isEmpty()) {
