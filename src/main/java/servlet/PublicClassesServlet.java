@@ -10,6 +10,7 @@ import model.Setting;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet("/public-classes")
@@ -48,6 +49,10 @@ public class PublicClassesServlet extends HttpServlet {
         int offset = (page - 1) * CLASSES_PER_PAGE;
 
         List<Class> classes = classDAO.getActiveClasses(keyword, categoryId, priceSort, CLASSES_PER_PAGE, offset);
+
+        for (Class c : classes) {
+            c.setClassStatus("Upcoming");
+        }
 
         int totalClasses = classDAO.countActiveClasses(keyword, categoryId);
         int totalPages = (int) Math.ceil((double) totalClasses / CLASSES_PER_PAGE);

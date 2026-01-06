@@ -12,22 +12,9 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/public-classes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<!-- Header -->
-<%--    <header class="header">--%>
-<%--        <div class="container">--%>
-<%--            <div class="logo">📚 E-Learning Platform</div>--%>
-<%--            <nav class="main-nav">--%>
-<%--                <ul>--%>
-<%--                    <li><a href="${pageContext.request.contextPath}/">Home</a></li>--%>
-<%--                    <li><a href="${pageContext.request.contextPath}/publicCourses">Courses</a></li>--%>
-<%--                    <li><a href="#">About</a></li>--%>
-<%--                    <li><a href="#">Contact</a></li>--%>
-<%--                </ul>--%>
-<%--            </nav>--%>
-<%--        </div>--%>
-<%--    </header>--%>
 
 <jsp:include page="include/header.jsp"/>
 <br>
@@ -83,6 +70,9 @@
                     <c:forEach items="${classes}" var="clazz">
                         <article class="class-card">
                             <div class="card-image">
+                                <span class="status-badge status-upcoming">
+                                    <i class="fas fa-clock"></i> ${clazz.classStatus}
+                                </span>
                                 <c:choose>
                                     <c:when test="${not empty clazz.thumbnailUrl}">
                                         <img src="${clazz.thumbnailUrl}" alt="${clazz.name}">

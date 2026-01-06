@@ -123,7 +123,7 @@ public class ClassDAO {
                     " LEFT JOIN setting cat ON cc.category_id = cat.setting_id AND cat.type_id = 5" +
                     " LEFT JOIN user u ON c.instructor_id = u.user_id" +
                     " LEFT JOIN setting s ON u.role_id = s.setting_id AND s.setting_name = 'Instructor'" +
-                    " WHERE c.status = 1");
+                    " WHERE c.status = 1 AND c.start_date > CURDATE() ");
 
 
             if (keyword != null && !keyword.trim().isEmpty()) {

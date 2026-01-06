@@ -17,12 +17,30 @@ public class Class {
     private Date startDate;
     private Date endDate;
     private User instructor;
+    private String recordUrl;
+    private String classStatus;
 
-    public int getId() {
+    public String getRecordUrl() {
+        return recordUrl;
+    }
+
+    public void setRecordUrl(String recordUrl) {
+        this.recordUrl = recordUrl;
+    }
+
+    public String getClassStatus() {
+        return classStatus;
+    }
+
+    public void setClassStatus(String classStatus) {
+        this.classStatus = classStatus;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
