@@ -20,7 +20,7 @@
 <div class="blog-hero">
   <div class="container">
     <div class="text-center">
-      <h1><i class="fas fa-blog"></i> Programming Blog</h1>
+      <h1>Programmize Blog</h1>
       <p>Discover programming knowledge, tips, and tricks from experts</p>
 
       <!-- Search Box -->

@@ -22,7 +22,7 @@
     <div class="learning-header">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <a href="${pageContext.request.contextPath}/my-courses"
+                <a href="javascript:history.back()"
                    class="btn btn-outline-light btn-sm me-3">
                     <i class="fas fa-arrow-left"></i> Back to Course
                 </a>
