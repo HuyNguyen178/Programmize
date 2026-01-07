@@ -232,61 +232,75 @@
         </div>
         
         <%-- SIDEBAR --%>
-        <div class="course-sidebar" id="courseSidebar">
-            <div class="sidebar-header">
-                <h6 class="mb-0 fw-bold">
-                    <i class="fas fa-book-open me-2"></i>Course Contents
-                </h6>
-            </div>
-            
-            <c:forEach var="chapter" items="${chapters}">
-                <div class="chapter-header">
-                    <i class="fas fa-folder me-2"></i>${chapter.chapterName}
+            <div class="course-sidebar" id="courseSidebar">
+                <div class="sidebar-header">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-book-open me-2"></i>Course Contents
+                    </h6>
                 </div>
 
-                <c:forEach var="lessonItem" items="${chapterLessonsMap[chapter.chapterId]}">
-                    <c:choose>
-                        <%-- allow clicking --%>
-                        <c:when test="${lessonItem.preview or isEnrolled or isAdminOrInstructor}">
-                            <a href="${pageContext.request.contextPath}/lesson-details?id=${lessonItem.lessonId}"
-                               class="lesson-item ${lessonItem.lessonId == lesson.lessonId ? 'active' : ''}">
-                                <div class="lesson-icon ${lessonItem.lessonType.value}">
-                                    <i class="${lessonItem.typeIcon}"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="lesson-title">
-                                            ${lessonItem.orderIndex}. ${lessonItem.lessonName}
-                                        <c:if test="${lessonItem.preview}">
-                                            <span class="preview-badge">Preview</span>
-                                        </c:if>
+                <c:forEach var="chapter" items="${chapters}">
+                    <div class="chapter-header">
+                        <i class="fas fa-folder me-2"></i>${chapter.chapterName}
+                    </div>
+
+                    <c:forEach var="lessonItem" items="${chapterLessonsMap[chapter.chapterId]}">
+                        <c:choose>
+                            <c:when test="${lessonItem.preview or isEnrolled or isAdminOrInstructor}">
+                                <a href="${pageContext.request.contextPath}/lesson-details?id=${lessonItem.lessonId}"
+                                   class="lesson-item ${lessonItem.lessonId == lesson.lessonId ? 'active' : ''}">
+                                    <div class="lesson-icon ${lessonItem.lessonType.value}">
+                                        <i class="${lessonItem.typeIcon}"></i>
                                     </div>
-                                    <div class="lesson-meta">
-                                            ${lessonItem.durationFormatted} • ${lessonItem.typeDisplayName}
+                                    <div class="flex-grow-1">
+                                        <div class="lesson-title">
+                                                ${lessonItem.orderIndex}. ${lessonItem.lessonName}
+                                            <c:if test="${lessonItem.preview}">
+                                                <span class="preview-badge">Preview</span>
+                                            </c:if>
+                                        </div>
+                                        <div class="lesson-meta">${lessonItem.durationFormatted}</div>
                                     </div>
-                                </div>
-                            </a>
-                        </c:when>
-                        <%-- not llow clicking --%>
-                        <c:otherwise>
-                            <div class="lesson-item lesson-locked-item">
-                                <div class="lesson-icon ${lessonItem.lessonType.value}">
-                                    <i class="${lessonItem.typeIcon}"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="lesson-title text-muted">
-                                            ${lessonItem.orderIndex}. ${lessonItem.lessonName}
-                                        <i class="fas fa-lock ms-2" title="Enroll to access"></i>
-                                    </div>
-                                    <div class="lesson-meta">
-                                            ${lessonItem.durationFormatted} • ${lessonItem.typeDisplayName}
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="lesson-item lesson-locked-item">
+                                    <div class="lesson-icon"><i class="${lessonItem.typeIcon}"></i></div>
+                                    <div class="flex-grow-1">
+                                        <div class="lesson-title text-muted">
+                                                ${lessonItem.orderIndex}. ${lessonItem.lessonName}
+                                            <i class="fas fa-lock ms-2"></i>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+
+                    <c:forEach var="qItem" items="${chapterQuizzesMap[chapter.chapterId]}">
+                        <c:choose>
+                            <c:when test="${isEnrolled or isAdminOrInstructor}">
+                                <a href="${pageContext.request.contextPath}/quiz-details?id=${qItem.id}"
+                                   class="lesson-item">
+                                    <div class="lesson-icon quiz">
+                                        <i class="fas fa-question-circle text-warning"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="lesson-title text-warning">Quiz: ${qItem.title}</div>
+                                        <div class="lesson-meta">Practice</div>
+                                    </div>
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="lesson-item lesson-locked-item">
+                                    <div class="lesson-icon"><i class="fas fa-lock"></i></div>
+                                    <div class="lesson-title text-muted">Quiz: ${qItem.title}</div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
                 </c:forEach>
-            </c:forEach>
-        </div>
+            </div>
     </div>
 </div>
 

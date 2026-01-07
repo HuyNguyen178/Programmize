@@ -1,6 +1,8 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Chapter {
     private Integer chapterId;
@@ -14,6 +16,24 @@ public class Chapter {
 
     private int lessonCount;
 
+    private List<Lesson> lessons = new ArrayList<>();
+    private List<Quiz> quizzes = new ArrayList<>();
+
+    public List<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(List<Lesson> lessons) {
+        this.lessons = lessons;
+    }
+
+    public List<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(List<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
 
     public Chapter() {
     }

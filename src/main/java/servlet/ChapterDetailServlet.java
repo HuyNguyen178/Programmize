@@ -5,6 +5,8 @@ import dao.LessonDAO;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import dao.QuizDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,18 +14,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Chapter;
 import model.Lesson;
+import model.Quiz;
 
 @WebServlet(name = "ChapterDetailServlet", urlPatterns = {"/chapter-details"})
 public class ChapterDetailServlet extends HttpServlet {
 
     private ChapterDAO chapterDAO;
     private LessonDAO lessonDAO;
+    private QuizDAO quizDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
         chapterDAO = new ChapterDAO();
         lessonDAO = new LessonDAO();
+        quizDAO = new QuizDAO();
+
     }
 
     @Override
@@ -53,6 +59,8 @@ public class ChapterDetailServlet extends HttpServlet {
 
             // Get all lessons for this chapter
             List<Lesson> lessons = lessonDAO.getLessonsByChapterId(chapterId);
+
+            List<Quiz> quizzes = quizDAO.getQuizzesByChapterId(chapterId);
 
             // Get filter parameters
             String typeFilter = request.getParameter("type");
@@ -96,6 +104,8 @@ public class ChapterDetailServlet extends HttpServlet {
             request.setAttribute("currentType", typeFilter);
             request.setAttribute("currentStatus", statusFilter);
             request.setAttribute("currentSearch", searchQuery);
+
+            request.setAttribute("quizzes", quizzes);
 
             request.getRequestDispatcher("/WEB-INF/views/chapter-details.jsp").forward(request, response);
 

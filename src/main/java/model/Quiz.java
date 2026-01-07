@@ -1,10 +1,21 @@
 package model;
 
+import java.util.List;
+
 public class Quiz {
     private Integer id;
     private Chapter chapter;
     private String title;
     private String description;
+    private List<Question> questions;
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
 
     public Integer getId() {
         return id;
