@@ -123,8 +123,13 @@
 
             <div class="info-item">
                 <div class="info-label">Schedule</div>
-                <div class="info-value">Monday & Wednesday</div>
-                <div class="info-value">19:00 - 21:00 </div>
+                <div class="info-value">
+                    <c:forEach var="day" items="${syllabus.daysOfWeek}" varStatus="loop">
+                        ${day}
+                        <c:if test="${!loop.last}">, </c:if>
+                    </c:forEach>
+                </div>
+                <div class="info-value"><fmt:formatDate value="${syllabus.startTime}" pattern="HH:mm"/> - <fmt:formatDate value="${syllabus.endTime}" pattern="HH:mm"/></div>
             </div>
 
             <div class="info-item">
@@ -143,29 +148,24 @@
             <div class="evaluation-details">
                 <div class="eval-item">
                     <div class="eval-label">Attendance</div>
-                    <div class="eval-value">20%</div>
+                    <div class="eval-value">${syllabus.attendance}%</div>
                 </div>
                 <div class="eval-item">
                     <div class="eval-label">Assignments</div>
-                    <div class="eval-value">40%</div>
+                    <div class="eval-value">${syllabus.assignments}%</div>
                 </div>
                 <div class="eval-item">
                     <div class="eval-label">Final Exam</div>
-                    <div class="eval-value">40%</div>
+                    <div class="eval-value">${syllabus.finalExam}%</div>
                 </div>
             </div>
         </div>
 
         <div class="objectives-box">
             <h4><i class="fas fa-bullseye"></i> Learning Objectives</h4>
-            <ul>
-                <li>Master React fundamentals including components, props, and state management</li>
-                <li>Build single-page applications (SPAs) with React Router</li>
-                <li>Implement state management using Redux and Context API</li>
-                <li>Work with RESTful APIs and handle asynchronous operations</li>
-                <li>Apply best practices for code organization and performance optimization</li>
-                <li>Deploy React applications to production environments</li>
-            </ul>
+            <div class="objectives-content">
+                ${syllabus.objectives}
+            </div>
         </div>
     </div>
 
@@ -177,14 +177,14 @@
         </h2>
         <div class="instructor-card">
             <div class="instructor-avatar">
-                <img src="https://i.pravatar.cc/200?img=33" alt="Instructor">
+                <img src="${clazz.instructor.avatarUrl}" alt="Instructor">
             </div>
             <div class="instructor-info">
-                <h3>Dr. John Anderson</h3>
-                <p><i class="fas fa-graduation-cap"></i> Senior Web Development Expert • 10+ years experience</p>
+                <h3>${clazz.instructor.fullname}</h3>
+                <p><i class="fas fa-graduation-cap"></i> Class Expert</p>
                 <div class="instructor-email">
                     <i class="fas fa-envelope"></i>
-                    john.anderson@programmize.com
+                    ${clazz.instructor.email}
                 </div>
             </div>
         </div>

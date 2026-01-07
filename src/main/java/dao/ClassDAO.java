@@ -250,7 +250,7 @@ public class ClassDAO {
     }
 
     public Class getClassByUserIdAndClassId(Integer classId, Integer userId) {
-        String sql = "SELECT c.*, u.avatar_url, u.user_id AS instructor_id, u.fullname AS instructor_name, " +
+        String sql = "SELECT c.*, u.avatar_url, u.email, u.user_id AS instructor_id, u.fullname AS instructor_name, " +
                 "GROUP_CONCAT(DISTINCT s.setting_name SEPARATOR ', ') AS category_names " +
                 "FROM class c " +
                 "LEFT JOIN user u ON c.instructor_id = u.user_id " +
@@ -277,6 +277,7 @@ public class ClassDAO {
                 instructor.setId(rs.getInt("instructor_id"));
                 instructor.setFullname(rs.getString("instructor_name"));
                 instructor.setAvatarUrl(rs.getString("avatar_url"));
+                instructor.setEmail(rs.getString("email"));
                 c.setInstructor(instructor);
 
                 c.setStartDate(rs.getDate("start_date"));

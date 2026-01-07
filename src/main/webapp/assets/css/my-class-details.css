@@ -277,15 +277,10 @@ body {
     margin-bottom: 12px;
 }
 
-.objectives-box ul {
-    margin: 0;
+.objectives-content {
     padding-left: 20px;
-}
-
-.objectives-box li {
     color: #78350f;
     margin-bottom: 8px;
-    line-height: 1.5;
 }
 
 .content-section {

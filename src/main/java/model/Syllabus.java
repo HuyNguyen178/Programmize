@@ -9,10 +9,10 @@ public class Syllabus {
     int totalHours;
     private Time startTime;
     private Time endTime;
-    private List<DaysOfWeek> days;
-    private double attendance;
-    private double assignments;
-    private double finalExam;
+    private List<DaysOfWeek> daysOfWeek;
+    private int attendance;
+    private int assignments;
+    private int finalExam;
     private String objectives;
 
     public Integer getSyllabusId() {
@@ -55,35 +55,35 @@ public class Syllabus {
         this.endTime = endTime;
     }
 
-    public List<DaysOfWeek> getDays() {
-        return days;
+    public List<DaysOfWeek> getDaysOfWeek() {
+        return daysOfWeek;
     }
 
-    public void setDays(List<DaysOfWeek> days) {
-        this.days = days;
+    public void setDaysOfWeek(List<DaysOfWeek> daysOfWeek) {
+        this.daysOfWeek = daysOfWeek;
     }
 
-    public double getAttendance() {
+    public int getAttendance() {
         return attendance;
     }
 
-    public void setAttendance(double attendance) {
+    public void setAttendance(int attendance) {
         this.attendance = attendance;
     }
 
-    public double getAssignments() {
+    public int getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(double assignments) {
+    public void setAssignments(int assignments) {
         this.assignments = assignments;
     }
 
-    public double getFinalExam() {
+    public int getFinalExam() {
         return finalExam;
     }
 
-    public void setFinalExam(double finalExam) {
+    public void setFinalExam(int finalExam) {
         this.finalExam = finalExam;
     }
 
