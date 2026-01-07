@@ -32,62 +32,62 @@
 
 <div id="content" class="py-4">
 
-  <div class="page-header">
-    <h1 class="fw-bold mb-4 text-primary">
-      <i class="bi bi-journal-bookmark me-2"></i>Class List
-    </h1>
-  </div>
-
-  <c:if test="${not empty sessionScope.successMessage}">
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="bi bi-check-circle me-2"></i>${sessionScope.successMessage}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="page-header">
+        <h1 class="fw-bold mb-4 text-primary">
+            <i class="bi bi-journal-bookmark me-2"></i>Class List
+        </h1>
     </div>
-    <c:remove var="successMessage" scope="session"/>
-  </c:if>
-  <c:if test="${not empty sessionScope.errorMessage}">
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="bi bi-exclamation-circle me-2"></i>${sessionScope.errorMessage}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+    <c:if test="${not empty sessionScope.successMessage}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>${sessionScope.successMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <c:remove var="successMessage" scope="session"/>
+    </c:if>
+    <c:if test="${not empty sessionScope.errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>${sessionScope.errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <c:remove var="errorMessage" scope="session"/>
+    </c:if>
+
+    <!-- Filter Card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form class="row g-3 align-items-center" method="get"
+                  action="${pageContext.request.contextPath}/class-content">
+
+                <div class="col-md-2">
+                    <select class="form-select" id="filterCategory" name="category" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        <c:forEach var="cat" items="${allCategories}">
+                            <option value="${cat.id}" ${selectedCategoryId == cat.id ? 'selected' : ''}>
+                                    ${cat.name}
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
+                        <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Draft</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 d-flex">
+                    <input type="text" class="form-control me-2" name="search"
+                           placeholder="Search classes..." value="${searchKeyword}" onchange="this.form.submit()">
+                    <button type="submit" class="btn filter-search-btn">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <c:remove var="errorMessage" scope="session"/>
-  </c:if>
-
-  <!-- Filter Card -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-body">
-      <form class="row g-3 align-items-center" method="get"
-            action="${pageContext.request.contextPath}/class-content">
-
-        <div class="col-md-2">
-          <select class="form-select" id="filterCategory" name="category" onchange="this.form.submit()">
-            <option value="">All Categories</option>
-            <c:forEach var="cat" items="${allCategories}">
-              <option value="${cat.id}" ${selectedCategoryId == cat.id ? 'selected' : ''}>
-                  ${cat.name}
-              </option>
-            </c:forEach>
-          </select>
-        </div>
-
-        <div class="col-md-2">
-          <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
-            <option value="">All Statuses</option>
-            <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
-            <option value="0" ${selectedStatus == '0' ? 'selected' : ''}>Draft</option>
-          </select>
-        </div>
-
-        <div class="col-md-4 d-flex">
-          <input type="text" class="form-control me-2" name="search"
-                 placeholder="Search classes..." value="${searchKeyword}" onchange="this.form.submit()">
-          <button type="submit" class="btn filter-search-btn">
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
 
     <div class="card shadow-sm">
         <div class="card-body p-0">
@@ -103,7 +103,6 @@
                         <div class="class-card">
                             <div class="class-header" onclick="toggleClass(this, ${loop.index})">
                                 <div>
-                                        <%-- SỬA: Dùng boolean trực tiếp thay vì so sánh String --%>
                                     <c:choose>
                                         <c:when test="${clazz.status}">
                                             <span class="badge bg-success me-2">Active</span>
@@ -118,7 +117,7 @@
                             </div>
 
                             <div class="class-body" id="classBody${loop.index}">
-                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <small class="text-muted">
                                             <i class="bi bi-person me-1"></i>
@@ -138,6 +137,14 @@
                                             <c:out value="${clazz.numberOfStudents} student(s)"  default="No students"/>
                                         </small>
                                     </div>
+
+                                    <!-- Class Recordings Button -->
+                                    <div>
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                onclick="openRecordingModal(${clazz.id}, '${clazz.name}', '${clazz.recordUrl != null ? clazz.recordUrl : ""}', event)">
+                                            <i class="bi bi-camera-video me-1"></i> Class Recordings
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -148,45 +155,94 @@
     </div>
 </div>
 
+<!-- Delete Class Modal -->
 <div class="modal fade" id="deleteClassModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm Delete
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this class? This action cannot be undone</p>
-        <p class="fw-bold text-danger" id="deleteClassName"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form id="deleteClassForm" action="${pageContext.request.contextPath}/class-content"
-              method="post" style="display:inline;">
-            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-
-          <input type="hidden" name="action" value="deleteClass">
-          <input type="hidden" name="classId" id="deleteClassId">
-          <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash me-1"></i> Delete
-          </button>
-        </form>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this class? This action cannot be undone</p>
+                <p class="fw-bold text-danger" id="deleteClassName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteClassForm" action="${pageContext.request.contextPath}/class-content"
+                      method="post" style="display:inline;">
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                    <input type="hidden" name="action" value="deleteClass">
+                    <input type="hidden" name="classId" id="deleteClassId">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+<!-- Class Recording Modal -->
+<div class="modal fade" id="recordingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-camera-video text-primary me-2"></i>Add Class Recording
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="recordingForm" action="${pageContext.request.contextPath}/class-content" method="post">
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                <input type="hidden" name="action" value="addRecording">
+                <input type="hidden" name="classId" id="recordingClassId">
+
+                <div class="modal-body">
+                    <p class="mb-3">Class: <span class="fw-bold" id="recordingClassName"></span></p>
+
+                    <div class="mb-3">
+                        <label for="recordingLink" class="form-label">Recording Link <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" id="recordingLink" name="recordingLink"
+                               placeholder="https://drive.google.com/recording" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Add Recording
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/admin_scripts.js"></script>
 <script>
-  function toggleClass(header, index) {
-    const body = document.getElementById('classBody' + index);
+    function toggleClass(header, index) {
+        const body = document.getElementById('classBody' + index);
+        header.classList.toggle('active');
+        body.classList.toggle('show');
+    }
 
-    header.classList.toggle('active');
-    body.classList.toggle('show');
-  }
+    function openRecordingModal(classId, className, recordUrl, event) {
+        event.stopPropagation();
+
+        // Set giá trị cho modal
+        document.getElementById('recordingClassId').value = classId;
+        document.getElementById('recordingClassName').textContent = className;
+
+        document.getElementById('recordingLink').value = recordUrl || "";
+
+        // Mở modal
+        const modal = new bootstrap.Modal(document.getElementById('recordingModal'));
+        modal.show();
+    }
 </script>
 </body>
 

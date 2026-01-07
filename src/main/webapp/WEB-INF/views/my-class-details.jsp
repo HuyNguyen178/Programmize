@@ -79,23 +79,6 @@
         </div>
     </div>
 
-    <!-- Instructor Section -->
-    <div class="instructor-section">
-        <h2 class="section-title">
-            <i class="fas fa-chalkboard-teacher"></i>
-            Instructor
-        </h2>
-        <div class="instructor-card">
-            <div class="instructor-avatar">
-                <img src="${clazz.instructor.avatarUrl}" alt="Instructor">
-            </div>
-            <div class="instructor-info">
-                <h3>${clazz.instructor.fullname}</h3>
-                <p><i class="fas fa-user"></i> Class Expert</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Video Records Link -->
     <div class="video-records-link">
         <div class="video-link-info">
@@ -114,196 +97,233 @@
     </div>
 
     <!-- Syllabus Section -->
-    <div class="syllabus-section">
+    <div class="info-section">
         <h2 class="section-title">
-            <i class="fas fa-book"></i>
-            Course Syllabus
+            <i class="fas fa-info-circle"></i>
+            Syllabus
         </h2>
 
-        <!-- Module 1 -->
-        <div class="syllabus-item">
-            <div class="syllabus-header">
-                <div class="syllabus-title">
-                    <span class="syllabus-number">1</span>
-                    Introduction to Web Development
-                </div>
-                <div class="syllabus-duration">
-                    <i class="fas fa-clock"></i> 2 hours
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Class Name</div>
+                <div class="info-value">${clazz.name}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Location</div>
+                <div class="info-value">
+                    Offline (at class) and Online (through Zoom Workplace)
                 </div>
             </div>
-            <p class="syllabus-description">
-                Get started with the fundamentals of web development. Learn about how the web works, development tools, and set up your coding environment.
-            </p>
-            <div class="lesson-list">
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Welcome to the Course</span>
-                    <span class="lesson-duration">10 min</span>
+
+            <div class="info-item">
+                <div class="info-label">Total Hours</div>
+                <div class="info-value">${syllabus.totalHours}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Schedule</div>
+                <div class="info-value">Monday & Wednesday</div>
+                <div class="info-value">19:00 - 21:00 </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Start Date</div>
+                <div class="info-value"><fmt:formatDate value="${clazz.startDate}" pattern="dd/MM/yyyy"/></div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">End Date</div>
+                <div class="info-value"><fmt:formatDate value="${clazz.endDate}" pattern="dd/MM/yyyy"/></div>
+            </div>
+        </div>
+
+        <div class="info-item" style="margin-bottom: 20px;">
+            <div class="info-label">Evaluation Criteria</div>
+            <div class="evaluation-details">
+                <div class="eval-item">
+                    <div class="eval-label">Attendance</div>
+                    <div class="eval-value">20%</div>
                 </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">How the Web Works</span>
-                    <span class="lesson-duration">25 min</span>
+                <div class="eval-item">
+                    <div class="eval-label">Assignments</div>
+                    <div class="eval-value">40%</div>
                 </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Setting Up Your Development Environment</span>
-                    <span class="lesson-duration">30 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-file-alt lesson-icon"></i>
-                    <span class="lesson-name">Your First HTML Page</span>
-                    <span class="lesson-duration">45 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-check-circle lesson-icon" style="color: #10b981;"></i>
-                    <span class="lesson-name">Module 1 Quiz</span>
-                    <span class="lesson-duration">10 min</span>
+                <div class="eval-item">
+                    <div class="eval-label">Final Exam</div>
+                    <div class="eval-value">40%</div>
                 </div>
             </div>
         </div>
 
-        <!-- Module 2 -->
-        <div class="syllabus-item">
-            <div class="syllabus-header">
-                <div class="syllabus-title">
-                    <span class="syllabus-number">2</span>
-                    HTML & CSS Fundamentals
+        <div class="objectives-box">
+            <h4><i class="fas fa-bullseye"></i> Learning Objectives</h4>
+            <ul>
+                <li>Master React fundamentals including components, props, and state management</li>
+                <li>Build single-page applications (SPAs) with React Router</li>
+                <li>Implement state management using Redux and Context API</li>
+                <li>Work with RESTful APIs and handle asynchronous operations</li>
+                <li>Apply best practices for code organization and performance optimization</li>
+                <li>Deploy React applications to production environments</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 2. Instructor Information -->
+    <div class="instructor-section">
+        <h2 class="section-title">
+            <i class="fas fa-chalkboard-teacher"></i>
+            Instructor
+        </h2>
+        <div class="instructor-card">
+            <div class="instructor-avatar">
+                <img src="https://i.pravatar.cc/200?img=33" alt="Instructor">
+            </div>
+            <div class="instructor-info">
+                <h3>Dr. John Anderson</h3>
+                <p><i class="fas fa-graduation-cap"></i> Senior Web Development Expert • 10+ years experience</p>
+                <div class="instructor-email">
+                    <i class="fas fa-envelope"></i>
+                    john.anderson@programmize.com
                 </div>
-                <div class="syllabus-duration">
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Course Content -->
+    <div class="content-section">
+        <h2 class="section-title">
+            <i class="fas fa-book-open"></i>
+            Course Content
+        </h2>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">1</div>
+                <div class="lesson-title">Introduction to React and Modern JavaScript</div>
+                <div class="lesson-duration">
                     <i class="fas fa-clock"></i> 4 hours
                 </div>
             </div>
-            <p class="syllabus-description">
-                Master HTML5 and CSS3 to build beautiful, responsive websites. Learn semantic HTML, CSS layouts, Flexbox, and Grid.
-            </p>
-            <div class="lesson-list">
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">HTML Tags and Elements</span>
-                    <span class="lesson-duration">35 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">CSS Styling Basics</span>
-                    <span class="lesson-duration">40 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">The Box Model</span>
-                    <span class="lesson-duration">30 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Flexbox Layout</span>
-                    <span class="lesson-duration">45 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">CSS Grid Layout</span>
-                    <span class="lesson-duration">50 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-laptop-code lesson-icon"></i>
-                    <span class="lesson-name">Project: Build a Portfolio Page</span>
-                    <span class="lesson-duration">60 min</span>
-                </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Understand the fundamentals of React library, JSX syntax, and ES6+ JavaScript features. Set up your development environment with Create React App and learn about component-based architecture.
             </div>
         </div>
 
-        <!-- Module 3 -->
-        <div class="syllabus-item">
-            <div class="syllabus-header">
-                <div class="syllabus-title">
-                    <span class="syllabus-number">3</span>
-                    JavaScript Programming
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">2</div>
+                <div class="lesson-title">Components, Props, and State</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 4 hours
                 </div>
-                <div class="syllabus-duration">
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Master functional and class components, understand how to pass data through props, and manage component state. Learn about component lifecycle and when to use different component types.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">3</div>
+                <div class="lesson-title">React Hooks (useState, useEffect, useContext)</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 4 hours
+                </div>
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Deep dive into React Hooks to manage state and side effects in functional components. Learn custom hooks creation and best practices for hook usage to write cleaner, more maintainable code.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">4</div>
+                <div class="lesson-title">React Router and Navigation</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 4 hours
+                </div>
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Build single-page applications with multiple views using React Router. Implement nested routes, dynamic routing, protected routes, and programmatic navigation for complex applications.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">5</div>
+                <div class="lesson-title">State Management with Redux</div>
+                <div class="lesson-duration">
                     <i class="fas fa-clock"></i> 6 hours
                 </div>
             </div>
-            <p class="syllabus-description">
-                Learn JavaScript from the ground up. Understand variables, functions, objects, arrays, DOM manipulation, and modern ES6+ features.
-            </p>
-            <div class="lesson-list">
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">JavaScript Basics</span>
-                    <span class="lesson-duration">40 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Functions and Scope</span>
-                    <span class="lesson-duration">45 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Objects and Arrays</span>
-                    <span class="lesson-duration">50 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">DOM Manipulation</span>
-                    <span class="lesson-duration">55 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Events and Event Listeners</span>
-                    <span class="lesson-duration">40 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Async JavaScript & Promises</span>
-                    <span class="lesson-duration">60 min</span>
-                </div>
-                <div class="lesson-item">
-                    <i class="fas fa-laptop-code lesson-icon"></i>
-                    <span class="lesson-name">Project: Interactive To-Do App</span>
-                    <span class="lesson-duration">90 min</span>
-                </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Master Redux for complex state management across large applications. Learn actions, reducers, store configuration, middleware, and Redux Toolkit for modern Redux development.
             </div>
         </div>
 
-        <!-- Module 4 -->
-        <div class="syllabus-item">
-            <div class="syllabus-header">
-                <div class="syllabus-title">
-                    <span class="syllabus-number">4</span>
-                    React.js Framework
-                </div>
-                <div class="syllabus-duration">
-                    <i class="fas fa-clock"></i> 8 hours
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">6</div>
+                <div class="lesson-title">Working with APIs and Async Operations</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 4 hours
                 </div>
             </div>
-            <p class="syllabus-description">
-                Build modern, interactive web applications with React. Learn components, hooks, state management, and routing.
-            </p>
-            <div class="lesson-list">
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Introduction to React</span>
-                    <span class="lesson-duration">30 min</span>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Fetch data from RESTful APIs using axios and fetch API. Handle loading states, errors, and implement advanced patterns like infinite scrolling and pagination.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">7</div>
+                <div class="lesson-title">Forms and Validation</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 4 hours
                 </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">Components and Props</span>
-                    <span class="lesson-duration">50 min</span>
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Create complex forms with validation using libraries like Formik and React Hook Form. Implement real-time validation, error handling, and user-friendly form experiences.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">8</div>
+                <div class="lesson-title">Testing React Applications</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 4 hours
                 </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">State and Hooks</span>
-                    <span class="lesson-duration">60 min</span>
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Write unit and integration tests using Jest and React Testing Library. Learn testing best practices, mocking, and how to achieve good test coverage for maintainable code.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">9</div>
+                <div class="lesson-title">Performance Optimization</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 3 hours
                 </div>
-                <div class="lesson-item">
-                    <i class="fas fa-play-circle lesson-icon"></i>
-                    <span class="lesson-name">React Router</span>
-                    <span class="lesson-duration">45 min</span>
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Optimize React applications using memo, useMemo, useCallback, and code splitting. Learn performance profiling techniques and how to identify and fix performance bottlenecks.
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">10</div>
+                <div class="lesson-title">Final Project & Deployment</div>
+                <div class="lesson-duration">
+                    <i class="fas fa-clock"></i> 6 hours
                 </div>
-                <div class="lesson-item">
-                    <i class="fas fa-laptop-code lesson-icon"></i>
-                    <span class="lesson-name">Final Project: E-Commerce Website</span>
-                    <span class="lesson-duration">4 hours</span>
-                </div>
+            </div>
+            <div class="lesson-description">
+                <strong>What you'll learn:</strong> Build a complete e-commerce application combining all learned concepts. Deploy your application to production using Vercel, Netlify, or AWS, and learn CI/CD best practices.
             </div>
         </div>
 

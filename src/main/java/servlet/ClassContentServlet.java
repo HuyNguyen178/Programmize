@@ -57,4 +57,15 @@ public class ClassContentServlet extends HttpServlet {
 
         request.getRequestDispatcher("/WEB-INF/views/class-content.jsp").forward(request, response);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int classId = Integer.parseInt(request.getParameter("classId"));
+        String recordingLink = request.getParameter("recordingLink");
+
+        classDAO.updateRecordingByClassId(classId, recordingLink);
+
+        request.getSession().setAttribute("successMessage", "Recording link saved successfully!");
+        response.sendRedirect("/class-content");
+    }
 }

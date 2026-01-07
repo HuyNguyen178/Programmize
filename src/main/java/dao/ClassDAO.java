@@ -92,6 +92,18 @@ public class ClassDAO {
         return classes;
     }
 
+    public void updateRecordingByClassId(Integer classId, String recordUrl) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "UPDATE class SET record_url = ? WHERE class_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, recordUrl);
+            statement.setInt(2, classId);
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Class> getActiveClasses(String keyword, Integer categoryId, String priceSort, int limit, int offset) {
         List<Class> classes = new ArrayList<>();
 
@@ -272,7 +284,7 @@ public class ClassDAO {
                 c.setListedPrice(rs.getBigDecimal("listed_price"));
                 c.setSalePrice(rs.getBigDecimal("sale_price"));
                 c.setNumberOfStudents(rs.getInt("number_of_students"));
-                c.setTotalHours(rs.getInt("total_hours"));
+                c.setRecordUrl(rs.getString("record_url"));
 
                 String cats = rs.getString("category_names");
                 if (cats != null && !cats.isEmpty()) {
@@ -520,6 +532,7 @@ public class ClassDAO {
                 c.setStatus(rs.getBoolean("status"));
                 c.setNumberOfStudents(rs.getInt("number_of_students"));
                 c.setDescription(rs.getString("description"));
+                c.setRecordUrl(rs.getString("record_url"));
 
                 User u = new User();
                 u.setFullname(rs.getString("instructor_name"));

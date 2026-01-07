@@ -170,7 +170,7 @@
                                         <input type="hidden" name="id" value="${clazz.id}">
 
                                         <button type="submit" class="btn btn-success btn-lg btn-buy w-100 mb-2">
-                                            <i class="fas fa-shopping-cart me-2"></i> Buy Class Now
+                                            <i class="fas fa-shopping-cart me-2"></i> Enroll Class Now
                                         </button>
                                     </form>
                                 </c:otherwise>
