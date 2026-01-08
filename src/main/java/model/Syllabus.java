@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Syllabus {
     private Integer syllabusId;
-    private Class classId;
-    int totalHours;
+    private Class clazz;
+    private int totalHours;
     private Time startTime;
     private Time endTime;
     private List<DaysOfWeek> daysOfWeek;
@@ -14,6 +14,15 @@ public class Syllabus {
     private int assignments;
     private int finalExam;
     private String objectives;
+    private List<SyllabusLesson> lessons;
+
+    public List<SyllabusLesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(List<SyllabusLesson> lessons) {
+        this.lessons = lessons;
+    }
 
     public Integer getSyllabusId() {
         return syllabusId;
@@ -23,12 +32,12 @@ public class Syllabus {
         this.syllabusId = syllabusId;
     }
 
-    public Class getClassId() {
-        return classId;
+    public Class getClazz() {
+        return clazz;
     }
 
-    public void setClassId(Class classId) {
-        this.classId = classId;
+    public void setClazz(Class clazz) {
+        this.clazz = clazz;
     }
 
     public int getTotalHours() {

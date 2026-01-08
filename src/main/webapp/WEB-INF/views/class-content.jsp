@@ -138,8 +138,15 @@
                                         </small>
                                     </div>
 
-                                    <!-- Class Recordings Button -->
                                     <div>
+                                        <!-- Class Syllabus Button -->
+                                        <a href="${pageContext.request.contextPath}/syllabus-details?classId=${clazz.id}"
+                                           class="btn btn-outline-primary btn-sm me-2"
+                                           onclick="event.stopPropagation()">
+                                            <i class="bi bi-file-text me-1"></i> Class Syllabus
+                                        </a>
+
+                                        <!-- Class Recordings Button -->
                                         <button type="button" class="btn btn-primary btn-sm"
                                                 onclick="openRecordingModal(${clazz.id}, '${clazz.name}', '${clazz.recordUrl != null ? clazz.recordUrl : ""}', event)">
                                             <i class="bi bi-camera-video me-1"></i> Class Recordings

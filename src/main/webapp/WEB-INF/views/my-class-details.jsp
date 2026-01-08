@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Class Details - E-Learning Platform</title>
+    <title>My Class Details</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.png">
@@ -18,7 +18,7 @@
 <div class="container py-4" style="margin-top: 60px">
     <a href="${pageContext.request.contextPath}/my-classes" class="back-button">
         <i class="fas fa-arrow-left"></i>
-        Back to My Classes
+        Back
     </a>
 
     <!-- Class Header -->
@@ -193,135 +193,17 @@
             Course Content
         </h2>
 
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">1</div>
-                <div class="lesson-title">Introduction to React and Modern JavaScript</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
+        <c:forEach var="lesson" items="${syllabus.lessons}" varStatus="status">
+            <div class="lesson-card">
+                <div class="lesson-header">
+                    <div class="lesson-number">${status.index + 1}</div>
+                    <div class="lesson-title">${lesson.title}</div>
+                </div>
+                <div class="lesson-description">
+                        ${lesson.objectives}
                 </div>
             </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Understand the fundamentals of React library, JSX syntax, and ES6+ JavaScript features. Set up your development environment with Create React App and learn about component-based architecture.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">2</div>
-                <div class="lesson-title">Components, Props, and State</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Master functional and class components, understand how to pass data through props, and manage component state. Learn about component lifecycle and when to use different component types.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">3</div>
-                <div class="lesson-title">React Hooks (useState, useEffect, useContext)</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Deep dive into React Hooks to manage state and side effects in functional components. Learn custom hooks creation and best practices for hook usage to write cleaner, more maintainable code.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">4</div>
-                <div class="lesson-title">React Router and Navigation</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Build single-page applications with multiple views using React Router. Implement nested routes, dynamic routing, protected routes, and programmatic navigation for complex applications.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">5</div>
-                <div class="lesson-title">State Management with Redux</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 6 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Master Redux for complex state management across large applications. Learn actions, reducers, store configuration, middleware, and Redux Toolkit for modern Redux development.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">6</div>
-                <div class="lesson-title">Working with APIs and Async Operations</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Fetch data from RESTful APIs using axios and fetch API. Handle loading states, errors, and implement advanced patterns like infinite scrolling and pagination.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">7</div>
-                <div class="lesson-title">Forms and Validation</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Create complex forms with validation using libraries like Formik and React Hook Form. Implement real-time validation, error handling, and user-friendly form experiences.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">8</div>
-                <div class="lesson-title">Testing React Applications</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 4 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Write unit and integration tests using Jest and React Testing Library. Learn testing best practices, mocking, and how to achieve good test coverage for maintainable code.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">9</div>
-                <div class="lesson-title">Performance Optimization</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 3 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Optimize React applications using memo, useMemo, useCallback, and code splitting. Learn performance profiling techniques and how to identify and fix performance bottlenecks.
-            </div>
-        </div>
-
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-number">10</div>
-                <div class="lesson-title">Final Project & Deployment</div>
-                <div class="lesson-duration">
-                    <i class="fas fa-clock"></i> 6 hours
-                </div>
-            </div>
-            <div class="lesson-description">
-                <strong>What you'll learn:</strong> Build a complete e-commerce application combining all learned concepts. Deploy your application to production using Vercel, Netlify, or AWS, and learn CI/CD best practices.
-            </div>
-        </div>
+        </c:forEach>
 
     </div>
 </div>

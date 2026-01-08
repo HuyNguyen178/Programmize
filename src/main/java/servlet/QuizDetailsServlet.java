@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @WebServlet("/quiz-details")
-public class QuizDetailServlet extends HttpServlet {
+public class QuizDetailsServlet extends HttpServlet {
 
     private QuizDAO quizDAO;
     private ChapterDAO chapterDAO;
