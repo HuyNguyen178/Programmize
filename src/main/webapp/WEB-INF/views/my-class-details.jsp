@@ -66,10 +66,6 @@
                     <i class="fas fa-users"></i>
                     <span><strong>Students:</strong> ${clazz.numberOfStudents}</span>
                 </div>
-                <div class="meta-item">
-                    <i class="fas fa-clock"></i>
-                    <span><strong>Total Hours:</strong> ${clazz.totalHours}</span>
-                </div>
             </div>
 
             <!-- Description -->
