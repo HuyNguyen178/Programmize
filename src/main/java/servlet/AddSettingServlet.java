@@ -10,7 +10,7 @@ import dao.SettingDAO;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/new-setting")
+@WebServlet("/add-setting")
 public class AddSettingServlet extends HttpServlet {
     private SettingDAO settingRepository;
 

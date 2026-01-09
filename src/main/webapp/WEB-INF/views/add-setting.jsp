@@ -34,7 +34,7 @@
             <div class="alert alert-danger">${errorMsg}</div>
         </c:if>
 
-        <form action="new-setting" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="add-setting" method="post" class="p-4 bg-white rounded shadow-lg">
 
             <%-- CSRF Token bảo mật --%>
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">

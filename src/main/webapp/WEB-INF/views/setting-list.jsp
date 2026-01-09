@@ -100,8 +100,8 @@
                     <%-- 4. ADD NEW BUTTON (col-md-4 d-flex justify-content-end) --%>
                     <%-- 2 + 2 + 4 = 8. Còn 4 cột cho nút Add New --%>
                     <div class="col-md-4 d-flex justify-content-end">
-                        <a href="new-setting" class="btn btn-success">
-                            <i class="fas fa-plus-circle me-1"></i> New Setting
+                        <a href="add-setting" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-1"></i> Add Setting
                         </a>
                     </div>
                 </form>
