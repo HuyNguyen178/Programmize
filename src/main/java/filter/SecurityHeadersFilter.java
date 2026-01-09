@@ -33,16 +33,16 @@ public class SecurityHeadersFilter implements Filter {
 
         // 5. Content-Security-Policy - Kiểm soát nguồn tài nguyên
         httpResponse.setHeader("Content-Security-Policy",
-            "default-src 'self'; " +
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://use.fontawesome.com; " +
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://use.fontawesome.com; " +
-            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://use.fontawesome.com https://ka-f.fontawesome.com; " +
-            "img-src 'self' data: https: https://lh3.googleusercontent.com; " +
-            "connect-src 'self'https://sandbox.vnpayment.vn; " +
-            "frame-src 'self' https://sandbox.vnpayment.vn https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://drive.google.com https://docs.google.com; " +
-            "frame-ancestors 'self'; " + //change "none" to "self" to be able to load iframe for pdf </assets/pdf/>
-            "form-action 'self' https://sandbox.vnpayment.vn; " +
-            "base-uri 'self'"
+                "default-src 'self'; " +
+                        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://use.fontawesome.com; " +
+                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://use.fontawesome.com; " +
+                        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://use.fontawesome.com https://ka-f.fontawesome.com; " +
+                        "img-src 'self' data: https: https://lh3.googleusercontent.com; " +
+                        "connect-src 'self'https://sandbox.vnpayment.vn; " +
+                        "frame-src 'self' https://sandbox.vnpayment.vn https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://drive.google.com https://docs.google.com; " +
+                        "frame-ancestors 'self'; " + //change "none" to "self" to be able to load iframe for pdf </assets/pdf/>
+                        "form-action 'self' https://sandbox.vnpayment.vn; " +
+                        "base-uri 'self'"
         );
 
         // 6. Referrer-Policy - Kiểm soát thông tin referrer
@@ -50,10 +50,10 @@ public class SecurityHeadersFilter implements Filter {
 
         // 7. Permissions-Policy - Hạn chế quyền truy cập API
         httpResponse.setHeader("Permissions-Policy",
-            "geolocation=(), " +
-            "microphone=(), " +
-            "camera=(), " +
-            "payment=(self)"
+                "geolocation=(), " +
+                        "microphone=(), " +
+                        "camera=(), " +
+                        "payment=(self)"
         );
 
         // 8. Cache-Control cho các trang nhạy cảm
