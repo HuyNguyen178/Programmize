@@ -15,19 +15,7 @@
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-    <style>
-        #editor-container {
-            height: 400px;
-        }
-
-        .checkbox-group {
-            max-height: 110px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 0.25rem;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/edit-course.css">
 
 </head>
 <body>
@@ -69,10 +57,28 @@
                                value="${course.courseName}" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-                        <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control"
-                               value="${course.thumbnailUrl}">
+                    <div class="form-group text-center">
+                        <label class="form-label">Course Thumbnail Image</label>
+
+                        <div class="course-thumb-wrapper mb-3">
+                            <img id="thumbnailPreview"
+                                 src="${course.thumbnailUrl}"
+                                 alt="Thumbnail"
+                                 class="course-thumb">
+                        </div>
+
+                        <input type="file"
+                               id="thumbnailInput"
+                               name="thumbnailImg"
+                               accept="image/*"
+                               hidden
+                               onchange="previewThumbnail(this)">
+
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                onclick="document.getElementById('thumbnailInput').click()">
+                            <i class="fa fa-image me-1"></i> Select Picture
+                        </button>
                     </div>
 
                     <div class="form-group">
@@ -203,6 +209,16 @@
     form.addEventListener('submit', function () {
         hiddenInput.value = quill.root.innerHTML;
     });
+
+    function previewThumbnail(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('thumbnailPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 </body>
 </html>

@@ -15,9 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.CloudinaryUtil;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +25,7 @@ import java.util.Map;
         maxFileSize = 5 * 1024 * 1024,
         maxRequestSize = 10 * 1024 * 1024
 )
-public class    AccountDetailServlet extends HttpServlet {
+public class AccountDetailsServlet extends HttpServlet {
 
     private UserDAO userDAO;
     private SettingDAO settingDAO;

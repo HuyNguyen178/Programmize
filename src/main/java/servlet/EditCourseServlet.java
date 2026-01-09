@@ -1,5 +1,7 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.CourseDAO;
 import dao.UserDAO;
 import model.Course;
@@ -10,11 +12,13 @@ import jakarta.servlet.annotation.MultipartConfig;
 import model.User;
 import service.FileValidationService;
 import service.FileValidationService.ValidationResult;
+import utils.CloudinaryUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/edit-course")
 @MultipartConfig(
@@ -110,33 +114,31 @@ public class EditCourseServlet extends HttpServlet {
             }
 
             // Handle thumbnail upload with validation
-            String thumbnailUrl = request.getParameter("thumbnailUrl");
-            Part thumbnailPart = request.getPart("thumbnailFile");
+            String thumbnailUrl = course.getThumbnailUrl();
+            Part thumbnailPart = request.getPart("thumbnailImg");
 
             if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
-                String filename = thumbnailPart.getSubmittedFileName();
+
                 String contentType = thumbnailPart.getContentType();
-                long fileSize = thumbnailPart.getSize();
-
-                ValidationResult validationResult = fileValidator.validate(
-                    filename, contentType, fileSize, thumbnailPart.getInputStream()
-                );
-
-                if (!validationResult.isValid()) {
-                    request.setAttribute("error", "Thumbnail upload failed: " + validationResult.getMessage());
-                    request.getRequestDispatcher("WEB-INF/views/edit-course.jsp").forward(request, response);
+                if (!contentType.startsWith("image/")) {
+                    request.getSession().setAttribute("errorMessage", "Only image files are allowed!");
+                    response.sendRedirect("edit-course");
                     return;
                 }
 
-                String safeFilename = fileValidator.sanitizeFilename(filename);
-                String uploadDir = getServletContext().getRealPath("/uploads/courses");
-                File dir = new File(uploadDir);
-                if (!dir.exists()) dir.mkdirs();
+                byte[] fileBytes = thumbnailPart.getInputStream().readAllBytes();
 
-                thumbnailPart.write(uploadDir + File.separator + safeFilename);
-                thumbnailUrl = "uploads/courses/" + safeFilename;
-            } else if (thumbnailUrl == null || thumbnailUrl.trim().isEmpty()) {
-                thumbnailUrl = course.getThumbnailUrl();
+                Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
+
+                Map uploadResult = cloudinary.uploader().upload(
+                        fileBytes,
+                        ObjectUtils.asMap(
+                                "folder", "course_thumbnail",
+                                "resource_type", "image"
+                        )
+                );
+
+                thumbnailUrl = (String) uploadResult.get("secure_url");
             }
 
             // Update course object

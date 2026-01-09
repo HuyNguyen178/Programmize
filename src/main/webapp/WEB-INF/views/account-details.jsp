@@ -56,7 +56,7 @@
     String placeholderAvatar = "https://i.pinimg.com/736x/20/ef/6b/20ef6b554ea249790281e6677abc4160.jpg";
     String currentAvatarUrl = finalAvatarUrl.isEmpty() ? placeholderAvatar : finalAvatarUrl;
 
-    String pageTitle = isEditMode ? "Account Detail - " + finalUsername : "Add New Account";
+    String pageTitle = isEditMode ? "Account Details - " + finalUsername : "Add New Account";
     String headerTitle = isEditMode ? "Account Detail" : "Add New Account";
     String formAction = isEditMode ? "account-details" : "add-account";
 %>

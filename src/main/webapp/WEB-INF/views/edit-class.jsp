@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Class</title>
+    <title>Edit Class - ${clazz.name}</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -36,7 +36,7 @@
             <c:remove var="errorMessage" scope="session"/>
         </c:if>
 
-        <form action="${pageContext.request.contextPath}/edit-class" method="post" class="p-4 bg-white rounded shadow-lg">
+        <form action="${pageContext.request.contextPath}/edit-class" method="post" class="p-4 bg-white rounded shadow-lg" enctype="multipart/form-data">
 
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
             <input type="hidden" name="classId" value="${clazz.id}">
@@ -50,6 +50,30 @@
                         <label for="className" class="form-label">Class Name <span class="text-danger">*</span></label>
                         <input type="text" id="className" name="className" class="form-control"
                                placeholder="Enter class name" value="${clazz.name}" required>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <label class="form-label">Class Thumbnail Image</label>
+
+                        <div class="class-thumb-wrapper mb-3">
+                            <img id="thumbnailPreview"
+                                 src="${clazz.thumbnailUrl}"
+                                 alt="Thumbnail"
+                                 class="class-thumb">
+                        </div>
+
+                        <input type="file"
+                               id="thumbnailInput"
+                               name="thumbnailImg"
+                               accept="image/*"
+                               hidden
+                               onchange="previewThumbnail(this)">
+
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                onclick="document.getElementById('thumbnailInput').click()">
+                            <i class="fa fa-image me-1"></i> Select Picture
+                        </button>
                     </div>
 
                     <div class="form-group">
@@ -96,7 +120,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Number of Students</label>
-                        <input type="number" class="form-control" value="0" disabled>
+                        <input type="number" class="form-control" value="${clazz.numberOfStudents}" disabled>
                     </div>
 
                     <div class="form-group mb-3">
@@ -135,12 +159,6 @@
                 </div>
 
                 <div class="col-12">
-                    <div class="form-group">
-                        <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-                        <input type="text" id="thumbnailUrl" name="thumbnailUrl" class="form-control" value="${clazz.thumbnailUrl}"
-                               placeholder="Enter thumbnail image URL">
-                    </div>
-
                     <div class="form-group">
                         <label for="description" class="form-label">Description</label>
                         <div id="editor-container"></div>
@@ -194,6 +212,16 @@
     form.addEventListener('submit', function () {
         hiddenInput.value = quill.root.innerHTML;
     });
+
+    function previewThumbnail(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('thumbnailPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 
 </body>

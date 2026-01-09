@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/student-details")
-public class StudentDetailServlet extends HttpServlet {
+public class StudentDetailsServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
 

@@ -24,7 +24,7 @@ public class AddSettingServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Setting> types = settingRepository.findAllTypes();
         request.setAttribute("types", types);
-        request.getRequestDispatcher("/WEB-INF/views/new-setting.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/add-setting.jsp").forward(request, response);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class AddSettingServlet extends HttpServlet {
             request.setAttribute("typeValue", typeIdStr);
             request.setAttribute("types", settingRepository.findAllTypes());
 
-            request.getRequestDispatcher("/WEB-INF/views/new-setting.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/add-setting.jsp").forward(request, response);
             return;
         }
 
@@ -72,6 +72,6 @@ public class AddSettingServlet extends HttpServlet {
 
         request.setAttribute("addSuccess", success);
         request.setAttribute("types", settingRepository.findAllTypes());
-        request.getRequestDispatcher("/WEB-INF/views/new-setting.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/add-setting.jsp").forward(request, response);
     }
 }

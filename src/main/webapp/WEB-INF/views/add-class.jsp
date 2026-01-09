@@ -25,7 +25,7 @@
   <div class="container-fluid-custom p-0">
 
     <div class="d-flex justify-content-start align-items-center page-header">
-      <h2 class="text-primary fw-bold">📚 Add New Class</h2>
+      <h2 class="text-primary fw-bold">Add New Class</h2>
     </div>
 
     <c:if test="${not empty sessionScope.errorMessage}">

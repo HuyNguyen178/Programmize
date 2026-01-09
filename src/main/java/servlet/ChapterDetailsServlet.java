@@ -17,7 +17,7 @@ import model.Lesson;
 import model.Quiz;
 
 @WebServlet(name = "ChapterDetailServlet", urlPatterns = {"/chapter-details"})
-public class ChapterDetailServlet extends HttpServlet {
+public class ChapterDetailsServlet extends HttpServlet {
 
     private ChapterDAO chapterDAO;
     private LessonDAO lessonDAO;

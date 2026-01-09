@@ -1,26 +1,33 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.ClassDAO;
 import dao.SettingDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.Class;
 import model.Setting;
 import model.User;
-
+import utils.CloudinaryUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/edit-class")
+@MultipartConfig(
+        maxFileSize = 10485760,      // 10MB for images
+        maxRequestSize = 20971520    // 20MB
+)
 public class EditClassServlet extends HttpServlet {
     private ClassDAO classDAO;
     private UserDAO userDAO;
@@ -77,7 +84,6 @@ public class EditClassServlet extends HttpServlet {
 
             int classId = Integer.parseInt(request.getParameter("classId"));
             String className = request.getParameter("className");
-            String thumbnailUrl = request.getParameter("thumbnailUrl");
             String description = request.getParameter("description");
             BigDecimal listedPrice = new BigDecimal(request.getParameter("listedPrice"));
             BigDecimal salePrice = new BigDecimal(request.getParameter("salePrice"));
@@ -97,6 +103,33 @@ public class EditClassServlet extends HttpServlet {
 
             if (endDateStr != null && !endDateStr.isBlank()) {
                 endDate = formatter.parse(endDateStr);
+            }
+
+            String thumbnailUrl = classDAO.getClassById(classId).getThumbnailUrl();
+            Part thumbnailPart = request.getPart("thumbnailImg");
+
+            if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
+
+                String contentType = thumbnailPart.getContentType();
+                if (!contentType.startsWith("image/")) {
+                    request.getSession().setAttribute("errorMessage", "Only image files are allowed!");
+                    response.sendRedirect("add-class");
+                    return;
+                }
+
+                byte[] fileBytes = thumbnailPart.getInputStream().readAllBytes();
+
+                Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
+
+                Map uploadResult = cloudinary.uploader().upload(
+                        fileBytes,
+                        ObjectUtils.asMap(
+                                "folder", "class_thumbnail",
+                                "resource_type", "image"
+                        )
+                );
+
+                thumbnailUrl = (String) uploadResult.get("secure_url");
             }
 
             Class c = classDAO.getClassById(classId);

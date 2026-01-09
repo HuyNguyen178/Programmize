@@ -218,6 +218,7 @@ public class ClassDAO {
                 c.setId(rs.getInt("class_id"));
                 c.setThumbnailUrl(rs.getString("thumbnail_url"));
                 c.setName(rs.getString("class_name"));
+                c.setNumberOfStudents(rs.getInt("number_of_students"));
 
                 User instructor = new User();
                 instructor.setId(rs.getInt("instructor_id"));
