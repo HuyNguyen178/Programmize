@@ -78,7 +78,7 @@
                                         <a href="${pageContext.request.contextPath}/lesson-details?id=${firstLessonMap[e.courseId]}" class="btn-action">GO TO LEARN</a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="${pageContext.request.contextPath}/${e.type == 'COURSE' ? 'public-course-details' : 'public-class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>
+                                        <a href="${pageContext.request.contextPath}/${e.type == 'COURSE' ? 'my-course-details' : 'my-class-details'}?id=${e.itemId}" class="btn-action">VIEW DETAILS</a>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
