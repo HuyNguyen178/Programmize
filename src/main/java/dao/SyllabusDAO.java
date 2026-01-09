@@ -19,9 +19,9 @@ public class SyllabusDAO {
                     "c.class_name, " +
                     "GROUP_CONCAT(DISTINCT CONCAT(sl.title,'|', sl.objectives) ORDER BY sl.lesson_id ASC SEPARATOR ';') AS lessons " +
                     "FROM syllabus s " +
-                    "JOIN syllabus_days sd ON s.syllabus_id = sd.syllabus_id " +
-                    "JOIN class c ON s.class_id = c.class_id " +
-                    "JOIN syllabus_lesson sl ON s.syllabus_id = sl.syllabus_id " +
+                    "LEFT JOIN syllabus_days sd ON s.syllabus_id = sd.syllabus_id " +
+                    "LEFT JOIN class c ON s.class_id = c.class_id " +
+                    "LEFT JOIN syllabus_lesson sl ON s.syllabus_id = sl.syllabus_id " +
                     "WHERE s.class_id = ? " +
                     "GROUP BY s.syllabus_id, c.class_name";
             PreparedStatement statement = connection.prepareStatement(sql);

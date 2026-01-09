@@ -193,17 +193,27 @@
             Course Content
         </h2>
 
-        <c:forEach var="lesson" items="${syllabus.lessons}" varStatus="status">
-            <div class="lesson-card">
-                <div class="lesson-header">
-                    <div class="lesson-number">${status.index + 1}</div>
-                    <div class="lesson-title">${lesson.title}</div>
+        <c:choose>
+            <c:when test="${empty syllabus.lessons}">
+                <div class="alert alert-info text-center" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    No Lessons Found
                 </div>
-                <div class="lesson-description">
-                        ${lesson.objectives}
-                </div>
-            </div>
-        </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <c:forEach var="lesson" items="${syllabus.lessons}" varStatus="status">
+                    <div class="lesson-card">
+                        <div class="lesson-header">
+                            <div class="lesson-number">${status.index + 1}</div>
+                            <div class="lesson-title">${lesson.title}</div>
+                        </div>
+                        <div class="lesson-description">
+                                ${lesson.objectives}
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
 
     </div>
 </div>

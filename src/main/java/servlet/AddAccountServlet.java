@@ -1,5 +1,6 @@
 package servlet;
 
+import dao.SettingDAO;
 import dao.UserDAO;
 import model.User;
 import jakarta.servlet.*;
@@ -11,6 +12,7 @@ import service.FileValidationService.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/add-account")
 @MultipartConfig(
@@ -20,17 +22,22 @@ import java.io.IOException;
 public class AddAccountServlet extends HttpServlet {
     private UserDAO userDAO;
     private FileValidationService fileValidator;
+    private SettingDAO settingDAO;
 
     @Override
     public void init() throws ServletException {
         userDAO = new UserDAO();
         fileValidator = FileValidationService.getInstance();
+        settingDAO = new SettingDAO();
+
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
+        List<String> roles = settingDAO.getRoleNames();
+        request.setAttribute("roles", roles);
     }
 
     @Override
