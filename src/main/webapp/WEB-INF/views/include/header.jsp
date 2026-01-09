@@ -56,7 +56,6 @@
             <ul class="navbar-nav me-auto ms-4">
                 <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/public-courses">Course</a></li>
                 <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/public-classes">Class</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Flashcard</a></li>
                 <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/blog">Blog</a></li>
             </ul>
 
