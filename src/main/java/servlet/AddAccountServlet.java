@@ -35,9 +35,9 @@ public class AddAccountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
         List<String> roles = settingDAO.getRoleNames();
         request.setAttribute("roles", roles);
+        request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class AddAccountServlet extends HttpServlet {
             boolean success = userDAO.addUser(newUser);
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/accounts?success=added");
+                response.sendRedirect(request.getContextPath() + "/account-list?success=added");
             } else {
                 request.setAttribute("error", "Failed to create account");
                 request.getRequestDispatcher("WEB-INF/views/account-details.jsp").forward(request, response);

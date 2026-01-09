@@ -79,7 +79,7 @@
         <div class="card shadow-sm">
             <div class="card-body">
 
-                <% if ("success".equals(request.getParameter("status"))) { %>
+                <% if ("added".equals(request.getParameter("success"))) { %>
                 <div class="alert alert-success">New account added successfully!</div>
                 <% } %>
 

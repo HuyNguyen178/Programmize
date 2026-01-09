@@ -197,7 +197,6 @@
                         <label for="roleSelection" class="form-label">Role<span class="text-danger">*</span></label>
                         <select id="roleSelection" name="roleName" class="form-select" required>
                             <option value="">-- Select Role --</option>
-
                             <%
                                 if (roles != null) {
                                     for (String roleName : roles) {

@@ -41,7 +41,7 @@
                         boolean newStatus = "1".equals(newStatusParam);
 
                         userDAO.updateUserStatus(userId, newStatus);
-
+                        request.getSession().setAttribute("successMessage", "Account status updated successfully!");
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }

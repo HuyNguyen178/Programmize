@@ -276,7 +276,7 @@ public class SettingDAO {
 
     public List<String> getRoleNames() {
         List<String> roleNames = new ArrayList<>();
-        String sql = "SELECT setting_name FROM setting WHERE type_id = '1' ";  // Chưa có type_id
+        String sql = "SELECT setting_name FROM setting WHERE type_id = 1 ";  // Chưa có type_id
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
