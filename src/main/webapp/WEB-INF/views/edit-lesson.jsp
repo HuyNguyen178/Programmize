@@ -89,19 +89,21 @@
                         <small class="text-muted">YouTube, Vimeo, or direct video URL</small>
                     </div>
 
+                    <div class="form-group conditional-field active" id="pdfFileGroup">
+                        <label for="pdfFile" class="form-label">PDF File</label>
+                        <input type="file"
+                               id="pdfFile"
+                               name="pdfFile"
+                               class="form-control"
+                               accept="application/pdf">
+                    </div>
+
                     <%-- Duration field --%>
                     <div class="form-group">
                         <label for="duration" class="form-label">Duration (seconds)</label>
                         <input type="number" id="duration" name="duration" class="form-control"
                                min="0" value="${lesson.duration != null ? lesson.duration : 0}">
                         <small class="text-muted">e.g., 300 = 5 minutes</small>
-                    </div>
-
-                    <div class="form-group conditional-field ${lesson.lessonType.value == 'video' ? 'active' : ''}" id="videoUrlGroup">
-                        <label for="pdfUrl" class="form-label">PDF URL</label>
-                        <input type="text" id="pdfUrl" name="pdfUrl" class="form-control"
-                               value="${lesson.pdfUrl}" placeholder="">
-                        <small class="text-muted">Link .pdf file</small>
                     </div>
 
                 </div>
@@ -112,7 +114,7 @@
 
                     <div class="form-group">
                         <label for="chapterId" class="form-label">Chapter <span class="text-danger">*</span></label>
-                        <select id="chapterId" name="chapterId" class="form-select" required>
+                        <select id="chapterId" name="chapterId" class="form-select" required disabled>
                             <option value="">-- Select Chapter --</option>
                             <c:forEach items="${allChapters}" var="chapter">
                                 <option value="${chapter[0]}"

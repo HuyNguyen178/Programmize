@@ -1,5 +1,7 @@
 package servlet;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import dao.LessonDAO;
 import dao.ChapterDAO;
 import model.Lesson;
@@ -9,10 +11,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
 import service.FileValidationService;
 import service.FileValidationService.ValidationResult;
+import utils.CloudinaryUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/edit-lesson")
 @MultipartConfig(
@@ -67,9 +71,8 @@ public class EditLessonServlet extends HttpServlet {
             String content = request.getParameter("content");
             String lessonType = request.getParameter("lessonType");
             String videoUrl = request.getParameter("videoUrl");
-            String pdfUrl = request.getParameter("pdfUrl");
 
-            int orderNumber = lesson.getOrderIndex();  // Fixed: use getOrderIndex()
+            int orderNumber = lesson.getOrderIndex();
             String orderStr = request.getParameter("orderNumber");
             if (orderStr != null && !orderStr.trim().isEmpty()) {
                 orderNumber = Integer.parseInt(orderStr);
@@ -81,34 +84,35 @@ public class EditLessonServlet extends HttpServlet {
                 duration = Integer.parseInt(durationStr);
             }
 
-            // Handle file upload with validation
-            Part filePart = request.getPart("lessonFile");
+            String pdfUrl = lesson.getPdfUrl();
+            Part pdfPart = request.getPart("pdfFile");
+            if (pdfPart != null && pdfPart.getSize() > 0) {
 
-            if (filePart != null && filePart.getSize() > 0) {
-                String filename = filePart.getSubmittedFileName();
-                String contentType = filePart.getContentType();
-                long fileSize = filePart.getSize();
-
-                ValidationResult validationResult = fileValidator.validate(
-                    filename, contentType, fileSize, filePart.getInputStream()
-                );
-
-                if (!validationResult.isValid()) {
-                    request.setAttribute("error", "File upload failed: " + validationResult.getMessage());
-                    request.getRequestDispatcher("/WEB-INF/views/edit-lesson.jsp").forward(request, response);
+                if (!"application/pdf".equals(pdfPart.getContentType())) {
+                    request.getSession().setAttribute("errorMessage", "Only PDF files are allowed");
+                    request.setAttribute("lessonName", lessonName);
+                    request.setAttribute("content", content);
+                    request.setAttribute("lessonType", lessonType);
+                    request.setAttribute("videoUrl", videoUrl);
+                    request.getRequestDispatcher("/WEB-INF/views/add-lesson.jsp").forward(request, response);
                     return;
                 }
 
-                String subDir = contentType.startsWith("video/") ? "videos" : "documents";
-                String safeFilename = fileValidator.sanitizeFilename(filename);
-                String uploadDir = getServletContext().getRealPath("/uploads/lessons/" + subDir);
-                File dir = new File(uploadDir);
-                if (!dir.exists()) dir.mkdirs();
+                Cloudinary cloudinary = CloudinaryUtil.getCloudinary();
 
-                filePart.write(uploadDir + File.separator + safeFilename);
-                videoUrl = "uploads/lessons/" + subDir + "/" + safeFilename;
-            } else if (videoUrl == null || videoUrl.trim().isEmpty()) {
-                videoUrl = lesson.getVideoUrl();
+                byte[] fileBytes = pdfPart.getInputStream().readAllBytes();
+
+                Map uploadResult = cloudinary.uploader().upload(
+                        fileBytes,
+                        ObjectUtils.asMap(
+                                "resource_type", "raw",
+                                "public_id", "lesson_" + lessonId,
+                                "overwrite", true,
+                                "folder", "lessons/pdfs"
+                        )
+                );
+
+                pdfUrl = uploadResult.get("secure_url").toString();
             }
 
             // Update lesson object

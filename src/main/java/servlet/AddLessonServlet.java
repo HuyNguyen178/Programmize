@@ -101,9 +101,8 @@ public class AddLessonServlet extends HttpServlet {
                 Map uploadResult = cloudinary.uploader().upload(
                         fileBytes,
                         ObjectUtils.asMap(
-                                "resource_type", "raw",     // BẮT BUỘC cho PDF
-                                "folder", "lessons/pdfs",
-                                "public_id", System.currentTimeMillis() + "_lesson_pdf"
+                                "resource_type", "raw",
+                                "folder", "lessons/pdfs"
                         )
                 );
 
