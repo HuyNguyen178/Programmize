@@ -113,6 +113,8 @@ public class EditPosterServlet extends HttpServlet {
                     bytes,
                     ObjectUtils.asMap(
                             "folder", "blog_thumbnail",
+                            "public_id", "poster_" + poster.getPostId(),
+                            "overwrite", true,
                             "resource_type", "image"
                     )
             );

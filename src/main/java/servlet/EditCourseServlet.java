@@ -134,6 +134,8 @@ public class EditCourseServlet extends HttpServlet {
                         fileBytes,
                         ObjectUtils.asMap(
                                 "folder", "course_thumbnail",
+                                "public_id", "course_" + courseId,
+                                "overwrite", true,
                                 "resource_type", "image"
                         )
                 );

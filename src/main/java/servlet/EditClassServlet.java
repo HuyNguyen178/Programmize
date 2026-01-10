@@ -125,6 +125,8 @@ public class EditClassServlet extends HttpServlet {
                         fileBytes,
                         ObjectUtils.asMap(
                                 "folder", "class_thumbnail",
+                                "public_id", "class_" + classId,
+                                "overwrite", true,
                                 "resource_type", "image"
                         )
                 );
