@@ -4,6 +4,7 @@ import dao.UserDAO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import utils.EmailUtil;
 import utils.PasswordUtil;
 
 import java.io.IOException;
@@ -56,6 +57,9 @@ public class RegisterServlet extends HttpServlet {
             error = true;
         } else if (dao.checkUserOrEmailExists(email)) {
             request.setAttribute("emailError", "Email already exists!");
+            error = true;
+        } else if (!EmailUtil.isValidEmail(email)) {
+            request.setAttribute("emailError", "Email is invalid!");
             error = true;
         }
 

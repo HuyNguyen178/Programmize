@@ -12,12 +12,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.Setting;
 import model.User;
+import utils.EmailUtil;
 import utils.FileUtil;
 import utils.PasswordUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/import-accounts")
@@ -45,6 +48,16 @@ public class ImportAccountsServlet extends HttpServlet {
             return;
         }
 
+        String contentType = filePart.getContentType();
+        if (!"text/csv".equals(contentType) && !"application/vnd.ms-excel".equals(contentType)) {
+            request.getSession().setAttribute("errorMessage", "Invalid file type. Please upload a CSV file.");
+            response.sendRedirect("account-list?success=false");
+            return;
+        }
+
+        int totalAccount = 0;
+        int successCount = 0;
+        List<String> errors = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filePart.getInputStream()))) {
             String headerLine = bufferedReader.readLine();
             String[] headers = headerLine.split(",");
@@ -57,78 +70,83 @@ public class ImportAccountsServlet extends HttpServlet {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
+                totalAccount++;
                 String[] data = line.split(",");
 
                 User user = new User();
                 String fullName = FileUtil.getValue(indexMap, data, "full_name");
                 if (fullName == null) {
-                    request.getSession().setAttribute("errorMessage", "Full name is null somewhere, please check your file again");
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Full name is null somewhere, please check your file again");
+                    continue;
                 }
                 user.setFullname(fullName);
 
                 String username = FileUtil.getValue(indexMap, data, "username");
                 if (username == null) {
-                    request.getSession().setAttribute("errorMessage", "Username is null at user " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Username is blank at user " + user.getFullname());
+                    continue;
                 }
                 if (userDAO.checkUserOrEmailExists(username)) {
-                    request.getSession().setAttribute("errorMessage", "Username " + username + " has already existed at account " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Username " + username + " at account " + user.getFullname() + " has already existed!");
+                    continue;
                 }
                 user.setUsername(username);
 
                 String email = FileUtil.getValue(indexMap, data, "email");
                 if (email == null) {
-                    request.getSession().setAttribute("errorMessage", "Email is null at user " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Email is blank at user " + user.getFullname());
+                    continue;
+                }
+                if (!EmailUtil.isValidEmail(email)) {
+                    errors.add("Email is invalid at user " + user.getFullname());
+                    continue;
                 }
                 if (userDAO.checkUserOrEmailExists(email)) {
-                    request.getSession().setAttribute("errorMessage", "Email " + email + " has already existed at account " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Email " + email + " at account " + user.getFullname() + " has already existed!");
+                    continue;
                 }
                 user.setEmail(email);
 
                 String roleName = FileUtil.getValue(indexMap, data, "role");
                 if (roleName == null) {
-                    request.getSession().setAttribute("errorMessage", "Role is null at user " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Role is blank at user " + user.getFullname());
+                    continue;
                 }
 
+                String role = roleName.substring(0, 1).toUpperCase() + roleName.substring(1);
                 Setting setting = settingDAO.findRoleByName(roleName);
                 if (setting == null) {
-                    request.getSession().setAttribute("errorMessage", "Cannot find role " + roleName + " at account " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Cannot find role " + roleName + " at account " + user.getFullname());
+                    continue;
                 }
-                user.setRoleName(roleName);
+                user.setRoleName(role);
 
                 String password = FileUtil.getValue(indexMap, data, "password");
                 if (password == null) {
-                    request.getSession().setAttribute("errorMessage", "Password is null at user " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Password is blank at user " + user.getFullname());
+                    continue;
                 }
                 if (!PasswordUtil.isValidPassword(password)) {
-                    request.getSession().setAttribute("errorMessage", "Invalid password at account " + user.getFullname());
-                    response.sendRedirect("account-list?success=false");
-                    return;
+                    errors.add("Invalid password at account " + user.getFullname());
+                    continue;
                 }
                 user.setPassword(PasswordUtil.hash(password));
 
-                user.setAvatarUrl(FileUtil.getValue(indexMap, data, "avatar_url"));
-                user.setStatus(Boolean.parseBoolean(FileUtil.getValue(indexMap, data, "status")));
+                String statusStr = FileUtil.getValue(indexMap, data, "status");
+                if (!"true".equalsIgnoreCase(statusStr) && !"false".equalsIgnoreCase(statusStr)) {
+                    errors.add("Status must be true or false at user " + user.getFullname());
+                    continue;
+                }
+                user.setStatus(Boolean.parseBoolean(statusStr));
 
                 userDAO.addUser(user);
+                successCount++;
             }
 
-            request.getSession().setAttribute("successMessage", "Import successfully!");
+            if (!errors.isEmpty()) {
+                request.getSession().setAttribute("errors", errors);
+            }
+            request.getSession().setAttribute("successMessage", "Import successfully " + successCount + " of " + totalAccount + " account(s)");
             response.sendRedirect("account-list?success=true");
         } catch (Exception e) {
             e.printStackTrace();

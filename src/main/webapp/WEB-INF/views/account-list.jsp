@@ -67,13 +67,15 @@
             </div>
             <c:remove var="successMessage" scope="session"/>
         </c:if>
-        <c:if test="${not empty sessionScope.errorMessage}">
+        <c:if test="${not empty errors}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="fas fa-times-circle me-2"></i>
-                    ${sessionScope.errorMessage}
+                <c:forEach items="${errors}" var="error">
+                    ${error}
+                </c:forEach>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            <c:remove var="errorMessage" scope="session"/>
+            <c:remove var="errors" scope="session"/>
         </c:if>
 
         <div class="card shadow-sm">
@@ -112,7 +114,7 @@
                     </div>
 
                     <%-- 3. SEARCH KEYWORD & BUTTON --%>
-                    <div class="col-md-4 d-flex">
+                    <div class="col-md-3 d-flex">
                         <input type="text" name="search" class="form-control me-2"
                                placeholder="Search by name or email..."
                                value="<%= currentKeyword != null ? currentKeyword : "" %>">
@@ -122,7 +124,12 @@
                     </div>
 
                     <%-- 4. ADD NEW BUTTON  --%>
-                    <div class="col-md-3 d-flex ms-md-auto justify-content-end">
+                    <div class="col-md-5 d-flex ms-md-auto justify-content-end">
+                        <a href="${pageContext.request.contextPath}/download-template?type=account"
+                           class="btn btn-secondary"
+                           style="margin-right: 10px">
+                            <i class="fas fa-download me-1"></i> Download Template
+                        </a>
                         <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
                             <i class="fas fa-file-import me-1"></i> Import File (.csv)
                         </button>
