@@ -67,11 +67,13 @@
             </div>
             <c:remove var="successMessage" scope="session"/>
         </c:if>
-        <c:if test="${not empty errors}">
+        <c:if test="${not empty sessionScope.errors}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-times-circle me-2"></i>
-                <c:forEach items="${errors}" var="error">
-                    ${error}
+                <c:forEach items="${sessionScope.errors}" var="error">
+                    <div>
+                        <i class="fas fa-times-circle me-2"></i>
+                            ${error}
+                    </div>
                 </c:forEach>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>

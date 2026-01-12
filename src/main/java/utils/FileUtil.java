@@ -14,17 +14,8 @@ public class FileUtil {
         return value.isEmpty() ? null : value;
     }
 
-    public static String[] parseClassCategories(Map<String, Integer> indexMap, String[] data) {
-        String raw = getValue(indexMap, data, "class_categories");
-        if (raw == null) {
-            return null;
-        }
-
-        return Arrays.stream(raw.split("\\|")).map(String::trim).filter(s -> !s.isEmpty()).toArray(String[]::new);
-    }
-
-    public static String[] parseCourseCategories(Map<String, Integer> indexMap, String[] data) {
-        String raw = getValue(indexMap, data, "course_categories");
+    public static String[] parseCategories(Map<String, Integer> indexMap, String[] data) {
+        String raw = getValue(indexMap, data, "categories");
         if (raw == null) {
             return null;
         }

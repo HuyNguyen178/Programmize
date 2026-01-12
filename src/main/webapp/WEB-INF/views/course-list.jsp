@@ -44,13 +44,17 @@
                 </div>
                 <c:remove var="successMessage" scope="session"/>
             </c:if>
-            <c:if test="${not empty sessionScope.errorMessage}">
+            <c:if test="${not empty sessionScope.errors}">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-times-circle me-2"></i>
-                        ${sessionScope.errorMessage}
+                    <c:forEach items="${sessionScope.errors}" var="error">
+                        <div>
+                            <i class="fas fa-times-circle me-2"></i>
+                                ${error}
+                        </div>
+                    </c:forEach>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                <c:remove var="errorMessage" scope="session"/>
+                <c:remove var="errors" scope="session"/>
             </c:if>
 
         <%-- Sử dụng card shadow-sm giống account-list.jsp --%>
@@ -89,7 +93,7 @@
                     </div>
 
                     <%-- 3. FILTER BY STATUS (col-md-2) --%>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <select class="form-select" name="status" onchange="this.form.submit()">
                             <option value="">All Statuses</option>
                             <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
@@ -98,7 +102,7 @@
                     </div>
 
                     <%-- 4. SEARCH KEYWORD & BUTTON (col-md-4) - SỬ DỤNG ms-auto ĐỂ CĂN PHẢI, nhưng cấu trúc 12 cột không cho phép 3 + 3 + 2 + 4. Giữ nguyên 3 + 3 + 2, và dùng col-md-4 còn lại cho search. --%>
-                    <div class="col-md-3 d-flex">
+                    <div class="col-md-2 d-flex">
                         <input type="text" name="search" class="form-control me-2"
                                placeholder="Search courses..."
                                value="${searchKeyword}">
@@ -108,8 +112,13 @@
                     </div>
 
                     <%-- 5. ADD NEW BUTTON (col-md-3 d-flex ms-md-auto justify-content-end) --%>
-                    <div class="col-md-3 d-flex ms-md-auto justify-content-end">
+                    <div class="col-md-5 d-flex ms-md-auto justify-content-end">
                         <div class="d-flex justify-content-end">
+                            <a href="${pageContext.request.contextPath}/download-template?type=course"
+                               class="btn btn-secondary"
+                               style="margin-right: 10px">
+                                <i class="fas fa-download me-1"></i> Download Template
+                            </a>
                             <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
                                 <i class="fas fa-file-import me-1"></i> Import File (.csv)
                             </button>

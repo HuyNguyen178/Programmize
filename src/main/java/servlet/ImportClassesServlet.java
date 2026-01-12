@@ -19,10 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @WebServlet("/import-classes")
 @MultipartConfig(
@@ -51,7 +50,11 @@ public class ImportClassesServlet extends HttpServlet {
             return;
         }
 
+        List<String> errors = new ArrayList<>();
+        int totalClasses = 0;
+        int successCount = 0;
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filePart.getInputStream()))) {
+            bufferedReader.readLine();
             String headerLine = bufferedReader.readLine();
             String[] headers = headerLine.split(",");
 
@@ -63,108 +66,133 @@ public class ImportClassesServlet extends HttpServlet {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
+                totalClasses++;
                 String[] data = line.split(",");
 
                 Class clazz = new Class();
-                String className = FileUtil.getValue(indexMap, data, "class_name");
+                String className = FileUtil.getValue(indexMap, data, "name");
                 if (className == null) {
-                    request.getSession().setAttribute("errorMessage", "Class name cannot be null, please check your file again!");
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("Class name is blank somewhere, please check your file again!");
+                    continue;
+                }
+                if (classDAO.doesClassNameExist(clazz.getName())) {
+                    errors.add("Class name has already existed at class " + clazz.getName());
+                    continue;
                 }
                 clazz.setName(className);
 
-                String[] categories = FileUtil.parseClassCategories(indexMap, data);
+                String[] categories = FileUtil.parseCategories(indexMap, data);
                 String[] categoryIds = null;
 
                 if (categories != null && categories.length > 0) {
                     categoryIds = new String[categories.length];
 
                     for (int i = 0; i < categories.length; i++) {
-                        Setting category = settingDAO.findCategoryByName(categories[i]);
+                        String categoryName = categories[i].substring(0, 1).toUpperCase() + categories[i].substring(1);
+                        Setting category = settingDAO.findCategoryByName(categoryName);
 
                         if (category == null) {
-                            request.getSession().setAttribute(
-                                    "errorMessage",
-                                    "Cannot find category " + categories[i] + " at class " + clazz.getName()
-                            );
-                            response.sendRedirect("class-list?success=false");
-                            return;
+                            errors.add("Cannot find category " + categories[i] + " at class " + clazz.getName());
+                            continue;
                         }
 
                         categoryIds[i] = String.valueOf(category.getId());
                     }
                 }
 
-                String instructorName = FileUtil.getValue(indexMap, data, "class_instructor");
+                String instructorName = FileUtil.getValue(indexMap, data, "instructor");
+                if (instructorName == null) {
+                    errors.add("Instructor is blank at class " + clazz.getName());
+                    continue;
+                }
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
-                    request.getSession().setAttribute("errorMessage", "Cannot find instructor " + instructorName + " at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("Cannot find instructor " + instructorName + " at class " + clazz.getName());
+                    continue;
                 }
                 clazz.setInstructor(instructor);
 
                 String listedPrice = FileUtil.getValue(indexMap, data, "listed_price");
                 if (listedPrice == null) {
-                    request.getSession().setAttribute("errorMessage", "Listed Price is null at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("Listed Price is blank at class " + clazz.getName());
+                    continue;
                 }
-                clazz.setListedPrice(new BigDecimal(listedPrice));
+                try {
+                    clazz.setListedPrice(new BigDecimal(listedPrice));
+                } catch (NumberFormatException e) {
+                    errors.add("Listed Price is invalid at class " + clazz.getName());
+                    continue;
+                }
 
                 String salePrice = FileUtil.getValue(indexMap, data, "sale_price");
                 if (salePrice == null) {
-                    request.getSession().setAttribute("errorMessage", "Sale Price is null at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    clazz.setSalePrice(null);
                 }
-                clazz.setSalePrice(new BigDecimal(salePrice));
+                else {
+                    try {
+                        clazz.setSalePrice(new BigDecimal(salePrice));
+                    } catch (NumberFormatException e) {
+                        errors.add("Invalid Sale Price at class " + clazz.getName());
+                        continue;
+                    }
+                }
 
                 String startDateStr = FileUtil.getValue(indexMap, data, "start_date");
                 String endDateStr = FileUtil.getValue(indexMap, data, "end_date");
                 if (startDateStr == null) {
-                    request.getSession().setAttribute("errorMessage", "Start date is null at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("Start date is blank at class " + clazz.getName());
+                    continue;
                 }
                 if (endDateStr == null) {
-                    request.getSession().setAttribute("errorMessage", "End date is null at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("End date is blank at class " + clazz.getName());
+                    continue;
                 }
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy");
-                Date startDate = formatter.parse(startDateStr);
-                Date endDate = formatter.parse(endDateStr);
+                Date startDate;
+                Date endDate;
+
+                try {
+                    startDate = formatter.parse(startDateStr);
+                } catch (ParseException e) {
+                    errors.add("Start Date is invalid at class " + clazz.getName());
+                    continue;
+                }
                 clazz.setStartDate(startDate);
+                try {
+                    endDate = formatter.parse(endDateStr);
+                } catch (ParseException e) {
+                    errors.add("End Date is invalid at class " + clazz.getName());
+                    continue;
+                }
                 clazz.setEndDate(endDate);
 
                 clazz.setDescription(FileUtil.getValue(indexMap, data, "description"));
-                clazz.setThumbnailUrl(FileUtil.getValue(indexMap, data, "thumbnail_url"));
-                clazz.setStatus(Boolean.parseBoolean(FileUtil.getValue(indexMap, data, "status")));
+
+                String statusStr = FileUtil.getValue(indexMap, data, "status");
+                if (!"true".equalsIgnoreCase(statusStr) && !"false".equalsIgnoreCase(statusStr)) {
+                    errors.add("Status must be true or false at course " + clazz.getName());
+                    continue;
+                }
+                clazz.setStatus(Boolean.parseBoolean(statusStr));
 
                 if (startDate != null && endDate != null && endDate.before(startDate)) {
-                    request.getSession().setAttribute("errorMessage", "End date must be after start date at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("End date must be after start date at class " + clazz.getName());
+                    continue;
                 }
 
                 if (clazz.getListedPrice().compareTo(clazz.getSalePrice()) < 0) {
-                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
-                }
-
-                if (classDAO.doesClassNameExist(clazz.getName())) {
-                    request.getSession().setAttribute("errorMessage", "Class name has already existed at class " + clazz.getName());
-                    response.sendRedirect("class-list?success=false");
-                    return;
+                    errors.add("Listed Price must be greater than Sale Price at class " + clazz.getName());
+                    continue;
                 }
 
                 classDAO.insertClass(clazz, categoryIds);
+                successCount++;
             }
 
-            request.getSession().setAttribute("successMessage", "Imported successfully!");
+            if (!errors.isEmpty()) {
+                request.getSession().setAttribute("errors", errors);
+            }
+            request.getSession().setAttribute("successMessage", "Imported successfully " + successCount + " of " + totalClasses + " class(es)");
             response.sendRedirect("class-list?success=true");
         } catch (Exception e) {
             e.printStackTrace();

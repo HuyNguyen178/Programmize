@@ -76,7 +76,7 @@ public class ImportAccountsServlet extends HttpServlet {
                 User user = new User();
                 String fullName = FileUtil.getValue(indexMap, data, "full_name");
                 if (fullName == null) {
-                    errors.add("Full name is null somewhere, please check your file again");
+                    errors.add("Full name is blank somewhere, please check your file again");
                     continue;
                 }
                 user.setFullname(fullName);
@@ -147,7 +147,7 @@ public class ImportAccountsServlet extends HttpServlet {
                 request.getSession().setAttribute("errors", errors);
             }
             request.getSession().setAttribute("successMessage", "Import successfully " + successCount + " of " + totalAccount + " account(s)");
-            response.sendRedirect("account-list?success=true");
+            response.sendRedirect("account-list?");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("account-list?error=ImportFailed");

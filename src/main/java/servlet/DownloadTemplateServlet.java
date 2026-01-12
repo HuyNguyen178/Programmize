@@ -14,6 +14,7 @@ public class DownloadTemplateServlet extends HttpServlet {
         String type = request.getParameter("type");
         String headers = "";
         String filename = "";
+        String attention = "";
 
         switch (type) {
             case "account":
@@ -21,11 +22,13 @@ public class DownloadTemplateServlet extends HttpServlet {
                 filename = "account_template.csv";
                 break;
             case "course":
-                headers = "course_id,course_name,description,credits";
+                attention = "ATTENTION: Each category must be separated by '|' when courses have more than 1 categories\n";
+                headers = "name,categories,instructor,listed_price,sale_price,duration,description,status";
                 filename = "course_template.csv";
                 break;
             case "class":
-                headers = "class_id,class_name,course_id,instructor";
+                attention = "ATTENTION: Each category must be separated by '|' when classes have more than 1 categories. Date must be correct in format: dd-MM-yyyy\n";
+                headers = "name,categories,instructor,listed_price,sale_price,start_date,end_date,description,status";
                 filename = "class_template.csv";
                 break;
             default:
@@ -37,6 +40,7 @@ public class DownloadTemplateServlet extends HttpServlet {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
         try (PrintWriter writer = response.getWriter()) {
+            writer.write(attention);
             writer.println(headers);
         }
     }

@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @WebServlet("/import-courses")
 @MultipartConfig(
@@ -53,7 +51,11 @@ public class ImportCoursesServlet extends HttpServlet {
             return;
         }
 
+        List<String> errors = new ArrayList<>();
+        int totalCourse = 0;
+        int successCount = 0;
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filePart.getInputStream()))) {
+            bufferedReader.readLine();
             String headerLine = bufferedReader.readLine();
             String[] headers = headerLine.split(",");
 
@@ -65,18 +67,18 @@ public class ImportCoursesServlet extends HttpServlet {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
+                totalCourse++;
                 String[] data = line.split(",");
 
                 Course course = new Course();
-                String courseName = FileUtil.getValue(indexMap, data, "course_name");
+                String courseName = FileUtil.getValue(indexMap, data, "name");
                 if (courseName == null) {
-                    request.getSession().setAttribute("errorMessage", "Course name cannot be null, please check your file again!");
-                    response.sendRedirect("course-list?success=false");
-                    return;
+                    errors.add("Course name is blank somewhere, please check your file again!");
+                    continue;
                 }
                 course.setCourseName(courseName);
 
-                String[] categories = FileUtil.parseCourseCategories(indexMap, data);
+                String[] categories = FileUtil.parseCategories(indexMap, data);
                 String[] categoryIds = null;
 
                 if (categories != null && categories.length > 0) {
@@ -86,67 +88,82 @@ public class ImportCoursesServlet extends HttpServlet {
                         Setting category = settingDAO.findCategoryByName(categories[i]);
 
                         if (category == null) {
-                            request.getSession().setAttribute(
-                                    "errorMessage",
-                                    "Cannot find category " + categories[i] + " at course " + course.getCourseName()
-                            );
-                            response.sendRedirect("course-list?success=false");
-                            return;
+                            errors.add("Cannot find category " + categories[i] + " at course " + course.getCourseName());
+                            continue;
                         }
 
                         categoryIds[i] = String.valueOf(category.getId());
                     }
                 }
 
-                String instructorName = FileUtil.getValue(indexMap, data, "course_instructor");
+                String instructorName = FileUtil.getValue(indexMap, data, "instructor");
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
-                    request.getSession().setAttribute("errorMessage", "Cannot find instructor " + instructorName + " at course " + course.getCourseName());
-                    response.sendRedirect("course-list?success=false");
-                    return;
+                    errors.add("Cannot find instructor " + instructorName + " at course " + course.getCourseName());
+                    continue;
                 }
                 course.setInstructorId(instructor.getId());
 
                 String listedPrice = FileUtil.getValue(indexMap, data, "listed_price");
                 if (listedPrice == null) {
-                    request.getSession().setAttribute("errorMessage", "Listed Price is null at course " + course.getCourseName());
-                    response.sendRedirect("course-list?success=false");
-                    return;
+                    errors.add("Listed Price is blank at course " + course.getCourseName());
+                    continue;
                 }
-                course.setListedPrice(new BigDecimal(listedPrice));
+                try {
+                    course.setListedPrice(new BigDecimal(listedPrice));
+                } catch (NumberFormatException e) {
+                    errors.add("Listed Price is invalid at course " + course.getCourseName());
+                    continue;
+                }
 
                 String salePrice = FileUtil.getValue(indexMap, data, "sale_price");
                 if (salePrice == null) {
-                    request.getSession().setAttribute("errorMessage", "Sale Price is null at course " + course.getCourseName());
-                    response.sendRedirect("course-list?success=false");
-                    return;
+                    course.setSalePrice(null);
                 }
-                course.setSalePrice(new BigDecimal(salePrice));
+                else {
+                    try {
+                        course.setSalePrice(new BigDecimal(salePrice));
+                    } catch (NumberFormatException e) {
+                        errors.add("Sale Price is invalid at course " + course.getCourseName());
+                        continue;
+                    }
+                }
 
                 String duration = FileUtil.getValue(indexMap, data, "duration");
                 if (duration == null) {
-                    request.getSession().setAttribute("errorMessage", "Duration is null at course " + course.getCourseName());
-                    response.sendRedirect("course-list?success=false");
-                    return;
+                    errors.add("Duration is blank at course " + course.getCourseName());
+                    continue;
                 }
-                course.setDuration(Integer.valueOf(duration));
+                try {
+                    course.setDuration(Integer.valueOf(duration));
+                } catch (NumberFormatException e) {
+                    errors.add("Duration is invalid at course " + course.getCourseName());
+                    continue;
+                }
 
                 course.setDescription(FileUtil.getValue(indexMap, data, "description"));
-                course.setThumbnailUrl(FileUtil.getValue(indexMap, data, "thumbnail_url"));
-                course.setStatus(Boolean.parseBoolean(FileUtil.getValue(indexMap, data, "status")));
+                String statusStr = FileUtil.getValue(indexMap, data, "status");
+                if (!"true".equalsIgnoreCase(statusStr) && !"false".equalsIgnoreCase(statusStr)) {
+                    errors.add("Status must be true or false at course " + course.getCourseName());
+                    continue;
+                }
+                course.setStatus(Boolean.parseBoolean(statusStr));
 
 
                 if (course.getListedPrice().compareTo(course.getSalePrice()) < 0) {
-                    request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price at course " + course.getCourseName());
-                    response.sendRedirect("course-list?success=false");
-                    return;
+                    errors.add("Listed Price must be greater than Sale Price at course " + course.getCourseName());
+                    continue;
                 }
 
                 courseDAO.addCourse(course, categoryIds);
+                successCount++;
             }
 
-            request.getSession().setAttribute("successMessage", "Imported successfully!");
-            response.sendRedirect("course-list?success=true");
+            if (!errors.isEmpty()) {
+                request.getSession().setAttribute("errors", errors);
+            }
+            request.getSession().setAttribute("successMessage", "Imported successfully " + successCount + " of " + totalCourse + " course(s)");
+            response.sendRedirect("course-list?");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("course-list?error=ImportFailed");
