@@ -12,12 +12,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.Setting;
 import model.User;
+import org.apache.poi.ss.usermodel.*;
 import utils.EmailUtil;
-import utils.FileUtil;
+import utils.ExcelFileUtil;
 import utils.PasswordUtil;
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,99 +42,95 @@ public class ImportAccountsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Part filePart = request.getPart("accountFile");
-
-        if (filePart == null || filePart.getSize() == 0) {
-            response.sendRedirect("account-list?error=NoFile");
-            return;
-        }
-
-        String contentType = filePart.getContentType();
-        if (!"text/csv".equals(contentType) && !"application/vnd.ms-excel".equals(contentType)) {
-            request.getSession().setAttribute("errorMessage", "Invalid file type. Please upload a CSV file.");
-            response.sendRedirect("account-list?success=false");
-            return;
-        }
-
+        List<String> errors = new ArrayList<>();
         int totalAccount = 0;
         int successCount = 0;
-        List<String> errors = new ArrayList<>();
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filePart.getInputStream()))) {
-            String headerLine = bufferedReader.readLine();
-            String[] headers = headerLine.split(",");
 
-            Map<String, Integer> indexMap = new HashMap<>();
-            for (int i = 0; i < headers.length; i++) {
-                indexMap.put(headers[i].trim(), i);
+        if (filePart == null || filePart.getSize() == 0) {
+            errors.add("No file chosen!");
+            request.getSession().setAttribute("errors", errors);
+            response.sendRedirect("account-list");
+            return;
+        }
+
+        String fileName = filePart.getSubmittedFileName().toLowerCase();
+        if (!fileName.endsWith(".xlsx")) {
+            errors.add("Invalid file type. Please upload an Excel file!");
+            request.getSession().setAttribute("errors", errors);
+            response.sendRedirect("account-list");
+            return;
+        }
+
+        try (Workbook workbook = WorkbookFactory.create(filePart.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            Row headerRow = sheet.getRow(0);
+            if (headerRow == null) {
+                errors.add("Excel File has no header row!");
+                request.getSession().setAttribute("errors", errors);
+                response.sendRedirect("account-list");
+                return;
             }
 
-            String line;
+            Map<String, Integer> indexMap = new HashMap<>();
+            for (Cell cell : headerRow) {
+                indexMap.put(cell.getStringCellValue().trim(), cell.getColumnIndex());
+            }
 
-            while ((line = bufferedReader.readLine()) != null) {
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
                 totalAccount++;
-                String[] data = line.split(",");
-
                 User user = new User();
-                String fullName = FileUtil.getValue(indexMap, data, "full_name");
-                if (fullName == null) {
-                    errors.add("Full name is blank somewhere, please check your file again");
+
+                String fullName = ExcelFileUtil.getCell(row, indexMap.get("full_name"));
+                if (fullName.isEmpty()) {
+                    errors.add("Full name is blank at row " + (i + 1));
                     continue;
                 }
                 user.setFullname(fullName);
 
-                String username = FileUtil.getValue(indexMap, data, "username");
-                if (username == null) {
-                    errors.add("Username is blank at user " + user.getFullname());
+                String username = ExcelFileUtil.getCell(row, indexMap.get("username"));
+                if (username.isEmpty()) {
+                    errors.add("Username is blank at row " + (i + 1));
                     continue;
                 }
                 if (userDAO.checkUserOrEmailExists(username)) {
-                    errors.add("Username " + username + " at account " + user.getFullname() + " has already existed!");
+                    errors.add("Username at row " + (i + 1) + " has already existed!");
                     continue;
                 }
                 user.setUsername(username);
 
-                String email = FileUtil.getValue(indexMap, data, "email");
-                if (email == null) {
-                    errors.add("Email is blank at user " + user.getFullname());
-                    continue;
-                }
+                String email = ExcelFileUtil.getCell(row, indexMap.get("email"));
                 if (!EmailUtil.isValidEmail(email)) {
-                    errors.add("Email is invalid at user " + user.getFullname());
+                    errors.add("Email is invalid at row " + (i + 1));
                     continue;
                 }
                 if (userDAO.checkUserOrEmailExists(email)) {
-                    errors.add("Email " + email + " at account " + user.getFullname() + " has already existed!");
+                    errors.add("Email at row " + (i + 1) + " has already existed!");
                     continue;
                 }
                 user.setEmail(email);
 
-                String roleName = FileUtil.getValue(indexMap, data, "role");
-                if (roleName == null) {
-                    errors.add("Role is blank at user " + user.getFullname());
-                    continue;
-                }
-
-                String role = roleName.substring(0, 1).toUpperCase() + roleName.substring(1);
+                String roleName = ExcelFileUtil.getCell(row, indexMap.get("role"));
                 Setting setting = settingDAO.findRoleByName(roleName);
                 if (setting == null) {
-                    errors.add("Cannot find role " + roleName + " at account " + user.getFullname());
+                    errors.add("Role not found at row " + (i + 1));
                     continue;
                 }
-                user.setRoleName(role);
+                user.setRoleName(roleName.substring(0, 1).toUpperCase() + roleName.substring(1));
 
-                String password = FileUtil.getValue(indexMap, data, "password");
-                if (password == null) {
-                    errors.add("Password is blank at user " + user.getFullname());
-                    continue;
-                }
+                String password = ExcelFileUtil.getCell(row, indexMap.get("password"));
                 if (!PasswordUtil.isValidPassword(password)) {
-                    errors.add("Invalid password at account " + user.getFullname());
+                    errors.add("Invalid password at row " + (i + 1));
                     continue;
                 }
                 user.setPassword(PasswordUtil.hash(password));
 
-                String statusStr = FileUtil.getValue(indexMap, data, "status");
+                String statusStr = ExcelFileUtil.getCell(row, indexMap.get("status"));
                 if (!"true".equalsIgnoreCase(statusStr) && !"false".equalsIgnoreCase(statusStr)) {
-                    errors.add("Status must be true or false at user " + user.getFullname());
+                    errors.add("Status must be true or false at row " + (i + 1));
                     continue;
                 }
                 user.setStatus(Boolean.parseBoolean(statusStr));
@@ -146,8 +142,9 @@ public class ImportAccountsServlet extends HttpServlet {
             if (!errors.isEmpty()) {
                 request.getSession().setAttribute("errors", errors);
             }
-            request.getSession().setAttribute("successMessage", "Import successfully " + successCount + " of " + totalAccount + " account(s)");
-            response.sendRedirect("account-list?");
+
+            request.getSession().setAttribute("successMessage","Import successfully " + successCount + " of " + totalAccount + " account(s)");
+            response.sendRedirect("account-list");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("account-list?error=ImportFailed");

@@ -14,10 +14,14 @@ import jakarta.servlet.http.Part;
 import model.Class;
 import model.Setting;
 import model.User;
-import utils.FileUtil;
-import java.io.BufferedReader;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import utils.ExcelFileUtil;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,144 +48,151 @@ public class ImportClassesServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Part filePart = request.getPart("classFile");
-
-        if (filePart == null || filePart.getSize() == 0) {
-            response.sendRedirect("class-list?error=NoFile");
-            return;
-        }
-
         List<String> errors = new ArrayList<>();
         int totalClasses = 0;
         int successCount = 0;
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filePart.getInputStream()))) {
-            bufferedReader.readLine();
-            String headerLine = bufferedReader.readLine();
-            String[] headers = headerLine.split(",");
 
-            Map<String, Integer> indexMap = new HashMap<>();
-            for (int i = 0; i < headers.length; i++) {
-                indexMap.put(headers[i].trim(), i);
+        if (filePart == null || filePart.getSize() == 0) {
+            errors.add("No file chosen!");
+            request.getSession().setAttribute("errors", errors);
+            response.sendRedirect("class-list");
+            return;
+        }
+
+        String fileName = filePart.getSubmittedFileName().toLowerCase();
+        if (!fileName.endsWith(".xlsx")) {
+            errors.add("Invalid file type. Please upload an Excel file!");
+            request.getSession().setAttribute("errors", errors);
+            response.sendRedirect("class-list");
+            return;
+        }
+
+        try (Workbook workbook = WorkbookFactory.create(filePart.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            Row headerRow = sheet.getRow(1);
+            if (headerRow == null) {
+                errors.add("Excel file has no header row!");
+                request.getSession().setAttribute("errors", errors);
+                response.sendRedirect("class-list");
+                return;
             }
 
-            String line;
+            Map<String, Integer> indexMap = new HashMap<>();
+            for (Cell cell : headerRow) {
+                indexMap.put(cell.getStringCellValue().trim(), cell.getColumnIndex());
+            }
 
-            while ((line = bufferedReader.readLine()) != null) {
+            for (int i = 2; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
                 totalClasses++;
-                String[] data = line.split(",");
-
                 Class clazz = new Class();
-                String className = FileUtil.getValue(indexMap, data, "name");
-                if (className == null) {
-                    errors.add("Class name is blank somewhere, please check your file again!");
+
+                String className = ExcelFileUtil.getCell(row, indexMap.get("name"));
+                if (className == null || className.isEmpty()) {
+                    errors.add("Class name is blank at row " + (i + 1));
                     continue;
                 }
-                if (classDAO.doesClassNameExist(clazz.getName())) {
-                    errors.add("Class name has already existed at class " + clazz.getName());
+                if (classDAO.doesClassNameExist(className)) {
+                    errors.add("Class name already exists at row " + (i + 1));
                     continue;
                 }
                 clazz.setName(className);
 
-                String[] categories = FileUtil.parseCategories(indexMap, data);
+                Cell categoryCell = row.getCell(indexMap.get("categories"));
+                String[] categories = ExcelFileUtil.parseCategories(categoryCell);
                 String[] categoryIds = null;
-
-                if (categories != null && categories.length > 0) {
+                if (categories.length > 0) {
+                    boolean error = false;
                     categoryIds = new String[categories.length];
-
-                    for (int i = 0; i < categories.length; i++) {
-                        String categoryName = categories[i].substring(0, 1).toUpperCase() + categories[i].substring(1);
-                        Setting category = settingDAO.findCategoryByName(categoryName);
-
+                    for (int j = 0; j < categories.length; j++) {
+                        String catName = categories[j].substring(0, 1).toUpperCase() + categories[j].substring(1);
+                        Setting category = settingDAO.findCategoryByName(catName);
                         if (category == null) {
-                            errors.add("Cannot find category " + categories[i] + " at class " + clazz.getName());
-                            continue;
+                            errors.add("Cannot find category " + categories[j] + " at row " + (i + 1));
+                            error = true;
+                            break;
                         }
-
-                        categoryIds[i] = String.valueOf(category.getId());
+                        categoryIds[j] = String.valueOf(category.getId());
+                    }
+                    if (error) {
+                        continue;
                     }
                 }
 
-                String instructorName = FileUtil.getValue(indexMap, data, "instructor");
-                if (instructorName == null) {
-                    errors.add("Instructor is blank at class " + clazz.getName());
+                String instructorName = ExcelFileUtil.getCell(row, indexMap.get("instructor"));
+                if (instructorName == null || instructorName.isEmpty()) {
+                    errors.add("Instructor is blank at row " + (i + 1));
                     continue;
                 }
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
-                    errors.add("Cannot find instructor " + instructorName + " at class " + clazz.getName());
+                    errors.add("Cannot find instructor " + instructorName + " at row " + (i + 1));
                     continue;
                 }
                 clazz.setInstructor(instructor);
 
-                String listedPrice = FileUtil.getValue(indexMap, data, "listed_price");
-                if (listedPrice == null) {
-                    errors.add("Listed Price is blank at class " + clazz.getName());
+                String listedPrice = ExcelFileUtil.getCell(row, indexMap.get("listed_price"));
+                if (listedPrice == null || listedPrice.isEmpty()) {
+                    errors.add("Listed Price is blank at row " + (i + 1));
                     continue;
                 }
                 try {
                     clazz.setListedPrice(new BigDecimal(listedPrice));
                 } catch (NumberFormatException e) {
-                    errors.add("Listed Price is invalid at class " + clazz.getName());
+                    errors.add("Listed Price is invalid at row " + (i + 1));
                     continue;
                 }
 
-                String salePrice = FileUtil.getValue(indexMap, data, "sale_price");
-                if (salePrice == null) {
+                String salePrice = ExcelFileUtil.getCell(row, indexMap.get("sale_price"));
+                if (salePrice == null || salePrice.isEmpty()) {
                     clazz.setSalePrice(null);
-                }
-                else {
+                } else {
                     try {
                         clazz.setSalePrice(new BigDecimal(salePrice));
                     } catch (NumberFormatException e) {
-                        errors.add("Invalid Sale Price at class " + clazz.getName());
+                        errors.add("Sale Price is invalid at row " + (i + 1));
                         continue;
                     }
                 }
 
-                String startDateStr = FileUtil.getValue(indexMap, data, "start_date");
-                String endDateStr = FileUtil.getValue(indexMap, data, "end_date");
-                if (startDateStr == null) {
-                    errors.add("Start date is blank at class " + clazz.getName());
-                    continue;
-                }
-                if (endDateStr == null) {
-                    errors.add("End date is blank at class " + clazz.getName());
-                    continue;
-                }
+                // Dates
+                String startDateStr = ExcelFileUtil.getCell(row, indexMap.get("start_date"));
+                String endDateStr = ExcelFileUtil.getCell(row, indexMap.get("end_date"));
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy");
-                Date startDate;
-                Date endDate;
-
+                Date startDate, endDate;
                 try {
                     startDate = formatter.parse(startDateStr);
                 } catch (ParseException e) {
-                    errors.add("Start Date is invalid at class " + clazz.getName());
+                    errors.add("Start Date is invalid at row " + (i + 1));
                     continue;
                 }
-                clazz.setStartDate(startDate);
                 try {
                     endDate = formatter.parse(endDateStr);
                 } catch (ParseException e) {
-                    errors.add("End Date is invalid at class " + clazz.getName());
+                    errors.add("End Date is invalid at row " + (i + 1));
                     continue;
                 }
+                if (endDate.before(startDate)) {
+                    errors.add("End date must be after start date at row " + (i + 1));
+                    continue;
+                }
+                clazz.setStartDate(startDate);
                 clazz.setEndDate(endDate);
 
-                clazz.setDescription(FileUtil.getValue(indexMap, data, "description"));
+                clazz.setDescription(ExcelFileUtil.getCell(row, indexMap.get("description")));
 
-                String statusStr = FileUtil.getValue(indexMap, data, "status");
+                String statusStr = ExcelFileUtil.getCell(row, indexMap.get("status"));
                 if (!"true".equalsIgnoreCase(statusStr) && !"false".equalsIgnoreCase(statusStr)) {
-                    errors.add("Status must be true or false at course " + clazz.getName());
+                    errors.add("Status must be true or false at row " + (i + 1));
                     continue;
                 }
                 clazz.setStatus(Boolean.parseBoolean(statusStr));
 
-                if (startDate != null && endDate != null && endDate.before(startDate)) {
-                    errors.add("End date must be after start date at class " + clazz.getName());
-                    continue;
-                }
-
-                if (clazz.getListedPrice().compareTo(clazz.getSalePrice()) < 0) {
-                    errors.add("Listed Price must be greater than Sale Price at class " + clazz.getName());
+                if (clazz.getSalePrice() != null && clazz.getListedPrice().compareTo(clazz.getSalePrice()) < 0) {
+                    errors.add("Listed Price must be greater than Sale Price at row " + (i + 1));
                     continue;
                 }
 
@@ -192,8 +203,8 @@ public class ImportClassesServlet extends HttpServlet {
             if (!errors.isEmpty()) {
                 request.getSession().setAttribute("errors", errors);
             }
-            request.getSession().setAttribute("successMessage", "Imported successfully " + successCount + " of " + totalClasses + " class(es)");
-            response.sendRedirect("class-list?success=true");
+            request.getSession().setAttribute("successMessage","Imported successfully " + successCount + " of " + totalClasses + " class(es)");
+            response.sendRedirect("class-list");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("class-list?error=ImportFailed");

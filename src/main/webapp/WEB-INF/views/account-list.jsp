@@ -133,7 +133,7 @@
                             <i class="fas fa-download me-1"></i> Download Template
                         </a>
                         <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                            <i class="fas fa-file-import me-1"></i> Import File (.csv)
+                            <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
                         </button>
                         <a href="add-account" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
                     </div>
@@ -143,7 +143,7 @@
                     <input type="file"
                            id="accountFile"
                            name="accountFile"
-                           accept=".csv"
+                           accept=".xlsx"
                            onchange="submitImport()"
                            style="display:none;">
                 </form>
@@ -285,7 +285,7 @@
     }
 
     function submitImport() {
-        if (confirm("Import this CSV file now?")) {
+        if (confirm("Import this Excel file now?")) {
             document.getElementById("importForm").submit();
         }
     }

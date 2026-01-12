@@ -120,7 +120,7 @@
                                 <i class="fas fa-download me-1"></i> Download Template
                             </a>
                             <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                                <i class="fas fa-file-import me-1"></i> Import File (.csv)
+                                <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
                             </button>
                             <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
                             <a href="${pageContext.request.contextPath}/add-course" class="btn btn-success">
@@ -134,7 +134,7 @@
                         <input type="file"
                                id="courseFile"
                                name="courseFile"
-                               accept=".csv"
+                               accept=".xlsx"
                                onchange="submitImport()"
                                style="display:none;">
                     </form>
@@ -285,7 +285,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
 
 <script>
     function triggerImport() {
@@ -293,7 +293,7 @@
     }
 
     function submitImport() {
-        if (confirm("Import this CSV file now?")) {
+        if (confirm("Import this Excel file now?")) {
             document.getElementById("importForm").submit();
         }
     }

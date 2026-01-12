@@ -11,17 +11,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import model.Class;
 import model.Course;
 import model.Setting;
 import model.User;
-import utils.FileUtil;
-
-import java.io.BufferedReader;
+import org.apache.poi.ss.usermodel.*;
+import utils.ExcelFileUtil;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @WebServlet("/import-courses")
@@ -45,113 +41,129 @@ public class ImportCoursesServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Part filePart = request.getPart("courseFile");
-
-        if (filePart == null || filePart.getSize() == 0) {
-            response.sendRedirect("course-list?error=NoFile");
-            return;
-        }
-
         List<String> errors = new ArrayList<>();
         int totalCourse = 0;
         int successCount = 0;
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filePart.getInputStream()))) {
-            bufferedReader.readLine();
-            String headerLine = bufferedReader.readLine();
-            String[] headers = headerLine.split(",");
 
+        if (filePart == null || filePart.getSize() == 0) {
+            errors.add("No file chosen!");
+            request.getSession().setAttribute("errors", errors);
+            response.sendRedirect("course-list");
+            return;
+        }
+
+        String fileName = filePart.getSubmittedFileName().toLowerCase();
+        if (!fileName.endsWith(".xlsx")) {
+            errors.add("Invalid file type. Please upload an Excel file!");
+            request.getSession().setAttribute("errors", errors);
+            response.sendRedirect("course-list");
+            return;
+        }
+
+        try (Workbook workbook = WorkbookFactory.create(filePart.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            Row headerRow = sheet.getRow(1);
+            if (headerRow == null) {
+                errors.add("Excel file has no header row!");
+                request.getSession().setAttribute("errors", errors);
+                response.sendRedirect("course-list");
+                return;
+            }
             Map<String, Integer> indexMap = new HashMap<>();
-            for (int i = 0; i < headers.length; i++) {
-                indexMap.put(headers[i].trim(), i);
+            for (Cell cell : headerRow) {
+                indexMap.put(cell.getStringCellValue().trim(), cell.getColumnIndex());
             }
 
-            String line;
+            for (int i = 2; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
 
-            while ((line = bufferedReader.readLine()) != null) {
                 totalCourse++;
-                String[] data = line.split(",");
-
                 Course course = new Course();
-                String courseName = FileUtil.getValue(indexMap, data, "name");
-                if (courseName == null) {
-                    errors.add("Course name is blank somewhere, please check your file again!");
+
+                String courseName = ExcelFileUtil.getCell(row, indexMap.get("name"));
+                if (courseName == null || courseName.isEmpty()) {
+                    errors.add("Course name is blank at row " + (i + 1));
                     continue;
                 }
                 course.setCourseName(courseName);
 
-                String[] categories = FileUtil.parseCategories(indexMap, data);
+                Cell categoryCell = row.getCell(indexMap.get("categories"));
+                String[] categories = ExcelFileUtil.parseCategories(categoryCell);
                 String[] categoryIds = null;
-
-                if (categories != null && categories.length > 0) {
+                if (categories.length > 0) {
+                    boolean error = false;
                     categoryIds = new String[categories.length];
-
-                    for (int i = 0; i < categories.length; i++) {
-                        Setting category = settingDAO.findCategoryByName(categories[i]);
-
+                    for (int j = 0; j < categories.length; j++) {
+                        Setting category = settingDAO.findCategoryByName(categories[j]);
                         if (category == null) {
-                            errors.add("Cannot find category " + categories[i] + " at course " + course.getCourseName());
-                            continue;
+                            errors.add("Cannot find category " + categories[j] + " at row " + (i + 1));
+                            error = true;
+                            break;
                         }
-
-                        categoryIds[i] = String.valueOf(category.getId());
+                        categoryIds[j] = String.valueOf(category.getId());
+                    }
+                    if (error) {
+                        continue;
                     }
                 }
 
-                String instructorName = FileUtil.getValue(indexMap, data, "instructor");
+                String instructorName = ExcelFileUtil.getCell(row, indexMap.get("instructor"));
                 User instructor = userDAO.findInstructorByName(instructorName);
                 if (instructor == null) {
-                    errors.add("Cannot find instructor " + instructorName + " at course " + course.getCourseName());
+                    errors.add("Cannot find instructor " + instructorName + " at row " + (i + 1));
                     continue;
                 }
                 course.setInstructorId(instructor.getId());
 
-                String listedPrice = FileUtil.getValue(indexMap, data, "listed_price");
-                if (listedPrice == null) {
-                    errors.add("Listed Price is blank at course " + course.getCourseName());
+                String listedPrice = ExcelFileUtil.getCell(row, indexMap.get("listed_price"));
+                if (listedPrice == null || listedPrice.isEmpty()) {
+                    errors.add("Listed Price is blank at row " + (i + 1));
                     continue;
                 }
                 try {
                     course.setListedPrice(new BigDecimal(listedPrice));
                 } catch (NumberFormatException e) {
-                    errors.add("Listed Price is invalid at course " + course.getCourseName());
+                    errors.add("Listed Price is invalid at row " + (i + 1));
                     continue;
                 }
 
-                String salePrice = FileUtil.getValue(indexMap, data, "sale_price");
-                if (salePrice == null) {
+                String salePrice = ExcelFileUtil.getCell(row, indexMap.get("sale_price"));
+                if (salePrice == null || salePrice.isEmpty()) {
                     course.setSalePrice(null);
-                }
-                else {
+                } else {
                     try {
                         course.setSalePrice(new BigDecimal(salePrice));
                     } catch (NumberFormatException e) {
-                        errors.add("Sale Price is invalid at course " + course.getCourseName());
+                        errors.add("Sale Price is invalid at row " + (i + 1));
                         continue;
                     }
                 }
 
-                String duration = FileUtil.getValue(indexMap, data, "duration");
-                if (duration == null) {
-                    errors.add("Duration is blank at course " + course.getCourseName());
+                String duration = ExcelFileUtil.getCell(row, indexMap.get("duration"));
+                if (duration == null || duration.isEmpty()) {
+                    errors.add("Duration is blank at row " + (i + 1));
                     continue;
                 }
                 try {
                     course.setDuration(Integer.valueOf(duration));
                 } catch (NumberFormatException e) {
-                    errors.add("Duration is invalid at course " + course.getCourseName());
+                    errors.add("Duration is invalid at row " + (i + 1));
                     continue;
                 }
 
-                course.setDescription(FileUtil.getValue(indexMap, data, "description"));
-                String statusStr = FileUtil.getValue(indexMap, data, "status");
+                course.setDescription(ExcelFileUtil.getCell(row, indexMap.get("description")));
+
+                String statusStr = ExcelFileUtil.getCell(row, indexMap.get("status"));
                 if (!"true".equalsIgnoreCase(statusStr) && !"false".equalsIgnoreCase(statusStr)) {
-                    errors.add("Status must be true or false at course " + course.getCourseName());
+                    errors.add("Status must be true or false at row " + (i + 1));
                     continue;
                 }
                 course.setStatus(Boolean.parseBoolean(statusStr));
 
-
-                if (course.getListedPrice().compareTo(course.getSalePrice()) < 0) {
-                    errors.add("Listed Price must be greater than Sale Price at course " + course.getCourseName());
+                if (course.getSalePrice() != null && course.getListedPrice().compareTo(course.getSalePrice()) < 0) {
+                    errors.add("Listed Price must be greater than Sale Price at row " + (i + 1));
                     continue;
                 }
 
@@ -162,8 +174,9 @@ public class ImportCoursesServlet extends HttpServlet {
             if (!errors.isEmpty()) {
                 request.getSession().setAttribute("errors", errors);
             }
-            request.getSession().setAttribute("successMessage", "Imported successfully " + successCount + " of " + totalCourse + " course(s)");
-            response.sendRedirect("course-list?");
+
+            request.getSession().setAttribute("successMessage","Imported successfully " + successCount + " of " + totalCourse + " course(s)");
+            response.sendRedirect("course-list");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("course-list?error=ImportFailed");
