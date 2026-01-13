@@ -144,6 +144,7 @@
                         <select id="lessonType" name="lessonType" class="form-select" required onchange="toggleConditionalFields()">
                             <option value="video" selected>🎬 Video</option>
                             <option value="text">📄 Text/Reading</option>
+                            <option value="quiz">❓ Quiz</option>
                             <option value="assignment">💻 Assignment</option>
                         </select>
                     </div>
