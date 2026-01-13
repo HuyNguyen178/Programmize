@@ -211,79 +211,73 @@
 
     <!-- Filter + Search -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form class="row g-3 align-items-center" method="get"
-                  action="${pageContext.request.contextPath}/chapter-details">
-                <input type="hidden" name="id" value="${chapter.chapterId}">
+        <div class="card-body p-3"> <form class="d-flex flex-wrap align-items-center gap-2" method="get"
+                                          action="${pageContext.request.contextPath}/chapter-details">
 
-                <div class="col-md-2">
-                    <select class="form-select" id="filterType" name="type" onchange="this.form.submit()">
-                        <option value="">All Types</option>
-                        <option value="video" ${currentType=='video' ? 'selected' : '' }>
-                            <i class="fas fa-video"></i> Video
-                        </option>
-                        <option value="text" ${currentType=='text' ? 'selected' : '' }>Article
-                        </option>
-                        <option value="quiz" ${currentType=='quiz' ? 'selected' : '' }>Quiz</option>
-                        <option value="assignment" ${currentType=='assignment' ? 'selected' : '' }>
-                            Assignment</option>
-                    </select>
-                </div>
+            <input type="hidden" name="id" value="${chapter.chapterId}">
 
-                <div class="col-md-2">
-                    <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
-                        <option value="">All Statuses</option>
-                        <option value="1" ${currentStatus=='1' ? 'selected' : '' }>Published
-                        </option>
-                        <option value="0" ${currentStatus=='0' ? 'selected' : '' }>Draft</option>
-                    </select>
-                </div>
+            <div style="min-width: 140px;">
+                <select class="form-select" id="filterType" name="type" onchange="this.form.submit()">
+                    <option value="">All Types</option>
+                    <option value="video" ${currentType=='video' ? 'selected' : '' }>Video</option>
+                    <option value="text" ${currentType=='text' ? 'selected' : '' }>Article</option>
+                    <option value="assignment" ${currentType=='assignment' ? 'selected' : '' }>Assignment</option>
+                </select>
+            </div>
 
-                <div class="col-md-4 d-flex">
-                    <input type="text" class="form-control me-2" name="search"
-                           placeholder="Search lessons by title..." value="${currentSearch}"
-                           onchange="this.form.submit()">
-                    <button type="submit" class="btn filter-search-btn">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
+            <div style="min-width: 140px;">
+                <select class="form-select" id="filterStatus" name="status" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="1" ${currentStatus=='1' ? 'selected' : '' }>Published</option>
+                    <option value="0" ${currentStatus=='0' ? 'selected' : '' }>Draft</option>
+                </select>
+            </div>
 
-                <div class="col-md-2">
-                    <a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}"
-                       class="btn btn-outline-secondary w-100">
-                        <i class="bi bi-x-circle me-1"></i> Clear
-                    </a>
-                </div>
+            <div class="input-group" style="flex-grow: 1; min-width: 200px;">
+                <input type="text" class="form-control" name="search"
+                       placeholder="Search title..." value="${currentSearch}">
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="bi bi-search"></i>
+                </button>
+                <a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}"
+                   class="btn btn-outline-danger" title="Clear Filter">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
 
-                <div class="col-md-2 text-end">
-                    <a href="${pageContext.request.contextPath}/add-lesson?chapterId=${chapter.chapterId}"
-                       class="btn btn-primary w-100">
-                        <i class="bi bi-plus-circle me-1"></i> Add Lesson
-                    </a>
-                </div>
-                <div class="col-md-7">
-                    <a href="${pageContext.request.contextPath}/download-template?type=quiz"
-                       class="btn btn-secondary"
-                       style="margin-right: 10px">
-                        <i class="fas fa-download me-1"></i> Download Template
-                    </a>
-                    <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                        <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
-                    </button>
-                    <a href="${pageContext.request.contextPath}/add-quiz?chapterId=${chapter.chapterId}"
-                       class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Add Quiz
-                    </a>
-                </div>
-            </form>
+            <div class="d-flex gap-2 border-start ps-2"> <div class="btn-group">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-tools me-1"></i> Tools
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="${pageContext.request.contextPath}/download-template?type=quiz">
+                            <i class="fas fa-download me-2"></i>Download Template
+                        </a>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item" onclick="triggerImport()">
+                            <i class="fas fa-file-import me-2"></i>Import Quiz (.xlsx)
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+                <a href="${pageContext.request.contextPath}/add-quiz?chapterId=${chapter.chapterId}"
+                   class="btn btn-primary text-nowrap"> <i class="bi bi-plus-lg"></i> Quiz
+                </a>
+
+                <a href="${pageContext.request.contextPath}/add-lesson?chapterId=${chapter.chapterId}"
+                   class="btn btn-success text-nowrap">
+                    <i class="bi bi-plus-lg"></i> Lesson
+                </a>
+            </div>
+        </form>
+
             <form id="importForm" action="import-quizzes" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                <input type="file"
-                       id="quizFile"
-                       name="quizFile"
-                       accept=".xlsx"
-                       onchange="submitImport()"
-                       style="display:none;">
+                <input type="file" id="quizFile" name="quizFile" accept=".xlsx"
+                       onchange="submitImport()" style="display:none;">
             </form>
         </div>
     </div>
@@ -329,7 +323,6 @@
                                                 <c:when test=" ${lesson.lessonType=='VIDEO' }">text-danger
                             </c:when>
                             <c:when test="${lesson.lessonType == 'TEXT'}">text-info</c:when>
-                            <c:when test="${lesson.lessonType == 'QUIZ'}">text-warning</c:when>
                             <c:when test="${lesson.lessonType == 'ASSIGNMENT'}">text-success</c:when>
                             <c:otherwise>text-secondary</c:otherwise>
                         </c:choose>

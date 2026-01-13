@@ -17,7 +17,7 @@ public class Lesson {
     private Date createdAt;
     private Date updatedAt;
 
-    public enum LessonType {VIDEO("video"), TEXT("text"), QUIZ("quiz"), ASSIGNMENT("assignment");
+    public enum LessonType {VIDEO("video"), TEXT("text"), ASSIGNMENT("assignment");
 
         private final String value;
 
@@ -193,8 +193,6 @@ public class Lesson {
                 return "fas fa-video";
             case TEXT:
                 return "fas fa-file-alt";
-            case QUIZ:
-                return "fas fa-question-circle";
             case ASSIGNMENT:
                 return "fas fa-laptop-code";
             default:
@@ -212,8 +210,6 @@ public class Lesson {
                 return "Video";
             case TEXT:
                 return "Reading";
-            case QUIZ:
-                return "Quiz";
             case ASSIGNMENT:
                 return "Assignment";
             default:
