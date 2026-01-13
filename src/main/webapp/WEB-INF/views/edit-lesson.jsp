@@ -76,7 +76,6 @@
                         <select id="lessonType" name="lessonType" class="form-select" required onchange="toggleConditionalFields()">
                             <option value="video" ${lesson.lessonType.value == 'video' ? 'selected' : ''}>🎬 Video</option>
                             <option value="text" ${lesson.lessonType.value == 'text' ? 'selected' : ''}>📄 Text/Reading</option>
-                            <option value="quiz" ${lesson.lessonType.value == 'quiz' ? 'selected' : ''}>❓ Quiz</option>
                             <option value="assignment" ${lesson.lessonType.value == 'assignment' ? 'selected' : ''}>💻 Assignment</option>
                         </select>
                     </div>
