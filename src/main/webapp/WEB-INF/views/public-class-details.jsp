@@ -63,7 +63,7 @@
                 <h3 class="fw-bold mb-3 text-primary">Class Description</h3>
                 <c:choose>
                     <c:when test="${not empty clazz.description}">
-                        <p>${clazz.description}</p>
+                        ${description}
                     </c:when>
                     <c:otherwise>
                         <p>This comprehensive class is designed to help you master the essential concepts and practical skills needed to succeed in modern software development.</p>
@@ -188,13 +188,13 @@
                         <c:if test="${startDate != null}">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                Begins in <fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd"/>
+                                Begins in <fmt:formatDate value="${startDate}" pattern="dd/MM/yyyy"/>
                             </li>
                         </c:if>
                         <c:if test="${endDate != null}">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                Ends in <fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd"/>
+                                Ends in <fmt:formatDate value="${endDate}" pattern="dd/MM/yyyy"/>
                             </li>
                         </c:if>
                     </ul>

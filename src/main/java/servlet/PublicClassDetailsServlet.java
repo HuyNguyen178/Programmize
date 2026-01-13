@@ -8,6 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
 import model.User;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -56,12 +59,18 @@ public class PublicClassDetailsServlet extends HttpServlet {
             // check enroll
             isEnrolled = classDAO.isUserEnrolled(user.getId(), classId);
         }
+
+        String html = clazz.getDescription();
+        String decoded = StringEscapeUtils.unescapeHtml4(html);
+        String descPlainText = Jsoup.parse(decoded).text();
+
         request.setAttribute("isEnrolled", isEnrolled);
 
         request.setAttribute("startDate", clazz.getStartDate());
         request.setAttribute("endDate", clazz.getEndDate());
 
         request.setAttribute("clazz", clazz);
+        request.setAttribute("description", descPlainText);
         request.getRequestDispatcher("/WEB-INF/views/public-class-details.jsp")
                 .forward(request, response);
     }

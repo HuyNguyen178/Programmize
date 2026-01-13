@@ -15,6 +15,7 @@ import jakarta.servlet.http.Part;
 import model.Class;
 import model.Setting;
 import model.User;
+import org.apache.commons.lang3.StringEscapeUtils;
 import utils.CloudinaryUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -93,16 +94,19 @@ public class EditClassServlet extends HttpServlet {
             String startDateStr = request.getParameter("startDate");
             String endDateStr = request.getParameter("endDate");
 
+            String decodedStartDate = StringEscapeUtils.unescapeHtml4(startDateStr);
+            String decodedEndDate = StringEscapeUtils.unescapeHtml4(endDateStr);
+
             Date startDate = null;
             Date endDate = null;
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
             if (startDateStr != null && !startDateStr.isBlank()) {
-                startDate = formatter.parse(startDateStr);
+                startDate = formatter.parse(decodedStartDate);
             }
 
             if (endDateStr != null && !endDateStr.isBlank()) {
-                endDate = formatter.parse(endDateStr);
+                endDate = formatter.parse(decodedEndDate);
             }
 
             String thumbnailUrl = classDAO.getClassById(classId).getThumbnailUrl();
@@ -186,7 +190,7 @@ public class EditClassServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.getSession().setAttribute("errorMessage", "Error in updating class: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/class-list");
+            response.sendRedirect(request.getContextPath() + "/edit-class");
         }
     }
 }
