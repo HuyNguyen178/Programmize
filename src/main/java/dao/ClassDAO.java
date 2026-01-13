@@ -104,6 +104,23 @@ public class ClassDAO {
         }
     }
 
+    public Class getClassByName(String name) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM class WHERE class_name = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Class c = new Class();
+                c.setName(resultSet.getString("class_name"));
+                return c;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<Class> getActiveClasses(String keyword, Integer categoryId, String priceSort, int limit, int offset) {
         List<Class> classes = new ArrayList<>();
 

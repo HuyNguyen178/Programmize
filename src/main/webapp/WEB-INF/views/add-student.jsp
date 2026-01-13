@@ -117,7 +117,7 @@
                         <h5 class="text-secondary mb-3"><i class="fas fa-graduation-cap"></i> Enrollment Details</h5>
                         <div class="mb-3">
                             <label for="className" class="form-label fw-bold">Class Name</label>
-                            <select class="form-select" id="className" name="class" required>
+                            <select class="form-select" id="className" name="classes" required multiple>
                                 <option value="" selected disabled>Select a class</option>
                                 <%
                                     if (classNamesList != null && !classNamesList.isEmpty()) {

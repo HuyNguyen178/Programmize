@@ -6,7 +6,9 @@ import utils.DBUtil;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StudentDAO {
 
@@ -143,17 +145,17 @@ public class StudentDAO {
 
 
 
-    public boolean addStudentToClass(String identifier, boolean isEmail, String className) throws SQLException {
+    public boolean addStudentToClasses(String identifier, boolean isEmail, String[] classNames)
+            throws SQLException {
+
+        if (classNames == null || classNames.length == 0) return false;
 
         String findUserSql = isEmail
-                ? "SELECT user_id, role_id FROM user WHERE email = ?"
-                : "SELECT user_id, role_id FROM user WHERE username = ?";
+                ? "SELECT user_id FROM user WHERE email = ?"
+                : "SELECT user_id FROM user WHERE username = ?";
 
         String findClassSql =
                 "SELECT class_id FROM class WHERE class_name = ?";
-
-        String checkEnrollSql =
-                "SELECT 1 FROM class_enrollment WHERE user_id = ? AND class_id = ?";
 
         String insertEnrollSql =
                 "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
@@ -168,9 +170,8 @@ public class StudentDAO {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            int userId;
-
             // 1. Find user
+            int userId;
             try (PreparedStatement ps = conn.prepareStatement(findUserSql)) {
                 ps.setString(1, identifier);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -182,45 +183,39 @@ public class StudentDAO {
                 }
             }
 
-            // 2. Find class
-            int classId;
-            try (PreparedStatement ps = conn.prepareStatement(findClassSql)) {
-                ps.setString(1, className);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        conn.rollback();
-                        return false;
-                    }
-                    classId = rs.getInt("class_id");
-                }
-            }
+            // 2. Loop qua các class
+            for (String className : classNames) {
+                if (className == null || className.trim().isEmpty()) continue;
 
-            // 3. Check already enrolled
-            try (PreparedStatement ps = conn.prepareStatement(checkEnrollSql)) {
-                ps.setInt(1, userId);
-                ps.setInt(2, classId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        conn.rollback();
-                        return false;
+                int classId;
+
+                // Find class
+                try (PreparedStatement ps = conn.prepareStatement(findClassSql)) {
+                    ps.setString(1, className.trim());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) {
+                            conn.rollback();
+                            return false;
+                        }
+                        classId = rs.getInt("class_id");
                     }
                 }
-            }
 
-            // 4. Insert enrollment
-            try (PreparedStatement ps = conn.prepareStatement(insertEnrollSql)) {
-                ps.setInt(1, userId);
-                ps.setInt(2, classId);
-                ps.setBigDecimal(3, BigDecimal.ZERO);
-                ps.setString(4, "Teacher Added");
-                ps.setBoolean(5, true);
-                ps.executeUpdate();
-            }
+                // Insert enrollment
+                try (PreparedStatement ps = conn.prepareStatement(insertEnrollSql)) {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, classId);
+                    ps.setBigDecimal(3, BigDecimal.ZERO);
+                    ps.setString(4, "Teacher Added");
+                    ps.setBoolean(5, true);
+                    ps.executeUpdate();
+                }
 
-            // 5. Update number of students
-            try (PreparedStatement ps = conn.prepareStatement(updateClassSql)) {
-                ps.setInt(1, classId);
-                ps.executeUpdate();
+                // Update number of students
+                try (PreparedStatement ps = conn.prepareStatement(updateClassSql)) {
+                    ps.setInt(1, classId);
+                    ps.executeUpdate();
+                }   
             }
 
             conn.commit();
@@ -233,6 +228,7 @@ public class StudentDAO {
             if (conn != null) conn.close();
         }
     }
+
 
 
     public Student getStudentById(int id) {
@@ -270,6 +266,33 @@ public class StudentDAO {
 
         return st;
     }
+
+    public Set<String> getEnrolledClassNames(String identifier, boolean isEmail) throws SQLException {
+        String sql = isEmail
+                ? "SELECT c.class_name FROM class_enrollment ce " +
+                "JOIN user u ON ce.user_id = u.user_id " +
+                "JOIN class c ON ce.class_id = c.class_id " +
+                "WHERE u.email = ?"
+                : "SELECT c.class_name FROM class_enrollment ce " +
+                "JOIN user u ON ce.user_id = u.user_id " +
+                "JOIN class c ON ce.class_id = c.class_id " +
+                "WHERE u.username = ?";
+
+        Set<String> result = new HashSet<>();
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, identifier);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                result.add(rs.getString("class_name").trim().toLowerCase());
+            }
+        }
+        return result;
+    }
+
 
     public boolean updateStudentStatus(int userId, boolean newStatus) {
         String sql = "UPDATE class_enrollment SET status = ? WHERE user_id = ?";

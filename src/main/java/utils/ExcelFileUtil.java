@@ -47,7 +47,7 @@ public class ExcelFileUtil {
     }
 
 
-    public static String[] parseCategories(Cell cell) {
+    public static String[] parseMultipleData(Cell cell) {
         if (cell == null) {
             return new String[0];
         }

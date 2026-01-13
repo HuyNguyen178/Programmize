@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="model.Student" %>
 <%@ page import="java.util.List" %>
 
@@ -54,6 +55,27 @@
     <div class="container-fluid">
         <h2 class="fw-bold mb-4 text-primary">📚 Student List</h2>
 
+        <c:if test="${not empty sessionScope.successMessage}">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                    ${sessionScope.successMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="successMessage" scope="session"/>
+        </c:if>
+        <c:if test="${not empty sessionScope.errors}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <c:forEach items="${sessionScope.errors}" var="error">
+                    <div>
+                        <i class="fas fa-times-circle me-2"></i>
+                            ${error}
+                    </div>
+                </c:forEach>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="errors" scope="session"/>
+        </c:if>
+
         <% if (actionMessage != null) { %>
         <div class="alert alert-info alert-dismissible fade show" role="alert">
             <%= actionMessage %>
@@ -70,7 +92,7 @@
                     <input type="hidden" name="pageIndex" value="1">
 
                     <%-- 1. FILTER BY CLASS --%>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <select class="form-select" name="class">
                             <option value="" <%= (currentClassName == null || currentClassName.isEmpty()) ? "selected" : "" %>>All Classes</option>
                             <% if (classNamesList != null) {
@@ -94,7 +116,7 @@
                     </div>
 
                     <%-- 3. SEARCH KEYWORD & BUTTON --%>
-                        <div class="col-md-4 d-flex">
+                        <div class="col-md-3 d-flex">
                             <input type="text" name="search" class="form-control me-2"
                                    placeholder="Search by name or email..."
                                    value="<%= currentKeyword != null ? currentKeyword : "" %>">
@@ -104,10 +126,27 @@
                         </div>
 
                     <%-- 4. ADD NEW BUTTON  --%>
-                    <div class="col-md-3 d-flex ms-md-auto justify-content-end">
+                    <div class="col-md-5 d-flex ms-md-auto justify-content-end">
+                        <a href="${pageContext.request.contextPath}/download-template?type=student"
+                           class="btn btn-secondary"
+                           style="margin-right: 10px">
+                            <i class="fas fa-download me-1"></i> Download Template
+                        </a>
+                        <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
+                            <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
+                        </button>
                         <a href="add-student" class="btn btn-success"><i class="fas fa-user-plus me-1"></i> Add Student to Class</a>
                     </div>
                 </form>
+                    <form id="importForm" action="import-student" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                        <input type="file"
+                               id="studentFile"
+                               name="studentFile"
+                               accept=".xlsx"
+                               onchange="submitImport()"
+                               style="display:none;">
+                    </form>
 
                 <%-- DATA TABLE (6 COLUMNS) --%>
                 <div class="table-responsive">
@@ -246,6 +285,18 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
+
+<script>
+    function triggerImport() {
+        document.getElementById("studentFile").click();
+    }
+
+    function submitImport() {
+        if (confirm("Import this Excel file now?")) {
+            document.getElementById("importForm").submit();
+        }
+    }
+</script>
 </body>
 </html>

@@ -20,17 +20,22 @@ public class DownloadTemplateServlet extends HttpServlet {
         String attention = null;
 
         switch (type) {
+            case "student":
+                attention = "Each classes must be separated by '|' when students enroll more than 1 class";
+                headers = new String[]{"username/email", "classes"};
+                filename = "student_template.xlsx";
+                break;
             case "account":
                 headers = new String[]{"full_name", "username", "email", "role", "password", "status"};
                 filename = "account_template.xlsx";
                 break;
             case "course":
-                attention = "Each category must be separated by '|' when courses have more than 1 categories";
+                attention = "Each category must be separated by '|' when courses have more than 1 category";
                 headers = new String[]{"name", "categories", "instructor", "listed_price", "sale_price", "duration", "description", "status"};
                 filename = "course_template.xlsx";
                 break;
             case "class":
-                attention = "Each category must be separated by '|' when classes have more than 1 categories. Date must be correct in format: dd-MM-yyyy\n";
+                attention = "Each category must be separated by '|' when classes have more than 1 category. Date must be correct in format: dd-MM-yyyy\n";
                 headers = new String[]{"name", "categories", "instructor", "listed_price", "sale_price", "start_date", "end_date", "description", "status"};
                 filename = "class_template.xlsx";
                 break;

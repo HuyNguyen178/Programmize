@@ -38,26 +38,37 @@ public class AddStudentServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String identifier = request.getParameter("identifier");
-        String className = request.getParameter("class");
+        String[] classNames = request.getParameterValues("classes");
 
-        if (identifier == null || identifier.trim().isEmpty() || className == null || className.trim().isEmpty()) {
-            request.setAttribute("message", "Username/Email and Class Name can't be empty.");
+        if (identifier == null || identifier.trim().isEmpty()
+                || classNames == null || classNames.length == 0) {
+
+            request.setAttribute("message", "Username/Email and Class can't be empty.");
             request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
             return;
         }
+
         boolean isEmail = identifier.contains("@");
 
         try {
-            boolean success = studentDAO.addStudentToClass(identifier.trim(), isEmail, className.trim());
+            boolean success = studentDAO.addStudentToClasses(
+                    identifier.trim(),
+                    isEmail,
+                    classNames
+            );
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/student-list?success=true!");
+                response.sendRedirect(
+                        request.getContextPath() + "/student-list?success=true"
+                );
             } else {
-                request.setAttribute("message", "Error: Can't find user or class.");
+                request.setAttribute("message", "Error: Can't add student to class(es).");
                 request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            request.setAttribute("message", "Database error occurred.");
             request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
         }
     }

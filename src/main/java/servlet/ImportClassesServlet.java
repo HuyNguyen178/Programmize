@@ -102,7 +102,7 @@ public class ImportClassesServlet extends HttpServlet {
                 clazz.setName(className);
 
                 Cell categoryCell = row.getCell(indexMap.get("categories"));
-                String[] categories = ExcelFileUtil.parseCategories(categoryCell);
+                String[] categories = ExcelFileUtil.parseMultipleData(categoryCell);
                 String[] categoryIds = null;
                 if (categories.length > 0) {
                     boolean error = false;
