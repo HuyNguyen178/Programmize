@@ -101,7 +101,7 @@ public class EditCourseServlet extends HttpServlet {
             }
 
             BigDecimal listedPrice = new BigDecimal("0");
-            BigDecimal salePrice = new BigDecimal("0");
+            BigDecimal salePrice = null;
 
             String listedPriceStr = request.getParameter("listedPrice");
             String salePriceStr = request.getParameter("salePrice");

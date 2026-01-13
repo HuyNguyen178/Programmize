@@ -35,9 +35,9 @@
                             <div class="row w-100 align-items-center">
                                 <div class="col-lg-7 col-md-12">
                                     <div class="banner-content">
-                                        <h2>Français</h2>
+                                        <h2>Java Advanced</h2>
                                         <p></p>
-                                        <a href="<%= request.getContextPath()%>/public-course-details?id=4" class="btn btn-banner">More</a>
+                                        <a href="<%= request.getContextPath()%>/public-course-details?id=35" class="btn btn-banner">More</a>
                                     </div>
                                 </div>
                                 <div class="col-lg-5 banner-image-col text-end">
@@ -87,7 +87,7 @@
                 </c:if>
                 <c:forEach var="course" items="${highlightedCourses}">
                     <div class="course-item"
-                         style="background-image: url('${pageContext.request.contextPath}/${course.thumbnailUrl}');"
+                         style="background-image: url('${course.thumbnailUrl}');"
                          onclick="window.location.href='/public-course-details?id=${course.courseId}'">
 
                             <%-- Container for Text (Replaces the single span to hold both Name and Price) --%>

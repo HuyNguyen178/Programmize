@@ -10,6 +10,9 @@ import model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -83,8 +86,12 @@ public class PublicCourseDetailsServlet extends HttpServlet {
 
             // format total duration from actual lessons
             String totalDurationFromLessons = formatDuration(totalDurationSeconds);
+            String html = course.getDescription();
+            String decoded = StringEscapeUtils.unescapeHtml4(html);
+            String descPlainText = Jsoup.parse(decoded).text();
 
             request.setAttribute("course", course);
+            request.setAttribute("description", descPlainText);
             request.setAttribute("priceDisplay", priceDisplay);
             request.setAttribute("durationDisplay", durationDisplay);
             request.setAttribute("enrollmentCount", enrollmentCount);

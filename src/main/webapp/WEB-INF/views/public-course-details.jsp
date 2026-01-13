@@ -73,7 +73,7 @@
                 <h3 class="fw-bold mb-3 text-primary">Course Description</h3>
                 <c:choose>
                     <c:when test="${not empty course.description}">
-                        <p>${course.description}</p>
+                        ${description}
                     </c:when>
                     <c:otherwise>
                         <p>This comprehensive course is designed to help you master the essential concepts and practical skills needed to succeed in modern software development.</p>
