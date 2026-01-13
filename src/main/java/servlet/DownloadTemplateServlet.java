@@ -39,6 +39,11 @@ public class DownloadTemplateServlet extends HttpServlet {
                 headers = new String[]{"name", "categories", "instructor", "listed_price", "sale_price", "start_date", "end_date", "description", "status"};
                 filename = "class_template.xlsx";
                 break;
+            case "quiz":
+                attention = "Each answer must be separated by '|' and the correct answer must be in bold";
+                headers = new String[]{"question", "answers"};
+                filename = "quiz_template.xlsx";
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown template type");
                 return;

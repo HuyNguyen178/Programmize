@@ -96,6 +96,21 @@ public class QuizDAO {
         return list;
     }
 
+    public int getTotalQuizzesByChapterId(int chapterId) {
+        try (Connection connection = DBUtil.getConnection()) {
+            String sql = "SELECT COUNT(*) AS total_quizzes FROM quiz WHERE chapter_id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, chapterId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public boolean updateFullQuiz(Quiz quiz, List<Question> questions, List<List<Answer>> allAnswers) throws SQLException {
         String updateQuizSql = "UPDATE quiz SET title = ?, description = ? WHERE quiz_id = ?";
         String deleteAnswersSql = "DELETE FROM answer WHERE question_id IN (SELECT question_id FROM question WHERE quiz_id = ?)";

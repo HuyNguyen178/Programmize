@@ -65,7 +65,6 @@ public class AddStudentServlet extends HttpServlet {
                 request.setAttribute("message", "Error: Can't add student to class(es).");
                 request.getRequestDispatcher("/WEB-INF/views/add-student.jsp").forward(request, response);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("message", "Database error occurred.");

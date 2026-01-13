@@ -261,12 +261,29 @@
                         <i class="bi bi-plus-circle me-1"></i> Add Lesson
                     </a>
                 </div>
-                <div class="col-md-2 text-end">
+                <div class="col-md-7">
+                    <a href="${pageContext.request.contextPath}/download-template?type=quiz"
+                       class="btn btn-secondary"
+                       style="margin-right: 10px">
+                        <i class="fas fa-download me-1"></i> Download Template
+                    </a>
+                    <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
+                        <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
+                    </button>
                     <a href="${pageContext.request.contextPath}/add-quiz?chapterId=${chapter.chapterId}"
-                       class="btn btn-primary w-100">
+                       class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1"></i> Add Quiz
                     </a>
                 </div>
+            </form>
+            <form id="importForm" action="import-quizzes" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                <input type="file"
+                       id="quizFile"
+                       name="quizFile"
+                       accept=".xlsx"
+                       onchange="submitImport()"
+                       style="display:none;">
             </form>
         </div>
     </div>
@@ -610,6 +627,18 @@
         document.getElementById('deleteChapterName').textContent = '"' + chapterName + '"';
         var modal = new bootstrap.Modal(document.getElementById('deleteChapterModal'));
         modal.show();
+    }
+</script>
+
+<script>
+    function triggerImport() {
+        document.getElementById("quizFile").click();
+    }
+
+    function submitImport() {
+        if (confirm("Import this Excel file now?")) {
+            document.getElementById("importForm").submit();
+        }
     }
 </script>
 </body>

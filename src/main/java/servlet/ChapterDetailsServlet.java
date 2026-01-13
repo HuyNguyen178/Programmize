@@ -79,7 +79,7 @@ public class ChapterDetailsServlet extends HttpServlet {
             // Count by type
             long videoCount = lessons.stream().filter(l -> l.getLessonType() == Lesson.LessonType.VIDEO).count();
             long textCount = lessons.stream().filter(l -> l.getLessonType() == Lesson.LessonType.TEXT).count();
-            long quizCount = lessons.stream().filter(l -> l.getLessonType() == Lesson.LessonType.QUIZ).count();
+            long quizCount = quizDAO.getTotalQuizzesByChapterId(chapterId);
             long assignmentCount = lessons.stream().filter(l -> l.getLessonType() == Lesson.LessonType.ASSIGNMENT).count();
 
             // Count by status
