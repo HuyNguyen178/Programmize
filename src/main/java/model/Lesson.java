@@ -162,26 +162,12 @@ public class Lesson {
     }
 
 //  extra methods
-    public String getDurationFormatted() {
-        if (duration <= 0) {
-            return "0 min";
-        }
-
-        int hours = duration / 3600;
-        int minutes = (duration % 3600) / 60;
-        int seconds = duration % 60;
-
-        if (hours > 0) {
-            if (minutes > 0) {
-                return hours + " hr " + minutes + " min";
-            }
-            return hours + " hr";
-        } else if (minutes > 0) {
-            return minutes + " min";
-        } else {
-            return seconds + " sec";
-        }
+public String getDurationFormatted() {
+    if (duration <= 0) {
+        return "0 min";
     }
+    return duration + " min";
+}
 
     public String getTypeIcon() {
         if (lessonType == null) {

@@ -158,10 +158,10 @@
 
                     <%-- Duration field --%>
                     <div class="form-group">
-                        <label for="duration" class="form-label">Duration (seconds)</label>
+                        <label for="duration" class="form-label">Duration (minutes)</label>
                         <input type="number" id="duration" name="duration" class="form-control"
-                               min="0" value="0" placeholder="Duration in seconds">
-                        <small class="text-muted">e.g., 300 = 5 minutes</small>
+                               min="0" value="0" placeholder="Duration in minutes">
+<%--                        <small class="text-muted">e.g., 300 = 5 minutes</small>--%>
                     </div>
 
                     <%-- pdf url field --%>

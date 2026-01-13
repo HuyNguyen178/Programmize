@@ -163,18 +163,6 @@ public class PublicCourseDetailsServlet extends HttpServlet {
         if (totalSeconds <= 0) {
             return "0 min";
         }
-
-        int hours = totalSeconds / 3600;
-        int minutes = (totalSeconds % 3600) / 60;
-
-        if (hours > 0 && minutes > 0) {
-            return hours + " hr " + minutes + " min";
-        } else if (hours > 0) {
-            return hours + " hr";
-        } else if (minutes > 0) {
-            return minutes + " min";
-        } else {
-            return totalSeconds + " sec";
-        }
+        return totalSeconds + " min";
     }
 }
