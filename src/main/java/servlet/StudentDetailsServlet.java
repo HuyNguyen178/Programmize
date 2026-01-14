@@ -25,6 +25,7 @@ public class StudentDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String classIdParam = request.getParameter("classId");
         String idParam = request.getParameter("id");
         int studentId = -1;
 
@@ -47,7 +48,7 @@ public class StudentDetailsServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student not found.");
             }
         } else {
-            response.sendRedirect(request.getContextPath() + "/student-list");
+            response.sendRedirect(request.getContextPath() + "/student-list?classId=" +  classIdParam);
         }
     }
 

@@ -122,7 +122,7 @@
                 <%-- Action Button (Mới: Nút Back to List ở bên trái) --%>
                 <div class="col-12 pt-3 border-top">
                     <div class="d-flex justify-content-start">
-                        <a href="student-list" class="btn btn-secondary">
+                        <a href="student-list?classId=${param.classId}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Back to List
                         </a>
                     </div>

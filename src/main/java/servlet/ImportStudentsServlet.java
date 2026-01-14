@@ -45,6 +45,7 @@ public class ImportStudentsServlet extends HttpServlet {
 
         User instructor = (User) request.getSession().getAttribute(SessionConfig.ATTR_LOGIN_USER);
         Part filePart = request.getPart("studentFile");
+        String classIdParam = request.getParameter("classId");
 
         List<String> errors = new ArrayList<>();
         int totalStudents = 0;
@@ -53,7 +54,7 @@ public class ImportStudentsServlet extends HttpServlet {
         if (filePart == null || filePart.getSize() == 0) {
             errors.add("No file chosen!");
             request.getSession().setAttribute("errors", errors);
-            response.sendRedirect("student-list");
+            response.sendRedirect("student-list?classId=" +  classIdParam);
             return;
         }
 
@@ -61,7 +62,7 @@ public class ImportStudentsServlet extends HttpServlet {
         if (!fileName.endsWith(".xlsx")) {
             errors.add("Invalid file type. Please upload an Excel file!");
             request.getSession().setAttribute("errors", errors);
-            response.sendRedirect("student-list");
+            response.sendRedirect("student-list?classId=" +  classIdParam);
             return;
         }
 
@@ -73,7 +74,7 @@ public class ImportStudentsServlet extends HttpServlet {
             if (headerRow == null) {
                 errors.add("Excel file has no header row!");
                 request.getSession().setAttribute("errors", errors);
-                response.sendRedirect("student-list");
+                response.sendRedirect("student-list?classId=" +  classIdParam);
                 return;
             }
 
@@ -180,11 +181,11 @@ public class ImportStudentsServlet extends HttpServlet {
                     "Imported successfully " + addedStudents + " of " + totalStudents + " student(s)"
             );
 
-            response.sendRedirect("student-list");
+            response.sendRedirect("student-list?classId=" + classIdParam);
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("student-list?error=ImportFailed");
+            response.sendRedirect("student-list?classId=" + classIdParam + "&error=ImportFailed");
         }
     }
 }

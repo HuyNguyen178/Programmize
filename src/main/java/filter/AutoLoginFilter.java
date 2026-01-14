@@ -44,7 +44,7 @@ public class AutoLoginFilter implements Filter {
                                 res.sendRedirect("dashboard");
                                 return;
                             case "Instructor":
-                                res.sendRedirect("student-list");
+                                res.sendRedirect("class-content");
                                 return;
                             default:
                                 res.sendRedirect("home");

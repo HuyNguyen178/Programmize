@@ -98,7 +98,7 @@
             <div class="card-body p-4">
 
                 <form method="post" action="add-student" class="row g-3">
-
+                    <input type="hidden" name="classId" value="<%= request.getParameter("classId") %>">
                     <%--            add csrftoken--%>
                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
@@ -117,24 +117,32 @@
                         <h5 class="text-secondary mb-3"><i class="fas fa-graduation-cap"></i> Enrollment Details</h5>
                         <div class="mb-3">
                             <label for="className" class="form-label fw-bold">Class Name</label>
-                            <select class="form-select" id="className" name="classes" required multiple>
-                                <option value="" selected disabled>Select a class</option>
+                            <select class="form-select" id="className" name="classes" required multiple style="min-height: 150px;">
                                 <%
+                                    String targetClassName = (String) request.getAttribute("targetClassName");
+
                                     if (classNamesList != null && !classNamesList.isEmpty()) {
-                                        for (String name : classNamesList) { %>
-                                <option value="<%= name %>"><%= name %></option>
-                                <%  }
-                                } else { %>
+                                        for (String name : classNamesList) {
+                                            String selected = (targetClassName != null && targetClassName.equals(name)) ? "selected" : "";
+                                %>
+                                <option value="<%= name %>" <%= selected %>><%= name %></option>
+                                <%
+                                    }
+                                } else {
+                                %>
                                 <option value="" disabled>No active classes found</option>
-                                <% } %>
+                                <%  } %>
                             </select>
+                            <div class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Hold <b>Ctrl</b> (Windows) or <b>Command</b> (Mac) to select multiple classes.
+                            </div>
                         </div>
                     </div>
 
                     <%-- ACTIONS --%>
                     <div class="col-12 pt-3 border-top">
                         <div class="d-flex justify-content-between">
-                            <a href="student-list" class="btn btn-secondary">
+                            <a href="student-list?classId=${param.classId}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Back to List
                             </a>
                             <button type="submit" class="btn btn-primary">

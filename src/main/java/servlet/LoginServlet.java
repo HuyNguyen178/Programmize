@@ -145,7 +145,7 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("dashboard");
                     break;
                 case "Instructor":
-                    response.sendRedirect("student-list");
+                    response.sendRedirect("class-content");
                     break;
                 case "Student":
                     response.sendRedirect("home");

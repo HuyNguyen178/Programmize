@@ -154,23 +154,20 @@ public class StudentDAO {
                 ? "SELECT user_id FROM user WHERE email = ?"
                 : "SELECT user_id FROM user WHERE username = ?";
 
-        String findClassSql =
-                "SELECT class_id FROM class WHERE class_name = ?";
+        String findClassSql = "SELECT class_id FROM class WHERE class_name = ?";
 
-        String insertEnrollSql =
-                "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
-                        "VALUES (?, ?, ?, ?, NOW(), ?)";
+        String checkEnrollmentSql = "SELECT 1 FROM class_enrollment WHERE user_id = ? AND class_id = ?";
 
-        String updateClassSql =
-                "UPDATE class SET number_of_students = number_of_students + 1 WHERE class_id = ?";
+        String insertEnrollSql = "INSERT INTO class_enrollment (user_id, class_id, price_paid, payment_method, enrolled_at, status) " +
+                "VALUES (?, ?, ?, ?, NOW(), ?)";
+
+        String updateClassSql = "UPDATE class SET number_of_students = number_of_students + 1 WHERE class_id = ?";
 
         Connection conn = null;
-
         try {
             conn = DBUtil.getConnection();
             conn.setAutoCommit(false);
 
-            // 1. Find user
             int userId;
             try (PreparedStatement ps = conn.prepareStatement(findUserSql)) {
                 ps.setString(1, identifier);
@@ -183,43 +180,49 @@ public class StudentDAO {
                 }
             }
 
-            // 2. Loop qua các class
+            boolean anyAdded = false;
+
             for (String className : classNames) {
                 if (className == null || className.trim().isEmpty()) continue;
 
                 int classId;
-
-                // Find class
                 try (PreparedStatement ps = conn.prepareStatement(findClassSql)) {
                     ps.setString(1, className.trim());
                     try (ResultSet rs = ps.executeQuery()) {
-                        if (!rs.next()) {
-                            conn.rollback();
-                            return false;
-                        }
+                        if (!rs.next()) continue;
                         classId = rs.getInt("class_id");
                     }
                 }
 
-                // Insert enrollment
+                try (PreparedStatement ps = conn.prepareStatement(checkEnrollmentSql)) {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, classId);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            continue;
+                        }
+                    }
+                }
+
                 try (PreparedStatement ps = conn.prepareStatement(insertEnrollSql)) {
                     ps.setInt(1, userId);
                     ps.setInt(2, classId);
-                    ps.setBigDecimal(3, BigDecimal.ZERO);
+                    ps.setBigDecimal(3, java.math.BigDecimal.ZERO);
                     ps.setString(4, "Teacher Added");
                     ps.setBoolean(5, true);
                     ps.executeUpdate();
                 }
 
-                // Update number of students
+                // Cập nhật sĩ số lớp
                 try (PreparedStatement ps = conn.prepareStatement(updateClassSql)) {
                     ps.setInt(1, classId);
                     ps.executeUpdate();
-                }   
+                }
+                anyAdded = true;
             }
 
             conn.commit();
-            return true;
+            return anyAdded;
 
         } catch (SQLException e) {
             if (conn != null) conn.rollback();
@@ -294,14 +297,15 @@ public class StudentDAO {
     }
 
 
-    public boolean updateStudentStatus(int userId, boolean newStatus) {
-        String sql = "UPDATE class_enrollment SET status = ? WHERE user_id = ?";
+    public boolean updateStudentStatus(int userId, int classId, boolean newStatus) {
+        String sql = "UPDATE class_enrollment SET status = ? WHERE user_id = ? AND class_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setBoolean(1, newStatus);
             ps.setInt(2, userId);
+            ps.setInt(3, classId);
 
             return ps.executeUpdate() > 0;
 
@@ -349,5 +353,98 @@ public class StudentDAO {
         }
 
         return list;
+    }
+
+    public int countStudentsByClassId(String keyword, String status, Integer classId, int instructorId) {
+        // Tận dụng buildBaseSql nhưng thay vì truyền className, ta xử lý classId trực tiếp
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(DISTINCT u.user_id) FROM user u " +
+                        "JOIN setting s ON u.role_id = s.setting_id " +
+                        "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
+                        "LEFT JOIN class c ON ce.class_id = c.class_id " +
+                        "WHERE s.setting_name = 'Student' AND c.instructor_id = ? "
+        );
+
+        if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
+        if (classId != null) sql.append(" AND c.class_id = ? "); // Lọc theo ID
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (status != null && !status.isEmpty()) ps.setInt(idx++, Integer.parseInt(status));
+            if (classId != null) ps.setInt(idx++, classId);
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                ps.setString(idx++, kw);
+                ps.setString(idx++, kw);
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public List<Student> searchStudentsByClassId(String keyword, String status, Integer classId,
+                                                 int pageIndex, int pageSize, int instructorId) {
+        List<Student> students = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT u.user_id, u.fullname, u.email, ce.status AS enrollment_status, u.avatar_url, " +
+                        "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name " +
+                        "FROM user u " +
+                        "JOIN setting s ON u.role_id = s.setting_id " +
+                        "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
+                        "LEFT JOIN class c ON ce.class_id = c.class_id " +
+                        "WHERE s.setting_name = 'Student' AND c.instructor_id = ? "
+        );
+
+        if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
+        if (classId != null) sql.append(" AND c.class_id = ? ");
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
+
+        sql.append(" GROUP BY u.user_id, u.fullname, u.email, ce.status, u.avatar_url ");
+        sql.append(" ORDER BY u.fullname ASC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (status != null && !status.isEmpty()) ps.setInt(idx++, Integer.parseInt(status));
+            if (classId != null) ps.setInt(idx++, classId);
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                ps.setString(idx++, kw);
+                ps.setString(idx++, kw);
+            }
+            ps.setInt(idx++, pageSize);
+            ps.setInt(idx++, (pageIndex - 1) * pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Student student = new Student();
+                student.setId(rs.getInt("user_id"));
+                student.setFullname(rs.getString("fullname"));
+                student.setEmail(rs.getString("email"));
+                student.setStatus(rs.getBoolean("enrollment_status"));
+                student.setAvatarUrl(rs.getString("avatar_url"));
+                student.setClassName(rs.getString("class_name"));
+                students.add(student);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return students;
+    }
+
+    public String getClassNameById(int classId) {
+        String sql = "SELECT class_name FROM class WHERE class_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, classId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("class_name");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

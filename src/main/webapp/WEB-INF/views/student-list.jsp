@@ -1,7 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="model.Student" %>
-<%@ page import="java.util.List" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,283 +14,220 @@
     <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student-list.css">
+
 </head>
 <body>
-
 
 <%@ include file="include/instructor-topbar.jsp" %>
 <%@ include file="include/instructor-sidebar.jsp" %>
 
-
-<%
-    String currentKeyword = (String) request.getAttribute("search");
-    String currentStatus = (String) request.getAttribute("status");
-    String currentClassName = (String) request.getAttribute("className");
-    List<String> classNamesList = (List<String>) request.getAttribute("classNamesList");
-
-    // Lấy thuộc tính Phân trang
-    List<Student> students = (List<Student>) request.getAttribute("students");
-    int pageIndex = (Integer) request.getAttribute("pageIndex");
-    int totalPage = (Integer) request.getAttribute("totalPage");
-
-    String actionMessage = (String) request.getAttribute("actionMessage");
-
-    int numPagesToShow = 5;
-
-    String filterQuery = "";
-    if (currentKeyword != null && !currentKeyword.isEmpty()) {
-        filterQuery += "&search=" + java.net.URLEncoder.encode(currentKeyword, "UTF-8");
-    }
-    if (currentStatus != null && !currentStatus.isEmpty()) {
-        filterQuery += "&status=" + currentStatus;
-    }
-    if (currentClassName != null && !currentClassName.isEmpty()) {
-        filterQuery += "&class=" + java.net.URLEncoder.encode(currentClassName, "UTF-8");
-    }
-
-%>
-
 <div id="content" class="content-wrapper">
     <div class="container-fluid">
-        <h2 class="fw-bold mb-4 text-primary">📚 Student List</h2>
+        <h2 class="fw-bold mb-4 text-primary">
+            <i class="fas fa-users-graduate me-2"></i> Student List
+            <c:if test="${not empty classId}"> (Class ID: ${classId})</c:if>
+        </h2>
+
+        <c:if test="${not empty param.success}">
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-check-circle me-2"></i> Action performed successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </c:if>
+
+        <c:if test="${not empty param.message}">
+            <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-info-circle me-2"></i> ${param.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </c:if>
 
         <c:if test="${not empty sessionScope.successMessage}">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                    ${sessionScope.successMessage}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-check-circle me-2"></i> ${sessionScope.successMessage}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <c:remove var="successMessage" scope="session"/>
         </c:if>
+
         <c:if test="${not empty sessionScope.errors}">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <c:forEach items="${sessionScope.errors}" var="error">
-                    <div>
-                        <i class="fas fa-times-circle me-2"></i>
-                            ${error}
-                    </div>
-                </c:forEach>
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i> <strong>Import Errors:</strong>
+                <ul class="mb-0 mt-2">
+                    <c:forEach var="err" items="${sessionScope.errors}">
+                        <li>${err}</li>
+                    </c:forEach>
+                </ul>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <c:remove var="errors" scope="session"/>
         </c:if>
 
-        <% if (actionMessage != null) { %>
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <%= actionMessage %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <% } %>
+        <c:if test="${not empty actionMessage}">
+            <div class="alert alert-primary alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-sync me-2"></i> ${actionMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </c:if>
 
-        <div class="card shadow-sm">
+        <div class="card shadow-sm border-0">
             <div class="card-body">
 
                 <%-- FILTER BAR --%>
-                <form class="row g-3 align-items-center mb-4" method="GET">
-                    <%-- Quan trọng: Đặt hidden input cho pageIndex để khi filter, nó trở về trang 1 --%>
+                <form class="row g-3 align-items-center mb-4" method="GET" action="student-list">
+                    <%-- Quan trọng: Giữ classId để lọc trong phạm vi lớp đó --%>
+                    <input type="hidden" name="classId" value="${classId}">
                     <input type="hidden" name="pageIndex" value="1">
 
-                    <%-- 1. FILTER BY CLASS --%>
-                    <div class="col-md-2">
-                        <select class="form-select" name="class">
-                            <option value="" <%= (currentClassName == null || currentClassName.isEmpty()) ? "selected" : "" %>>All Classes</option>
-                            <% if (classNamesList != null) {
-                                for (String className : classNamesList) { %>
-                            <option value="<%= className %>"
-                                    <%= (currentClassName != null && className.equals(currentClassName)) ? "selected" : "" %>>
-                                <%= className %>
-                            </option>
-                            <%  }
-                            } %>
-                        </select>
-                    </div>
-
-                    <%-- 2. FILTER BY STATUS --%>
+                    <%-- 1. FILTER BY STATUS --%>
                     <div class="col-md-2">
                         <select class="form-select" name="status">
-                            <option value="" <%= (currentStatus == null || currentStatus.isEmpty()) ? "selected" : "" %>>All Statuses</option>
-                            <option value="1" <%= "1".equals(currentStatus) ? "selected" : "" %>>Active</option>
-                            <option value="0" <%= "0".equals(currentStatus) ? "selected" : "" %>>Inactive</option>
+                            <option value="" ${empty status ? 'selected' : ''}>All Statuses</option>
+                            <option value="1" ${status == '1' ? 'selected' : ''}>Active</option>
+                            <option value="0" ${status == '0' ? 'selected' : ''}>Inactive</option>
                         </select>
                     </div>
 
-                    <%-- 3. SEARCH KEYWORD & BUTTON --%>
-                        <div class="col-md-3 d-flex">
-                            <input type="text" name="search" class="form-control me-2"
+                    <%-- 2. SEARCH KEYWORD --%>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control"
                                    placeholder="Search by name or email..."
-                                   value="<%= currentKeyword != null ? currentKeyword : "" %>">
+                                   value="${search}">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
+                    </div>
 
-                    <%-- 4. ADD NEW BUTTON  --%>
-                    <div class="col-md-5 d-flex ms-md-auto justify-content-end">
-                        <a href="${pageContext.request.contextPath}/download-template?type=student"
-                           class="btn btn-secondary"
-                           style="margin-right: 10px">
-                            <i class="fas fa-download me-1"></i> Download Template
+                    <%-- 3. CÁC NÚT ACTION --%>
+                    <div class="col-md-6 d-flex justify-content-end gap-2">
+                        <a href="${pageContext.request.contextPath}/download-template?type=student" class="btn btn-outline-secondary">
+                            <i class="fas fa-download"></i> Template
                         </a>
-                        <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                            <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
+                        <button type="button" class="btn btn-outline-secondary" onclick="triggerImport()">
+                            <i class="fas fa-file-import"></i> Import
                         </button>
-                        <a href="add-student" class="btn btn-success"><i class="fas fa-user-plus me-1"></i> Add Student to Class</a>
+                        <a href="add-student?classId=${classId}" class="btn btn-success">
+                            <i class="fas fa-user-plus"></i> Add Student
+                        </a>
                     </div>
                 </form>
-                    <form id="importForm" action="import-students" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                        <input type="file"
-                               id="studentFile"
-                               name="studentFile"
-                               accept=".xlsx"
-                               onchange="submitImport()"
-                               style="display:none;">
-                    </form>
 
-                <%-- DATA TABLE (6 COLUMNS) --%>
+                <%-- Form ẩn để Import file --%>
+                <form id="importForm" action="import-students" method="post" enctype="multipart/form-data" style="display:none;">
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                    <input type="hidden" name="classId" value="${classId}">
+                    <input type="file" id="studentFile" name="studentFile" accept=".xlsx" onchange="submitImport()">
+                </form>
+
+                <%-- DATA TABLE (ĐÃ BỎ CỘT CLASS) --%>
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered mb-0">
-                        <thead class="bg-light">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                         <tr>
-                            <th style="width: 5%;">ID</th>
-                            <th style="width: 25%;">Full Name</th>
-                            <th style="width: 25%;">Email</th>
-                            <th style="width: 25%;">Classes</th>
-                            <th style="width: 10%;">Status</th>
-                            <th style="width: 10%;">Actions</th>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 35%;">Full Name</th>
+                            <th style="width: 35%;">Email</th>
+                            <th style="width: 10%; text-align: center;">Status</th>
+                            <th style="width: 15%; text-align: center;">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <%
-                            int count = 1;
-                            if (students != null && !students.isEmpty()) {
-                                for (Student student : students) {
-                        %>
-                        <tr>
-                            <td><%= count %></td>
-                            <%count++;%>
-                            <td style="text-align: left;"><%= student.getFullname() %></td>
-                            <td><%= student.getEmail() %></td>
-                            <td>
-                                <%
-                                    String classes = student.getClassName();
-                                    if (classes != null) {
-                                        for (String cls : classes.split(", ")) {
-                                            out.println("<span class='badge  bg-info me-1'>" + cls + "</span>");
-                                        }
-                                    } else {
-                                        out.println("-");
-                                    }
-                                %>
-                            </td>
-                            <td>
-                                <% if (student.isStatus()) { %>
-                                <span class="badge bg-success">Active</span>
-                                <% } else { %>
-                                <span class="badge bg-danger">Inactive</span>
-                                <% } %>
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <%-- Nút Detail (Xem chi tiết) --%>
-                                    <a href="student-details?id=<%= student.getId() %>"
-                                       class="btn btn-sm btn-outline-secondary" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                        <c:forEach var="student" items="${students}" varStatus="loop">
+                            <tr>
+                                <td>${(pageIndex - 1) * 10 + loop.index + 1}</td>
+                                <td class="fw-bold text-dark">${student.fullname}</td>
+                                <td>${student.email}</td>
+                                <td class="text-center">
+                                    <c:choose>
+                                        <c:when test="${student.status}">
+                                            <span class="badge bg-success-subtle text-success px-3">Active</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-danger-subtle text-danger px-3">Inactive</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group">
+                                        <a href="student-details?id=${student.id}&classId=${classId}"
+                                           class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
 
-                                    <%-- Nút Bật/Tắt Trạng thái (Toggle Status) --%>
-                                    <%
-                                        if (student.isStatus()) {
-                                    %>
-                                    <a href="student-list?action=toggleStatus&id=<%= student.getId() %>&newStatus=0"
-                                       class="btn btn-sm btn-outline-warning"
-                                       title="Set Inactive"
-                                       onclick="return confirm('Are you sure you want to deactivate student <%= student.getFullname() %>?');">
-                                        <i class="fas fa-ban"></i>
-                                    </a>
-                                    <%
-                                    } else {
-                                    %>
-                                    <a href="student-list?action=toggleStatus&id=<%= student.getId() %>&newStatus=1"
-                                       class="btn btn-sm btn-outline-success"
-                                       title="Set Active"
-                                       onclick="return confirm('Are you sure you want to activate student <%= student.getFullname() %>?');">
-                                        <i class="fas fa-check-circle"></i>
-                                    </a>
-                                    <%
-                                        }
-                                    %>
-                                </div>
-                            </td>
-                        </tr>
-                        <%
-                            }
-                        } else {
-                        %>
-                        <tr>
-                            <td colspan="6" class="text-center text-muted">No students found</td>
-                        </tr>
-                        <%
-                            }
-                        %>
+                                        <c:choose>
+                                            <c:when test="${student.status}">
+                                                <a href="student-list?action=toggleStatus&id=${student.id}&newStatus=0&classId=${classId}&search=${search}&status=${status}&pageIndex=${pageIndex}"
+                                                   class="btn btn-sm btn-outline-warning" title="Deactivate"
+                                                   onclick="return confirm('Deactivate ${student.fullname}?');">
+                                                    <i class="fas fa-ban"></i>
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="student-list?action=toggleStatus&id=${student.id}&newStatus=1&classId=${classId}&search=${search}&status=${status}&pageIndex=${pageIndex}"
+                                                   class="btn btn-sm btn-outline-success" title="Activate"
+                                                   onclick="return confirm('Activate ${student.fullname}?');">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty students}">
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                                    No students found for this criteria.
+                                </td>
+                            </tr>
+                        </c:if>
                         </tbody>
                     </table>
                 </div>
 
-                <%-- PAGINATION (DYNAMIC) --%>
-                <% if (totalPage > 1) {
-                    // Tính toán phạm vi số trang hiển thị (tương tự account-list)
-                    int startPage = Math.max(1, pageIndex - (numPagesToShow / 2));
-                    int endPage = Math.min(totalPage, startPage + numPagesToShow - 1);
+                <%-- PAGINATION --%>
+                <c:if test="${totalPage > 1}">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-end mt-4">
+                                <%-- Nút Previous --%>
+                            <li class="page-item ${pageIndex == 1 ? 'disabled' : ''}">
+                                <a class="page-link" href="student-list?pageIndex=${pageIndex - 1}&classId=${classId}&search=${search}&status=${status}">Previous</a>
+                            </li>
 
-                    // Điều chỉnh startPage nếu endPage chạm mốc totalPage
-                    if (endPage - startPage + 1 < numPagesToShow) {
-                        startPage = Math.max(1, endPage - numPagesToShow + 1);
-                    }
-                %>
-                <nav>
-                    <ul class="pagination justify-content-end mt-3">
+                                <%-- Tính toán dải trang (Logic tương đương Account List) --%>
+                            <c:set var="startPage" value="${pageIndex - 2 < 1 ? 1 : pageIndex - 2}" />
+                            <c:set var="endPage" value="${startPage + 4 > totalPage ? totalPage : startPage + 4}" />
+                            <c:if test="${endPage - startPage < 4 && startPage > 1}">
+                                <c:set var="startPage" value="${endPage - 4 < 1 ? 1 : endPage - 4}" />
+                            </c:if>
 
-                        <%-- Nút Previous --%>
-                        <li class="page-item <%= (pageIndex == 1) ? "disabled" : "" %>">
-                            <a class="page-link"
-                               href="student-list?pageIndex=<%= pageIndex - 1 %><%= filterQuery %>">Previous</a>
-                        </li>
+                            <c:forEach begin="${startPage}" end="${endPage}" var="i">
+                                <li class="page-item ${i == pageIndex ? 'active' : ''}">
+                                    <a class="page-link" href="student-list?pageIndex=${i}&classId=${classId}&search=${search}&status=${status}">${i}</a>
+                                </li>
+                            </c:forEach>
 
-                        <%-- Hiển thị nút số trang --%>
-                        <%
-                            for (int i = startPage; i <= endPage; i++) {
-                        %>
-                        <li class="page-item <%= (i == pageIndex) ? "active" : "" %>">
-                            <a class="page-link"
-                               href="student-list?pageIndex=<%= i %><%= filterQuery %>"><%= i %></a>
-                        </li>
-                        <%
-                            }
-                        %>
-
-                        <%-- Nút Next --%>
-                        <li class="page-item <%= (pageIndex == totalPage) ? "disabled" : "" %>">
-                            <a class="page-link"
-                               href="student-list?pageIndex=<%= pageIndex + 1 %><%= filterQuery %>">Next</a>
-                        </li>
-
-                    </ul>
-                </nav>
-                <% } %>
+                                <%-- Nút Next --%>
+                            <li class="page-item ${pageIndex == totalPage ? 'disabled' : ''}">
+                                <a class="page-link" href="student-list?pageIndex=${pageIndex + 1}&classId=${classId}&search=${search}&status=${status}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </c:if>
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
-
+<script src="/assets/js/admin_scripts.js"></script>
 <script>
     function triggerImport() {
         document.getElementById("studentFile").click();
     }
-
     function submitImport() {
         if (confirm("Import this Excel file now?")) {
             document.getElementById("importForm").submit();
