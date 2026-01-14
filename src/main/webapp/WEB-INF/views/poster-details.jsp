@@ -67,7 +67,7 @@
           </div>
 
           <div class="post-body">
-            ${poster.content}
+            <c:out value="${poster.content}" escapeXml="false"/>
           </div>
         </div>
       </article>

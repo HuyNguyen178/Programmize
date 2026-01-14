@@ -89,7 +89,7 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             String totalDurationFromLessons = formatDuration(totalDurationSeconds);
             String html = course.getDescription();
             String decoded = StringEscapeUtils.unescapeHtml4(html);
-            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
             String descPlainText = Jsoup.clean(decoded, safelist);
 
             request.setAttribute("course", course);

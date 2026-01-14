@@ -86,8 +86,6 @@ public class EditClassServlet extends HttpServlet {
             int classId = Integer.parseInt(request.getParameter("classId"));
             String className = request.getParameter("className");
             String description = request.getParameter("description");
-            BigDecimal listedPrice = new BigDecimal(request.getParameter("listedPrice"));
-            BigDecimal salePrice = new BigDecimal(request.getParameter("salePrice"));
             String[] categoryIds = request.getParameterValues("categoryIds");
             int instructorId = Integer.parseInt(request.getParameter("instructorId"));
             boolean status = "1".equals(request.getParameter("status"));
@@ -107,6 +105,19 @@ public class EditClassServlet extends HttpServlet {
 
             if (endDateStr != null && !endDateStr.isBlank()) {
                 endDate = formatter.parse(decodedEndDate);
+            }
+
+            BigDecimal listedPrice = new BigDecimal("0");
+            BigDecimal salePrice = null;
+
+            String listedPriceStr = request.getParameter("listedPrice");
+            String salePriceStr = request.getParameter("salePrice");
+
+            if (listedPriceStr != null && !listedPriceStr.trim().isEmpty()) {
+                listedPrice = new BigDecimal(listedPriceStr);
+            }
+            if (salePriceStr != null && !salePriceStr.trim().isEmpty()) {
+                salePrice = new BigDecimal(salePriceStr);
             }
 
             String thumbnailUrl = classDAO.getClassById(classId).getThumbnailUrl();

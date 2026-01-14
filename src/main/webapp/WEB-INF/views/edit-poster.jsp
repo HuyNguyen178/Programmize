@@ -152,7 +152,7 @@
           <span class="required">*</span>
         </label>
         <div id="editor-container"></div>
-        <input type="hidden" id="content" name="content" required>
+        <input type="hidden" id="content" name="content" value="${poster.content}" required>
         <div class="form-text mt-3">
           <i class="fas fa-info-circle"></i> Use the editor toolbar to format your content with headings, lists, images, and code blocks
         </div>
@@ -231,9 +231,9 @@
     }
   });
 
-  const existingContent = `<c:out value="${poster.content}" escapeXml="false"/>`;
-  if (existingContent && existingContent.trim().length > 0) {
-    quill.root.innerHTML = existingContent;
+  const hiddenInput = document.getElementById('content');
+  if (hiddenInput.value) {
+    quill.root.innerHTML = hiddenInput.value;
   }
 
   // Character counters

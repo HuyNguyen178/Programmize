@@ -78,7 +78,7 @@ public class AddCourseServlet extends HttpServlet {
             }
 
             // Parse prices
-            BigDecimal listedPrice = null;
+            BigDecimal listedPrice = new BigDecimal("0");
             BigDecimal salePrice = null;
             if (listedPriceStr != null && !listedPriceStr.trim().isEmpty()) {
                 listedPrice = new BigDecimal(listedPriceStr);

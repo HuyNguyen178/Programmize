@@ -84,11 +84,11 @@ public class AddClassServlet extends HttpServlet {
                 thumbnailUrl = (String) uploadResult.get("secure_url");
             }
             String description = request.getParameter("description");
-            BigDecimal listedPrice = new BigDecimal(request.getParameter("listedPrice"));
-            BigDecimal salePrice = new BigDecimal(request.getParameter("salePrice"));
             String[] categoryIds = request.getParameterValues("categoryIds");
             String instructorIdStr = request.getParameter("instructorId");
             boolean status = "1".equals(request.getParameter("status"));
+            String listedPriceStr = request.getParameter("listedPrice");
+            String salePriceStr = request.getParameter("salePrice");
             String startDateStr = request.getParameter("startDate");
             String endDateStr = request.getParameter("endDate");
 
@@ -104,6 +104,15 @@ public class AddClassServlet extends HttpServlet {
 
             if (endDateStr != null && !endDateStr.isBlank()) {
                 endDate = formatter.parse(endDateStr);
+            }
+
+            BigDecimal listedPrice = new BigDecimal("0");
+            BigDecimal salePrice = null;
+            if (listedPriceStr != null && !listedPriceStr.trim().isEmpty()) {
+                listedPrice = new BigDecimal(listedPriceStr);
+            }
+            if (salePriceStr != null && !salePriceStr.trim().isEmpty()) {
+                salePrice = new BigDecimal(salePriceStr);
             }
 
             Class c = new Class();

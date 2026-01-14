@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Poster;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import utils.PosterUtil;
 
 import java.io.IOException;
@@ -61,6 +64,12 @@ public class PosterDetailsServlet extends HttpServlet {
                     PosterUtil.timeAgo(p.getPublishedAt())
             );
         }
+
+        String html = poster.getContent();
+        String decoded = StringEscapeUtils.unescapeHtml4(html);
+        Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
+        String text = Jsoup.clean(decoded, safelist);
+        poster.setContent(text);
 
         request.setAttribute("poster", poster);
         request.setAttribute("relatedPosters", relatedPosters);

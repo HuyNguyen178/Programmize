@@ -58,7 +58,7 @@ public class PublicCoursesServlet extends HttpServlet {
         for (Course course : courses) {
             if (course.getDescription() != null) {
                 String decoded = StringEscapeUtils.unescapeHtml4(course.getDescription());
-                Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+                Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
                 String plainText = Jsoup.clean(decoded, safelist);
                 course.setDescription(plainText);
             }

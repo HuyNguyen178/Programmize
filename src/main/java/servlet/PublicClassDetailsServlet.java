@@ -63,7 +63,7 @@ public class PublicClassDetailsServlet extends HttpServlet {
 
         String html = clazz.getDescription();
         String decoded = StringEscapeUtils.unescapeHtml4(html);
-        Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+        Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
         String descPlainText = Jsoup.clean(decoded, safelist);
 
         request.setAttribute("isEnrolled", isEnrolled);
