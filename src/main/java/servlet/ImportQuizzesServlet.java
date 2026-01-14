@@ -4,6 +4,7 @@ import dao.ChapterDAO;
 import dao.QuizDAO;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 @WebServlet("/import-quizzes")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 10 * 1024 * 1024
+)
 public class ImportQuizzesServlet extends HttpServlet {
     private QuizDAO quizDAO;
     private ChapterDAO chapterDAO;
@@ -34,7 +40,7 @@ public class ImportQuizzesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int chapterId = Integer.parseInt(request.getParameter("id"));
+        int chapterId = Integer.parseInt(request.getParameter("chapterId"));
         Chapter chapter = chapterDAO.getChapterById(chapterId);
         Part filePart = request.getPart("quizFile");
         List<String> errors = new ArrayList<>();
@@ -132,17 +138,30 @@ public class ImportQuizzesServlet extends HttpServlet {
                 answer.setContent(answerContent);
                 answer.setCorrect(isCorrect);
                 question.getAnswers().add(answer);
-
-
             }
 
             for (Quiz quiz : quizMap.values()) {
+                boolean quizValid = true;
+
                 for (Question q : quiz.getQuestions()) {
-                    boolean hasCorrect = q.getAnswers().stream().anyMatch(Answer::isCorrect);
-                    if (!hasCorrect) {
-                        errors.add("Question '" + q.getContent() + "' has no correct answer (Quiz: " + quiz.getTitle() + ")");
+                    long correctCount = q.getAnswers()
+                            .stream()
+                            .filter(Answer::isCorrect)
+                            .count();
+
+                    if (correctCount == 0) {
+                        errors.add("Question " + q.getContent() + " has no correct answer (Quiz: " + quiz.getTitle() + ")");
+                        quizValid = false;
+                    } else if (correctCount > 1) {
+                        errors.add("Question " + q.getContent() + " has more than one correct answer (Quiz: " + quiz.getTitle() + ")");
+                        quizValid = false;
                     }
                 }
+
+                if (!quizValid) {
+                    continue;
+                }
+
                 try {
                     quizDAO.addQuiz(quiz);
                     successCount++;

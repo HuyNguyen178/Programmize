@@ -281,6 +281,7 @@
 
             <form id="importForm" action="import-quizzes" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                <input type="hidden" name="chapterId" value="${chapter.chapterId}">
                 <input type="file" id="quizFile" name="quizFile" accept=".xlsx"
                        onchange="submitImport()" style="display:none;">
             </form>
