@@ -7,6 +7,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuizDAO {
+    public void addQuiz(Quiz quiz) throws SQLException {
+        String insertQuizSql = "INSERT INTO quiz (chapter_id, title, description) VALUES (?, ?, ?)";
+        String insertQuestionSql = "INSERT INTO question (quiz_id, content) VALUES (?, ?)";
+        String insertAnswerSql = "INSERT INTO answer (question_id, content, is_correct) VALUES (?, ?, ?)";
+
+        Connection conn = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            conn.setAutoCommit(false);
+
+            int quizId;
+
+            try (PreparedStatement ps = conn.prepareStatement(insertQuizSql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, quiz.getChapter().getChapterId());
+                ps.setString(2, quiz.getTitle());
+                ps.setString(3, quiz.getDescription());
+                ps.executeUpdate();
+
+                ResultSet rs = ps.getGeneratedKeys();
+                if (!rs.next()) throw new SQLException("Creating quiz failed.");
+                quizId = rs.getInt(1);
+            }
+
+            for (Question q : quiz.getQuestions()) {
+
+                int questionId;
+                try (PreparedStatement psQ = conn.prepareStatement(insertQuestionSql, Statement.RETURN_GENERATED_KEYS)) {
+                    psQ.setInt(1, quizId);
+                    psQ.setString(2, q.getContent());
+                    psQ.executeUpdate();
+
+                    ResultSet rsQ = psQ.getGeneratedKeys();
+                    if (!rsQ.next()) throw new SQLException("Creating question failed.");
+                    questionId = rsQ.getInt(1);
+                }
+
+                try (PreparedStatement psA = conn.prepareStatement(insertAnswerSql)) {
+                    for (Answer a : q.getAnswers()) {
+                        psA.setInt(1, questionId);
+                        psA.setString(2, a.getContent());
+                        psA.setBoolean(3, a.isCorrect());
+                        psA.addBatch();
+                    }
+                    psA.executeBatch();
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) conn.rollback();
+            throw e;
+        } finally {
+            if (conn != null) conn.close();
+        }
+    }
+
 
     public boolean addFullQuiz(Quiz quiz, List<Question> questions, List<List<Answer>> allAnswers) throws SQLException {
         String insertQuizSql = "INSERT INTO quiz (chapter_id, title, description) VALUES (?, ?, ?)";

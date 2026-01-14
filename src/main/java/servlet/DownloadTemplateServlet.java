@@ -40,8 +40,7 @@ public class DownloadTemplateServlet extends HttpServlet {
                 filename = "class_template.xlsx";
                 break;
             case "quiz":
-                attention = "Each answer must be separated by '|' and the correct answer must be in bold";
-                headers = new String[]{"question", "answers"};
+                headers = new String[]{"title", "description", "question", "answer", "is_correct"};
                 filename = "quiz_template.xlsx";
                 break;
             default:

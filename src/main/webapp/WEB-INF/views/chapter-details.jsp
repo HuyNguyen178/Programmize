@@ -55,12 +55,17 @@
         </div>
         <c:remove var="successMessage" scope="session" />
     </c:if>
-    <c:if test="${not empty sessionScope.errorMessage}">
+    <c:if test="${not empty sessionScope.errors}">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i>${sessionScope.errorMessage}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <c:forEach items="${sessionScope.errors}" var="error">
+                <div>
+                    <i class="bi bi-exclamination-cirle me-2"></i>
+                        ${error}
+                </div>
+            </c:forEach>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <c:remove var="errorMessage" scope="session" />
+        <c:remove var="errors" scope="session"/>
     </c:if>
 
     <!-- Chapter Information -->
@@ -117,7 +122,7 @@
                     </p>
                     <p class="mb-2">
                         <strong>Created:</strong>
-                        <fmt:formatDate value="${chapter.createdAt}" pattern="MMM dd, yyyy" />
+                        <fmt:formatDate value="${chapter.createdAt}" pattern="dd/MM/yyyy" />
                     </p>
                     <p class="mb-0">
                         <strong>Total Duration:</strong> ${totalDurationFormatted}
