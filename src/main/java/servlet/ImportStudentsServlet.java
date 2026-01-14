@@ -20,7 +20,7 @@ import utils.ExcelFileUtil;
 import java.io.IOException;
 import java.util.*;
 
-@WebServlet("/import-student")
+@WebServlet("/import-students")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
         maxFileSize = 5 * 1024 * 1024,

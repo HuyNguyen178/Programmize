@@ -12,69 +12,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
-
-    <style>
-        /* Layout and styling fixes */
-        body { margin: 0; background-color: #f8f9fa; }
-
-        /* Cấu hình CONTENT: Giới hạn chiều rộng và CĂN GIỮA */
-        #content {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            min-height: 100vh;
-            padding: 20px;
-
-            /* CSS CĂN GIỮA */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: calc(100% - 260px);
-            box-sizing: border-box;
-        }
-
-        #content.expanded {
-            margin-left: 72px;
-            width: calc(100% - 72px);
-        }
-
-        /* Cấu hình Topbar Shift */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-        #topbar.expanded {
-            margin-left: 72px;
-        }
-
-        /* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
-        .container-fluid-custom {
-            max-width: 850px;
-            width: 100%;
-        }
-
-        /* Cải thiện Header tối giản */
-        .page-header {
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e9ecef;
-            width: 100%;
-        }
-
-        /* Form styling */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            font-weight: 500;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/add-chapter.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
 </head>
 <body>
 
@@ -121,13 +61,13 @@
                     <div class="form-group">
                         <label for="chapterName" class="form-label">Chapter Name <span class="text-danger">*</span></label>
                         <input type="text" id="chapterName" name="chapterName" class="form-control"
-                               placeholder="Enter chapter name" required maxlength="100">
+                               placeholder="Enter chapter name" required maxlength="100" value="${chapter.chapterName}">
                     </div>
 
                     <div class="form-group">
                         <label for="description" class="form-label">Description</label>
-                        <textarea id="description" name="description" class="form-control" rows="4"
-                                  placeholder="Enter chapter description"></textarea>
+                        <div id="editor-container"></div>
+                        <input type="hidden" id="description" name="description" value="${chapter.description}">
                     </div>
 
                 </div>
@@ -138,7 +78,7 @@
 
                     <div class="form-group">
                         <label for="courseId" class="form-label">Course <span class="text-danger">*</span></label>
-                        <select id="courseId" name="courseId" class="form-select" required onchange="updateOrderIndex()">
+                        <select id="courseId" name="courseId" class="form-select" required onchange="updateOrderIndex()" disabled>
                             <option value="">-- Select Course --</option>
                             <c:forEach items="${allCourses}" var="course">
                                 <option value="${course[0]}"
@@ -147,6 +87,7 @@
                                 </option>
                             </c:forEach>
                         </select>
+                        <input type="hidden" name="courseId" value="${param.courseId}">
                     </div>
 
                     <div class="form-group">
@@ -194,7 +135,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
     // Auto-update order index when course is selected (optional AJAX enhancement)
@@ -216,29 +158,26 @@
 </script>
 
 <script>
-    // Initialize Summernote
-    $(document).ready(function() {
-        $('#description').summernote({
-            height: 300,
-            fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto', 'Open Sans'],
-            fontNamesIgnoreCheck: ['Roboto', 'Open Sans'],
-            fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: 'Write chapter description here...',
+        modules: {
             toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['height', ['height']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            placeholder: 'Enter chapter description...',
-            tabsize: 2,
-            disableDragAndDrop: false
-        });
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                ['link', 'image', 'code-block'],
+                ['clean']
+            ]
+        }
+    });
+
+    const hiddenInput = document.getElementById('description');
+    const form = document.querySelector('form[action$="/add-chapter"]');
+    form.addEventListener('submit', function () {
+        hiddenInput.value = quill.root.innerHTML;
     });
 </script>
 

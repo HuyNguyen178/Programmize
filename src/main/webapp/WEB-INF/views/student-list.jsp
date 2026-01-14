@@ -138,7 +138,7 @@
                         <a href="add-student" class="btn btn-success"><i class="fas fa-user-plus me-1"></i> Add Student to Class</a>
                     </div>
                 </form>
-                    <form id="importForm" action="import-student" method="post" enctype="multipart/form-data">
+                    <form id="importForm" action="import-students" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                         <input type="file"
                                id="studentFile"

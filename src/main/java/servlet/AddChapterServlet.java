@@ -45,7 +45,6 @@ public class AddChapterServlet extends HttpServlet {
                     int nextOrderIndex = chapterDAO.getNextOrderIndex(courseId);
                     request.setAttribute("nextOrderIndex", nextOrderIndex);
                 } catch (NumberFormatException e) {
-                    // Ignore invalid courseId
                 }
             } else {
                 // default order index
@@ -114,8 +113,7 @@ public class AddChapterServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage",
-                    "Invalid input format. Please check your data.");
+            request.getSession().setAttribute("errorMessage","Invalid input format. Please check your data.");
             response.sendRedirect(request.getContextPath() + "/add-chapter");
         } catch (Exception e) {
             e.printStackTrace();

@@ -15,6 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Chapter;
 import model.Lesson;
 import model.Quiz;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 @WebServlet(name = "ChapterDetailServlet", urlPatterns = {"/chapter-details"})
 public class ChapterDetailsServlet extends HttpServlet {
@@ -85,6 +88,12 @@ public class ChapterDetailsServlet extends HttpServlet {
             // Count by status
             long publishedCount = lessons.stream().filter(l -> l.getStatus() != null && l.getStatus()).count();
             long draftCount = lessons.stream().filter(l -> l.getStatus() == null || !l.getStatus()).count();
+
+            String html = chapter.getDescription();
+            String decoded = StringEscapeUtils.unescapeHtml4(html);
+            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
+            String descPlainText = Jsoup.clean(decoded, safelist);
+            chapter.setDescription(descPlainText);
 
             request.setAttribute("chapter", chapter);
             request.setAttribute("courseName", courseName);
