@@ -139,6 +139,12 @@
                                     </div>
 
                                     <div>
+                                        <!-- Student List Button -->
+                                        <a href="${pageContext.request.contextPath}/student-list?classId=${clazz.id}"
+                                           class="btn btn-outline-success btn-sm me-2"
+                                           onclick="event.stopPropagation()">
+                                            <i class="bi bi-people me-1"></i> Student List
+                                        </a>
                                         <!-- Class Syllabus Button -->
                                         <a href="${pageContext.request.contextPath}/syllabus-details?classId=${clazz.id}"
                                            class="btn btn-outline-primary btn-sm me-2"

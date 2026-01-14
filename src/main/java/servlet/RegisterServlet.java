@@ -43,8 +43,8 @@ public class RegisterServlet extends HttpServlet {
         if (username.trim().isEmpty()) {
             request.setAttribute("usernameError", "Username cannot be empty!");
             error = true;
-        } else if (username.length() > 20) {
-            request.setAttribute("usernameError", "Username must be less than 20 characters!");
+        } else if (username.length() > 50) {
+            request.setAttribute("usernameError", "Username must be less than 50 characters!");
             error = true;
         } else if (dao.checkUserOrEmailExists(username)) {
             request.setAttribute("usernameError", "Username already exists!");
