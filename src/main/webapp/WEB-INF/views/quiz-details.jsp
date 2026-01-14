@@ -14,19 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/lesson-details.css">
-
-    <style>
-        .quiz-view-area { padding: 20px; }
-        .question-card { display: none; background: #f9f9fb; padding: 25px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 20px; }
-        .question-card.active { display: block; animation: fadeIn 0.3s; }
-        .ans-opt {
-            border: 1px solid #ddd; border-radius: 8px; padding: 12px 15px; margin-bottom: 10px;
-            cursor: pointer; display: flex; align-items: center; transition: 0.2s; background: #fff;
-        }
-        .ans-opt:hover { background: #f0f7ff; border-color: #007bff; }
-        .ans-opt.selected { background: #e7f1ff; border-color: #0d6efd; font-weight: 600; }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/quiz-details.css">
 </head>
 <body>
 
@@ -35,8 +23,8 @@
     <div class="learning-header">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <a href="${pageContext.request.contextPath}/my-courses" class="btn btn-outline-light btn-sm me-3">
-                    <i class="fas fa-arrow-left"></i> Back to Course
+                <a href="chapter-details?id=${quiz.chapter.chapterId}" class="btn btn-outline-light btn-sm me-3">
+                    <i class="fas fa-arrow-left"></i> Back to Chapter
                 </a>
                 <h6 class="mb-0 text-truncate d-none d-md-block">${courseName}</h6>
             </div>

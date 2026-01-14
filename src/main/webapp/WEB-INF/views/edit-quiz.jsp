@@ -14,51 +14,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/favicon.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
-
-    <style>
-        .question-item {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            position: relative;
-            background: #fff;
-        }
-
-        .btn-remove-question {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .answer-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .answer-row .form-check-input {
-            margin-right: 10px;
-        }
-
-        /* Cấu hình Topbar Shift */
-        #topbar {
-            margin-left: 260px;
-            transition: margin-left 0.25s ease;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        #topbar.expanded {
-            margin-left: 72px;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/edit-quiz.css">
 </head>
 
 <body class="bg-light">
@@ -83,8 +40,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Description</label>
-                        <textarea name="description" id="description"
-                                  class="form-control">${quiz.description}</textarea>
+                        <div id="editor-container"></div>
+                        <input type="hidden" id="description" name="description" value="${quiz.description}">
                     </div>
                 </div>
             </div>
@@ -151,23 +108,32 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
-    $(document).ready(function () {
-        $('#description').summernote({
-            height: 200,
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: 'Write quiz description here...',
+        modules: {
             toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture']],
-                ['view', ['fullscreen', 'codeview']]
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                ['link', 'image', 'code-block'],
+                ['clean']
             ]
-        });
+        }
+    });
+
+    const hiddenInput = document.getElementById('description');
+    const form = document.querySelector('form[action$="/add-quiz"]');
+    form.addEventListener('submit', function () {
+        hiddenInput.value = quill.root.innerHTML;
     });
 
     // Khởi tạo qCount dựa trên số lượng câu hỏi hiện có từ server

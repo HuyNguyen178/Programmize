@@ -89,11 +89,18 @@ public class ChapterDetailsServlet extends HttpServlet {
             long publishedCount = lessons.stream().filter(l -> l.getStatus() != null && l.getStatus()).count();
             long draftCount = lessons.stream().filter(l -> l.getStatus() == null || !l.getStatus()).count();
 
-            String html = chapter.getDescription();
-            String decoded = StringEscapeUtils.unescapeHtml4(html);
+            String chapterHtml = chapter.getDescription();
+            String chapterDecoded = StringEscapeUtils.unescapeHtml4(chapterHtml);
             Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
-            String descPlainText = Jsoup.clean(decoded, safelist);
-            chapter.setDescription(descPlainText);
+            String chapterDesc = Jsoup.clean(chapterDecoded, safelist);
+            chapter.setDescription(chapterDesc);
+
+            for (Quiz quiz : quizzes) {
+                String quizHtml = quiz.getDescription();
+                String quizDecoded = StringEscapeUtils.unescapeHtml4(quizHtml);
+                String quizDesc = Jsoup.clean(quizDecoded, safelist);
+                quiz.setDescription(quizDesc);
+            }
 
             request.setAttribute("chapter", chapter);
             request.setAttribute("courseName", courseName);

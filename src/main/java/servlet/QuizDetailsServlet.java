@@ -11,6 +11,10 @@ import model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +81,12 @@ public class QuizDetailsServlet extends HttpServlet {
                 String role = user.getRoleName();
                 isAdminOrInstructor = "Admin".equals(role) || "Instructor".equals(role);
             }
+
+            String quizHtml = quiz.getDescription();
+            String quizDecoded = StringEscapeUtils.unescapeHtml4(quizHtml);
+            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
+            String quizDesc = Jsoup.clean(quizDecoded, safelist);
+            quiz.setDescription(quizDesc);
 
             // Gửi dữ liệu sang JSP
             request.setAttribute("quiz", quiz);

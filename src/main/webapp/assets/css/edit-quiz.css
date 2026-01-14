@@ -1,0 +1,41 @@
+.question-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    position: relative;
+    background: #fff;
+}
+
+.btn-remove-question {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.answer-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.answer-row .form-check-input {
+    margin-right: 10px;
+}
+
+/* Cấu hình Topbar Shift */
+#topbar {
+    margin-left: 260px;
+    transition: margin-left 0.25s ease;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+#editor-container {
+    height: 300px;
+}
+
+#topbar.expanded {
+    margin-left: 72px;
+}
