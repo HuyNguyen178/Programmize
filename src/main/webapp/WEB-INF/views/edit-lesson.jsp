@@ -76,7 +76,6 @@
                         <select id="lessonType" name="lessonType" class="form-select" required onchange="toggleConditionalFields()">
                             <option value="video" ${lesson.lessonType.value == 'video' ? 'selected' : ''}>🎬 Video</option>
                             <option value="text" ${lesson.lessonType.value == 'text' ? 'selected' : ''}>📄 Text/Reading</option>
-                            <option value="quiz" ${lesson.lessonType.value == 'quiz' ? 'selected' : ''}>❓ Quiz</option>
                             <option value="assignment" ${lesson.lessonType.value == 'assignment' ? 'selected' : ''}>💻 Assignment</option>
                         </select>
                     </div>
@@ -100,10 +99,10 @@
 
                     <%-- Duration field --%>
                     <div class="form-group">
-                        <label for="duration" class="form-label">Duration (seconds)</label>
+                        <label for="duration" class="form-label">Duration (minutes)</label>
                         <input type="number" id="duration" name="duration" class="form-control"
                                min="0" value="${lesson.duration != null ? lesson.duration : 0}">
-                        <small class="text-muted">e.g., 300 = 5 minutes</small>
+<%--                        <small class="text-muted">e.g., 300 = 5 minutes</small>--%>
                     </div>
 
                 </div>

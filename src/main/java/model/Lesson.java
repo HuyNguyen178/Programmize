@@ -17,7 +17,7 @@ public class Lesson {
     private Date createdAt;
     private Date updatedAt;
 
-    public enum LessonType {VIDEO("video"), TEXT("text"), QUIZ("quiz"), ASSIGNMENT("assignment");
+    public enum LessonType {VIDEO("video"), TEXT("text"), ASSIGNMENT("assignment");
 
         private final String value;
 
@@ -162,26 +162,12 @@ public class Lesson {
     }
 
 //  extra methods
-    public String getDurationFormatted() {
-        if (duration <= 0) {
-            return "0 min";
-        }
-
-        int hours = duration / 3600;
-        int minutes = (duration % 3600) / 60;
-        int seconds = duration % 60;
-
-        if (hours > 0) {
-            if (minutes > 0) {
-                return hours + " hr " + minutes + " min";
-            }
-            return hours + " hr";
-        } else if (minutes > 0) {
-            return minutes + " min";
-        } else {
-            return seconds + " sec";
-        }
+public String getDurationFormatted() {
+    if (duration <= 0) {
+        return "0 min";
     }
+    return duration + " min";
+}
 
     public String getTypeIcon() {
         if (lessonType == null) {
@@ -193,8 +179,6 @@ public class Lesson {
                 return "fas fa-video";
             case TEXT:
                 return "fas fa-file-alt";
-            case QUIZ:
-                return "fas fa-question-circle";
             case ASSIGNMENT:
                 return "fas fa-laptop-code";
             default:
@@ -212,8 +196,6 @@ public class Lesson {
                 return "Video";
             case TEXT:
                 return "Reading";
-            case QUIZ:
-                return "Quiz";
             case ASSIGNMENT:
                 return "Assignment";
             default:
