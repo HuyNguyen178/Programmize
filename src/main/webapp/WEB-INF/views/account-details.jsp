@@ -57,7 +57,7 @@
     String currentAvatarUrl = finalAvatarUrl.isEmpty() ? placeholderAvatar : finalAvatarUrl;
 
     String pageTitle = isEditMode ? "Account Details - " + finalUsername : "Add New Account";
-    String headerTitle = isEditMode ? "Account Detail" : "Add New Account";
+    String headerTitle = isEditMode ? "Account Details" : "Add New Account";
     String formAction = isEditMode ? "account-details" : "add-account";
 %>
 <!DOCTYPE html>

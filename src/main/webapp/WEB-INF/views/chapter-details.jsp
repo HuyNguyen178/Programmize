@@ -437,7 +437,7 @@
         <div class="card-header bg-white p-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold text-primary">
-                    <i class="bi bi-patch-question-fill me-2"></i>Quizzes List
+                    <i class="bi bi-patch-question-fill me-2"></i>Quiz List
                 </h5>
                 <span class="text-muted">
                     <i class="bi bi-list-check me-1"></i>Total: ${fn:length(quizzes)} quiz(zes)

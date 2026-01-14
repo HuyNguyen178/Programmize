@@ -8,17 +8,17 @@
     // Xử lý Avatar URL an toàn
     String placeholderAvatar = "https://i.pinimg.com/736x/20/ef/6b/20ef6b554ea249790281e6677abc4160.jpg";
     String avatarUrl = placeholderAvatar; // Khởi tạo với placeholder
-    String pageTitle = "Student Detail";
+    String pageTitle = "Student Details";
 
     if (student != null) {
         String studentUsername = student.getUsername() != null ? student.getUsername() : "";
-        pageTitle = "Student Detail - " + studentUsername;
+        pageTitle = "Student Details - " + studentUsername;
 
         if (student.getAvatarUrl() != null && !student.getAvatarUrl().isEmpty()) {
             avatarUrl = student.getAvatarUrl();
         }
     }
-    String headerTitle = "Student Detail";
+    String headerTitle = "Student Details";
 %>
 
 <!DOCTYPE html>
