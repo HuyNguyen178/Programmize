@@ -169,6 +169,7 @@ public class PosterDAO {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Poster poster = new Poster();
+                poster.setPostId(resultSet.getInt("post_id"));
                 poster.setTitle(resultSet.getString("title"));
                 poster.setViewCount(resultSet.getInt("view_count"));
                 poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
