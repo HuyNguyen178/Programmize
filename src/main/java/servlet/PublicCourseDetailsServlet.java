@@ -12,6 +12,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 import java.io.IOException;
 import java.util.List;
@@ -88,7 +89,8 @@ public class PublicCourseDetailsServlet extends HttpServlet {
             String totalDurationFromLessons = formatDuration(totalDurationSeconds);
             String html = course.getDescription();
             String decoded = StringEscapeUtils.unescapeHtml4(html);
-            String descPlainText = Jsoup.parse(decoded).text();
+            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+            String descPlainText = Jsoup.clean(decoded, safelist);
 
             request.setAttribute("course", course);
             request.setAttribute("description", descPlainText);

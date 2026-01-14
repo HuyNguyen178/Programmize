@@ -5,6 +5,10 @@ import model.Course;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -50,6 +54,15 @@ public class PublicCoursesServlet extends HttpServlet {
         // Get all categories for filter dropdown
         // Using getAllCategoryNames() which returns List<String> for backward compatibility
         List<String> allCategories = publicCourseDAO.getAllCategoryNames();
+
+        for (Course course : courses) {
+            if (course.getDescription() != null) {
+                String decoded = StringEscapeUtils.unescapeHtml4(course.getDescription());
+                Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+                String plainText = Jsoup.clean(decoded, safelist);
+                course.setDescription(plainText);
+            }
+        }
 
         // Set attributes for JSP
         request.setAttribute("courses", courses);

@@ -10,6 +10,7 @@ import model.Class;
 import model.User;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 import java.io.IOException;
 import java.util.Date;
@@ -62,7 +63,8 @@ public class PublicClassDetailsServlet extends HttpServlet {
 
         String html = clazz.getDescription();
         String decoded = StringEscapeUtils.unescapeHtml4(html);
-        String descPlainText = Jsoup.parse(decoded).text();
+        Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+        String descPlainText = Jsoup.clean(decoded, safelist);
 
         request.setAttribute("isEnrolled", isEnrolled);
 

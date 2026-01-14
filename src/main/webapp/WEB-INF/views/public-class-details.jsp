@@ -63,7 +63,7 @@
                 <h3 class="fw-bold mb-3 text-primary">Class Description</h3>
                 <c:choose>
                     <c:when test="${not empty clazz.description}">
-                        ${description}
+                        <c:out value="${description}" escapeXml="false"/>
                     </c:when>
                     <c:otherwise>
                         <p>This comprehensive class is designed to help you master the essential concepts and practical skills needed to succeed in modern software development.</p>

@@ -7,6 +7,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Class;
 import model.Setting;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +55,12 @@ public class PublicClassesServlet extends HttpServlet {
 
         for (Class c : classes) {
             c.setClassStatus("Upcoming");
+
+            String html = c.getDescription();
+            String decoded = StringEscapeUtils.unescapeHtml4(html);
+            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br");
+            String descPlainText = Jsoup.clean(decoded, safelist);
+            c.setDescription(descPlainText);
         }
 
         int totalClasses = classDAO.countActiveClasses(keyword, categoryId);
