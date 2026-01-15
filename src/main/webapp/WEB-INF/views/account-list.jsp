@@ -127,14 +127,21 @@
 
                     <%-- 4. ADD NEW BUTTON  --%>
                     <div class="col-md-5 d-flex ms-md-auto justify-content-end">
-                        <a href="${pageContext.request.contextPath}/download-template?type=account"
-                           class="btn btn-secondary"
-                           style="margin-right: 10px">
-                            <i class="fas fa-download me-1"></i> Download Template
-                        </a>
-                        <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                            <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="margin-right: 10px">
+                            <i class="fas fa-tools me-1"></i> Tools
                         </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="${pageContext.request.contextPath}/download-template?type=account">
+                                    <i class="fas fa-download me-2"></i>Download Import Template
+                                </a>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item" onclick="triggerImport()">
+                                    <i class="fas fa-file-import me-2"></i>Import Accounts (.xlsx)
+                                </button>
+                            </li>
+                        </ul>
                         <a href="add-account" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Add New Account</a>
                     </div>
                 </form>

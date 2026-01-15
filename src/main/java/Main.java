@@ -8,13 +8,12 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // Lấy PORT từ environment variable (Railway sẽ set biến này)
         String portStr = System.getenv("PORT");
         int port = (portStr != null) ? Integer.parseInt(portStr) : 8080;
 
         Tomcat tomcat = new Tomcat();
         tomcat.setPort(port);
-        tomcat.getConnector(); // Trigger connector creation
+        tomcat.getConnector();
 
         // Đường dẫn đến webapp
         String webappDir = new File("src/main/webapp").getAbsolutePath();

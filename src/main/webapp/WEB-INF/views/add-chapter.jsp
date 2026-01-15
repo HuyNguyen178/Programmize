@@ -18,8 +18,8 @@
 </head>
 <body>
 
-<%@ include file="include/instructor-topbar.jsp" %>
-<%@ include file="include/instructor-sidebar.jsp" %>
+<jsp:include page="include/instructor-topbar.jsp"/>
+<jsp:include page="include/instructor-sidebar.jsp"/>
 
 <div id="content" class="content-wrapper">
     <div class="container-fluid-custom p-0">
@@ -135,8 +135,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
 
 <script>
     // Auto-update order index when course is selected (optional AJAX enhancement)

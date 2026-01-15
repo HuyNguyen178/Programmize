@@ -33,11 +33,6 @@ body { margin: 0; background-color: #f8f9fa; }
     margin-left: 72px;
 }
 
-/* Đảm bảo nội dung bên trong không bị kéo dài và có chiều rộng tối đa */
-.container-fluid-custom{
-    max-width: 850px;
-    width: 100%;
-}
 
 #editor-container {
     height: 300px;

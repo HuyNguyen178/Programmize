@@ -93,7 +93,7 @@
                     </div>
 
                     <%-- 3. FILTER BY STATUS (col-md-2) --%>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <select class="form-select" name="status" onchange="this.form.submit()">
                             <option value="">All Statuses</option>
                             <option value="1" ${selectedStatus == '1' ? 'selected' : ''}>Active</option>
@@ -112,16 +112,23 @@
                     </div>
 
                     <%-- 5. ADD NEW BUTTON (col-md-3 d-flex ms-md-auto justify-content-end) --%>
-                    <div class="col-md-5 d-flex ms-md-auto justify-content-end">
+                    <div class="col-md-4 d-flex ms-md-auto justify-content-end">
                         <div class="d-flex justify-content-end">
-                            <a href="${pageContext.request.contextPath}/download-template?type=course"
-                               class="btn btn-secondary"
-                               style="margin-right: 10px">
-                                <i class="fas fa-download me-1"></i> Download Template
-                            </a>
-                            <button type="button" class="btn btn-secondary" onclick="triggerImport()" style="margin-right: 10px">
-                                <i class="fas fa-file-import me-1"></i> Import File (.xlsx)
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="margin-right: 10px">
+                                <i class="fas fa-tools me-1"></i> Tools
                             </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="${pageContext.request.contextPath}/download-template?type=course">
+                                        <i class="fas fa-download me-2"></i>Download Import Template
+                                    </a>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item" onclick="triggerImport()">
+                                        <i class="fas fa-file-import me-2"></i>Import Courses (.xlsx)
+                                    </button>
+                                </li>
+                            </ul>
                             <%-- Nút Add New (sử dụng btn btn-success và icon giống account-list.jsp) [cite: 28] --%>
                             <a href="${pageContext.request.contextPath}/add-course" class="btn btn-success">
                                 <i class="fas fa-plus-circle me-1"></i> Add New Course

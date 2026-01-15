@@ -1,7 +1,9 @@
 package servlet;
 
+import dao.ClassDAO;
 import dao.StudentDAO;
 import jakarta.servlet.http.HttpSession;
+import model.Class;
 import model.Student;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,11 +18,13 @@ import java.util.List;
 public class StudentListServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
+    private ClassDAO classDAO;
     private final int PAGE_SIZE = 10;
 
     @Override
     public void init() throws ServletException {
         studentDAO = new StudentDAO();
+        classDAO = new ClassDAO();
     }
 
     @Override
@@ -34,16 +38,9 @@ public class StudentListServlet extends HttpServlet {
             return;
         }
 
-        String classIdParam = request.getParameter("classId");
-        Integer classId = null;
-        try {
-            if (classIdParam != null && !classIdParam.trim().isEmpty()) {
-                classId = Integer.parseInt(classIdParam);
-            }
-        } catch (NumberFormatException e) {
-            classId = null;
-        }
+        Integer classId = Integer.parseInt(request.getParameter("classId"));
 
+        String className = classDAO.getClassById(classId).getName();
         String action = request.getParameter("action");
         String idParam = request.getParameter("id");
         String statusParam = request.getParameter("newStatus");
@@ -95,6 +92,7 @@ public class StudentListServlet extends HttpServlet {
         request.setAttribute("search", keyword);
         request.setAttribute("status", status);
         request.setAttribute("classId", classId);
+        request.setAttribute("className", className);
         request.setAttribute("pageIndex", pageIndex);
         request.setAttribute("totalPage", totalPage);
         request.setAttribute("actionMessage", actionMessage);

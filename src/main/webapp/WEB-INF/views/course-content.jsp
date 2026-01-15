@@ -261,7 +261,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
 <script>
     function toggleCourse(header, index) {
         const body = document.getElementById('courseBody' + index);

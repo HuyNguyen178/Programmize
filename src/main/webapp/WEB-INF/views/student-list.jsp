@@ -25,7 +25,7 @@
     <div class="container-fluid">
         <h2 class="fw-bold mb-4 text-primary">
             <i class="fas fa-users-graduate me-2"></i> Student List
-            <c:if test="${not empty classId}"> (Class ID: ${classId})</c:if>
+            <c:if test="${not empty className}"> (Class: ${className})</c:if>
         </h2>
 
         <c:if test="${not empty param.success}">
@@ -102,12 +102,21 @@
 
                     <%-- 3. CÁC NÚT ACTION --%>
                     <div class="col-md-6 d-flex justify-content-end gap-2">
-                        <a href="${pageContext.request.contextPath}/download-template?type=student" class="btn btn-outline-secondary">
-                            <i class="fas fa-download"></i> Template
-                        </a>
-                        <button type="button" class="btn btn-outline-secondary" onclick="triggerImport()">
-                            <i class="fas fa-file-import"></i> Import
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-tools me-1"></i> Tools
                         </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="${pageContext.request.contextPath}/download-template?type=student">
+                                    <i class="fas fa-download me-2"></i>Download Import Template
+                                </a>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item" onclick="triggerImport()">
+                                    <i class="fas fa-file-import me-2"></i>Import Students (.xlsx)
+                                </button>
+                            </li>
+                        </ul>
                         <a href="add-student?classId=${classId}" class="btn btn-success">
                             <i class="fas fa-user-plus"></i> Add Student
                         </a>
@@ -137,7 +146,7 @@
                         <c:forEach var="student" items="${students}" varStatus="loop">
                             <tr>
                                 <td>${(pageIndex - 1) * 10 + loop.index + 1}</td>
-                                <td class="fw-bold text-dark">${student.fullname}</td>
+                                <td class="fw-bold text-dark text-center">${student.fullname}</td>
                                 <td>${student.email}</td>
                                 <td class="text-center">
                                     <c:choose>
