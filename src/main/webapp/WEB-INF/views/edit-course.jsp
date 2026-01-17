@@ -180,13 +180,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/admin_scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/admin_scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
     const quill = new Quill('#editor-container', {
         theme: 'snow',
-        placeholder: 'Write the description here...',
+        placeholder: 'Write course description here...',
         modules: {
             toolbar: [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],

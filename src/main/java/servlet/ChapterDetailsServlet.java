@@ -102,6 +102,13 @@ public class ChapterDetailsServlet extends HttpServlet {
                 quiz.setDescription(quizDesc);
             }
 
+            for (Lesson lesson : filteredLessons) {
+                String contentHtml = lesson.getContent();
+                String contentDecoded = StringEscapeUtils.unescapeHtml4(contentHtml);
+                String contentPlainText = Jsoup.clean(contentDecoded, safelist);
+                lesson.setContent(contentPlainText);
+            }
+
             request.setAttribute("chapter", chapter);
             request.setAttribute("courseName", courseName);
             request.setAttribute("lessons", filteredLessons);

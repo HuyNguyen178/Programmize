@@ -21,10 +21,6 @@ body { margin: 0; background-color: #f8f9fa; }
     width: calc(100% - 72px);
 }
 
-#editor-container {
-    height: 400px;
-}
-
 /* Cấu hình Topbar Shift */
 #topbar {
     margin-left: 260px;
@@ -65,4 +61,8 @@ body { margin: 0; background-color: #f8f9fa; }
 }
 .conditional-field.active {
     display: block;
+}
+
+#editor-container {
+    height: 400px;
 }
