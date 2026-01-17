@@ -66,8 +66,31 @@
                             <c:when test="${not empty lesson.videoUrl}">
                                 <div class="video-container mb-4">
                                     <%-- Convert YouTube URL to embed format --%>
-                                    <c:set var="videoUrl" value="${lesson.videoUrl}" />
-                                    <c:set var="embedUrl" value="${videoUrl}" />
+                                        <c:set var="videoUrl" value="${lesson.videoUrl}" />
+                                        <c:set var="embedUrl" value="${videoUrl}" />
+
+                                        <c:choose>
+
+                                            <c:when test="${fn:contains(videoUrl, 'drive.google.com')}">
+                                                <c:set var="temp" value="${fn:substringAfter(videoUrl, '/d/')}" />
+                                                <c:set var="videoId" value="${fn:substringBefore(temp, '/')}" />
+                                                <c:set var="embedUrl" value="https://drive.google.com/file/d/${videoId}/preview" />
+                                            </c:when>
+
+                                            <c:when test="${fn:contains(videoUrl, 'youtube.com/watch')}">
+                                                <c:set var="videoId" value="${fn:substringAfter(videoUrl, 'v=')}" />
+                                                <c:if test="${fn:contains(videoId, '&')}">
+                                                    <c:set var="videoId" value="${fn:substringBefore(videoId, '&')}" />
+                                                </c:if>
+                                                <c:set var="embedUrl" value="https://www.youtube.com/embed/${videoId}" />
+                                            </c:when>
+
+                                            <c:when test="${fn:contains(videoUrl, 'youtu.be/')}">
+                                                <c:set var="videoId" value="${fn:substringAfter(videoUrl, 'youtu.be/')}" />
+                                                <c:set var="embedUrl" value="https://www.youtube.com/embed/${videoId}" />
+                                            </c:when>
+
+                                        </c:choose>
                                     
                                     <%-- Handle youtube.com/watch?v= format --%>
                                     <c:if test="${fn:contains(videoUrl, 'youtube.com/watch')}">
@@ -84,7 +107,7 @@
                                         <c:set var="embedUrl" value="https://www.youtube.com/embed/${videoId}" />
                                     </c:if>
                                     
-                                    <iframe src="${embedUrl}" 
+                                    <iframe src="${embedUrl}"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                             allowfullscreen></iframe>
                                 </div>

@@ -86,9 +86,6 @@
                                         👤 ${course.courseInstructor}
                                     </c:if>
                                 </div>
-                                <c:if test="${not empty course.description}">
-                                    <p>${course.description}</p>
-                                </c:if>
                                 <div class="card-price">
                                     <c:choose>
                                         <c:when test="${course.salePrice != null}">

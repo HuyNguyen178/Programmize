@@ -55,15 +55,6 @@ public class PublicCoursesServlet extends HttpServlet {
         // Using getAllCategoryNames() which returns List<String> for backward compatibility
         List<String> allCategories = publicCourseDAO.getAllCategoryNames();
 
-        for (Course course : courses) {
-            if (course.getDescription() != null) {
-                String decoded = StringEscapeUtils.unescapeHtml4(course.getDescription());
-                Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
-                String plainText = Jsoup.clean(decoded, safelist);
-                course.setDescription(plainText);
-            }
-        }
-
         // Set attributes for JSP
         request.setAttribute("courses", courses);
         request.setAttribute("allCategories", allCategories);

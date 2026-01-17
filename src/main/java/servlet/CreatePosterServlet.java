@@ -23,7 +23,7 @@ import java.util.Map;
 @WebServlet("/blog/create-poster")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,     // 1MB
-        maxFileSize = 5 * 1024 * 1024,        // 5MB
+        maxFileSize = 10 * 1024 * 1024,        // 10MB
         maxRequestSize = 10 * 1024 * 1024     // 10MB
 )
 public class CreatePosterServlet extends HttpServlet {

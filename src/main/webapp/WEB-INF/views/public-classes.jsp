@@ -97,9 +97,6 @@
                                         👤 ${clazz.instructor.fullname}
                                     </c:if>
                                 </div>
-                                <c:if test="${not empty clazz.description}">
-                                    <p>${clazz.description}</p>
-                                </c:if>
                                 <div class="card-price">
                                     <c:choose>
                                         <c:when test="${clazz.salePrice != null}">

@@ -10,7 +10,7 @@ public class RateLimiterService {
     private final ConcurrentHashMap<String, AttemptInfo> loginAttempts = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, RequestInfo> requestCounts = new ConcurrentHashMap<>();
 
-    private static final int MAX_LOGIN_ATTEMPTS = 5;
+    private static final int MAX_LOGIN_ATTEMPTS = 10;
     private static final long LOCKOUT_DURATION_MINUTES = 15;
     private static final int MAX_REQUESTS_PER_MINUTE = 100;
 

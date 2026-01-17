@@ -8,6 +8,10 @@ import model.*;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +37,6 @@ public class LessonDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String lessonIdParam = request.getParameter("id");
 
         if (lessonIdParam == null || lessonIdParam.trim().isEmpty()) {
@@ -111,6 +114,16 @@ public class LessonDetailsServlet extends HttpServlet {
                 }
             }
 
+            String urlHtml = lesson.getVideoUrl();
+            String urlDecoded = StringEscapeUtils.unescapeHtml4(urlHtml);
+            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
+            String urlPlainText = Jsoup.parse(urlDecoded).text();
+            lesson.setVideoUrl(urlPlainText);
+
+            String descHtml = lesson.getContent();
+            String descDecoded = StringEscapeUtils.unescapeHtml4(descHtml);
+            String descPlainText = Jsoup.clean(descDecoded, safelist);
+            lesson.setContent(descPlainText);
 
             request.setAttribute("lesson", lesson);
             request.setAttribute("chapterName", chapter.getChapterName());

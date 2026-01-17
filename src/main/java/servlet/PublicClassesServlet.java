@@ -53,16 +53,6 @@ public class PublicClassesServlet extends HttpServlet {
 
         List<Class> classes = classDAO.getActiveClasses(keyword, categoryId, priceSort, CLASSES_PER_PAGE, offset);
 
-        for (Class c : classes) {
-            c.setClassStatus("Upcoming");
-
-            String html = c.getDescription();
-            String decoded = StringEscapeUtils.unescapeHtml4(html);
-            Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
-            String descPlainText = Jsoup.clean(decoded, safelist);
-            c.setDescription(descPlainText);
-        }
-
         int totalClasses = classDAO.countActiveClasses(keyword, categoryId);
         int totalPages = (int) Math.ceil((double) totalClasses / CLASSES_PER_PAGE);
 
