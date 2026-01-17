@@ -33,6 +33,7 @@ public class AuthorizationFilter implements Filter {
             "/public-classes",
             "/public-class-details",
             "/public-course-details",
+            "/lesson-details",
             "/verify",
             "/blog",
             "/poster-details"

@@ -44,7 +44,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i> Master the fundamentals of ${clazz.name}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Master the fundamental knowledge</li>
                             <li><i class="fas fa-check text-success me-2"></i> Build real-world projects and applications</li>
                             <li><i class="fas fa-check text-success me-2"></i> Learn industry best practices and patterns</li>
                         </ul>
@@ -60,10 +60,24 @@
             </div>
 
             <div class="card-custom">
-                <h3 class="fw-bold mb-3 text-primary">Class Description</h3>
+                <h3 class="fw-bold mb-3 text-primary">Class Schedule</h3>
+                <c:choose>
+                    <c:when test="${not empty syllabus}">
+                        <c:forEach var="day" items="${syllabus.daysOfWeek}" varStatus="loop">
+                            ${day}
+                            <c:if test="${!loop.last}"> - </c:if>
+                        </c:forEach>
+                        <br>
+                        <fmt:formatDate value="${syllabus.startTime}" pattern="HH:mm"/> - <fmt:formatDate value="${syllabus.endTime}" pattern="HH:mm"/>
+                    </c:when>
+                    <c:otherwise>
+                        <p><i>No schedule yet</i></p>
+                    </c:otherwise>
+                </c:choose>
+                <h3 class="fw-bold mb-3 text-primary" style="margin-top: 10px">Class Description</h3>
                 <c:choose>
                     <c:when test="${not empty clazz.description}">
-                        <c:out value="${description}" escapeXml="false"/>
+                        ${description}
                     </c:when>
                     <c:otherwise>
                         <p>This comprehensive class is designed to help you master the essential concepts and practical skills needed to succeed in modern software development.</p>

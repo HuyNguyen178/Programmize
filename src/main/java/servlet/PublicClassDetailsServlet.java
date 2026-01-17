@@ -1,12 +1,14 @@
 package servlet;
 
 import dao.ClassDAO;
+import dao.SyllabusDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Class;
+import model.Syllabus;
 import model.User;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -18,10 +20,12 @@ import java.util.Date;
 @WebServlet("/public-class-details")
 public class PublicClassDetailsServlet extends HttpServlet {
     private ClassDAO classDAO;
+    private SyllabusDAO syllabusDAO;
 
     @Override
     public void init() throws ServletException {
         classDAO = new ClassDAO();
+        syllabusDAO = new SyllabusDAO();
     }
 
     @Override
@@ -38,6 +42,8 @@ public class PublicClassDetailsServlet extends HttpServlet {
 
         int classId = Integer.parseInt(idParam);
         Class clazz = classDAO.getClassById(classId);
+
+        Syllabus syllabus = syllabusDAO.getSyllabusByClassId(classId);
 
         if (clazz == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -70,7 +76,7 @@ public class PublicClassDetailsServlet extends HttpServlet {
 
         request.setAttribute("startDate", clazz.getStartDate());
         request.setAttribute("endDate", clazz.getEndDate());
-
+        request.setAttribute("syllabus", syllabus);
         request.setAttribute("clazz", clazz);
         request.setAttribute("description", descPlainText);
         request.getRequestDispatcher("/WEB-INF/views/public-class-details.jsp")
