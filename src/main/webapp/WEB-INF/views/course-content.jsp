@@ -152,6 +152,11 @@
                                         </small>
                                     </div>
                                     <div>
+                                        <a href="${pageContext.request.contextPath}/student-list?courseId=${course.courseId}"
+                                           class="btn btn-outline-success btn-sm me-2"
+                                           onclick="event.stopPropagation()">
+                                            <i class="bi bi-people me-1"></i> Student List
+                                        </a>
                                         <a href="${pageContext.request.contextPath}/add-chapter?courseId=${course.courseId}"
                                            class="btn btn-sm btn-primary">
                                             <i class="fa fa-plus me-1"></i> Add Chapter
@@ -185,10 +190,6 @@
                                                             </c:if>
                                                         </div>
                                                         <div class="btn-group">
-                                                            <a href="${pageContext.request.contextPath}/add-lesson?chapterId=${chapter.chapterId}"
-                                                               class="btn btn-sm btn-outline-primary">
-                                                                <i class="fa fa-plus"></i> Lesson
-                                                            </a>
                                                             <a href="${pageContext.request.contextPath}/edit-chapter?id=${chapter.chapterId}"
                                                                class="btn btn-sm btn-outline-secondary">
                                                                 <i class="bi bi-pencil"></i>

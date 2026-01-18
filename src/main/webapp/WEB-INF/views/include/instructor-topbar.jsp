@@ -12,10 +12,9 @@
 <nav class="navbar navbar-light bg-white shadow-sm px-4 topbar" id="topbar">
 
     <form class="d-none d-md-flex me-auto">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search for..." aria-label="Search">
-            <button class="btn btn-outline-secondary" type="button"><i class="fa fa-search"></i></button>
-        </div>
+        <a href="<%=request.getContextPath()%>/home" class="btn btn-link text-decoration-none">
+            <i class="fa fa-home me-2"></i>Home Page
+        </a>
     </form>
 
     <div class="d-flex align-items-center ms-auto">
