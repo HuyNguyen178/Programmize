@@ -2,6 +2,10 @@
     padding: 20px;
 }
 
+a {
+    text-decoration: none;
+}
+
 .question-card {
     display: none;
     background: #f9f9fb;

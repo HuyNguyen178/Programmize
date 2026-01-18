@@ -46,7 +46,7 @@
                 <nav aria-label="breadcrumb" class="mb-3">
                     <ol class="breadcrumb small">
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/public-course-details?id=${courseId}">${courseName}</a></li>
-                        <li class="breadcrumb-item">${chapterName}</li>
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}">${chapter.chapterName}</a></li>
                         <li class="breadcrumb-item active">${quiz.title}</li>
                     </ol>
                 </nav>

@@ -90,7 +90,7 @@ public class QuizDetailsServlet extends HttpServlet {
 
             // Gửi dữ liệu sang JSP
             request.setAttribute("quiz", quiz);
-            request.setAttribute("chapterName", currentChapter.getChapterName());
+            request.setAttribute("chapter", currentChapter);
             request.setAttribute("courseId", courseId);
             request.setAttribute("courseName", chapterDAO.getCourseNameById(courseId));
             request.setAttribute("chapters", chapters);

@@ -440,8 +440,8 @@
                     <i class="bi bi-patch-question-fill me-2"></i>Quiz List
                 </h5>
                 <span class="text-muted">
-                    <i class="bi bi-list-check me-1"></i>Total: ${fn:length(quizzes)} quiz(zes)
-                </span>
+                <i class="bi bi-list-check me-1"></i>Total: ${fn:length(quizzes)} quiz(zes)
+            </span>
             </div>
         </div>
 
@@ -451,8 +451,8 @@
                 <tr>
                     <th scope="col" style="width: 5%;">#</th>
                     <th scope="col" style="width: 35%;">Quiz Title</th>
-                    <th scope="col" style="width: 29%;">Description</th>
-                    <th scope="col" style="width: 16%;" class="text-end pe-3">Actions</th>
+                    <th scope="col" style="width: 44%;">Description</th>
+                    <th scope="col" style="width: 16%;" class="text-end">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -460,24 +460,23 @@
                     <c:when test="${not empty quizzes}">
                         <c:forEach var="q" items="${quizzes}" varStatus="status">
                             <tr>
-                                <td class="align-middle">
+                                <td class="align-middle" style="width: 5%;">
                                     <span class="badge bg-secondary">${status.index + 1}</span>
                                 </td>
-                                <td class="align-middle">
-                                    <div class="d-flex align-items-center">
+                                <td class="align-middle" style="width: 35%;">
+                                    <div class="d-flex" style="justify-content: center">
                                         <i class="bi bi-patch-question text-warning fs-5 me-2"></i>
                                         <div>
                                             <strong>${q.title}</strong>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="align-middle">
-                                    <div class="text-muted small text-truncate" style="max-width: 300px;">
-                                        <c:out
-                                                value="${not empty q.description ? q.description : 'No description provided.'}" />
+                                <td class="align-middle" style="width: 44%;">
+                                    <div class="text-muted small">
+                                        <c:out value="${not empty q.description ? q.description : 'No description provided.'}" />
                                     </div>
                                 </td>
-                                <td class="align-middle text-end pe-3">
+                                <td class="align-middle text-end" style="width: 16%;">
                                     <div class="btn-group">
                                         <a href="${pageContext.request.contextPath}/quiz-details?id=${q.id}"
                                            class="btn btn-sm btn-outline-primary action-btn" title="View Detail">
@@ -499,7 +498,7 @@
                     </c:when>
                     <c:otherwise>
                         <tr>
-                            <td colspan="5" class="text-center py-5">
+                            <td colspan="4" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
                                     <p class="mb-2">No quizzes in this chapter yet.</p>

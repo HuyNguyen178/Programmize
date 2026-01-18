@@ -47,7 +47,7 @@
                         <li class="breadcrumb-item">
                             <a href="${pageContext.request.contextPath}/public-course-details?id=${courseId}">${courseName}</a>
                         </li>
-                        <li class="breadcrumb-item">${chapterName}</li>
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/chapter-details?id=${chapter.chapterId}">${chapter.chapterName}</a></li>
                         <li class="breadcrumb-item active">${lesson.lessonName}</li>
                     </ol>
                 </nav>

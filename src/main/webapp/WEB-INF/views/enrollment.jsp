@@ -17,7 +17,7 @@
 
 <jsp:include page="include/header.jsp" />
 
-<main class="container mb-5">
+<main class="container" style="margin-bottom: 150px">
     <c:choose>
         <c:when test="${item != null}">
             <div class="row g-4">

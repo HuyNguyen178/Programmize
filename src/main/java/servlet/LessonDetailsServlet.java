@@ -126,7 +126,7 @@ public class LessonDetailsServlet extends HttpServlet {
             lesson.setContent(descPlainText);
 
             request.setAttribute("lesson", lesson);
-            request.setAttribute("chapterName", chapter.getChapterName());
+            request.setAttribute("chapter", chapter);
             request.setAttribute("courseId", courseId);
             request.setAttribute("courseName", courseName);
             request.setAttribute("chapters", chapters);
