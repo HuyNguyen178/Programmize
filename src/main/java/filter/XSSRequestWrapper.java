@@ -43,7 +43,7 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
         int count = values.length;
         String[] encodedValues = new String[count];
         for (int i = 0; i < count; i++) {
-            encodedValues[i] = stripXSS(values[i]);
+            encodedValues[i] = sanitize(parameter, values[i]);
         }
 
         return encodedValues;
@@ -52,32 +52,36 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String getParameter(String parameter) {
         String value = super.getParameter(parameter);
-        return stripXSS(value);
+        return sanitize(parameter, value);
     }
 
     @Override
     public String getHeader(String name) {
         String value = super.getHeader(name);
-        return stripXSS(value);
+        return sanitize(name, value);
     }
 
-    private String stripXSS(String value) {
-        if (value == null) {
-            return null;
-        }
+    private String sanitize(String paramName, String value) {
+        if (value == null) return null;
 
-        // Remove all XSS patterns
-        for (Pattern pattern : XSS_PATTERNS) {
-            value = pattern.matcher(value).replaceAll("");
-        }
-
-        // Escape HTML entities
-        value = value.replaceAll("<", "&lt;")
+        if (isRichTextField(paramName)) {
+            return value.replaceAll("<", "&lt;")
                     .replaceAll(">", "&gt;")
                     .replaceAll("\"", "&quot;")
                     .replaceAll("'", "&#x27;")
                     .replaceAll("/", "&#x2F;");
+        }
 
+        for (Pattern pattern : XSS_PATTERNS) {
+            value = pattern.matcher(value).replaceAll("");
+        }
         return value;
+    }
+
+    private boolean isRichTextField(String paramName) {
+        return paramName.equalsIgnoreCase("description")
+                || paramName.equalsIgnoreCase("content")
+                || paramName.equalsIgnoreCase("overview")
+                || paramName.equalsIgnoreCase("note");
     }
 }

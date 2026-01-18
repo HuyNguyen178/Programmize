@@ -125,6 +125,16 @@ public class AddCourseServlet extends HttpServlet {
             course.setListedPrice(listedPrice);
             course.setSalePrice(salePrice);
 
+            if (listedPrice.compareTo(salePrice) < 0 && salePrice != null) {
+                request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price!");
+                request.setAttribute("course", course);
+                request.setAttribute("description", description);
+                request.setAttribute("instructors", userDAO.getAllInstructors());
+                request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
+                request.getRequestDispatcher("/WEB-INF/views/add-course.jsp").forward(request, response);
+                return;
+            }
+
             // Use the correct DAO method
             int courseId = courseDAO.addCourseWithCategories(course, categoryIds);
 
@@ -133,7 +143,7 @@ public class AddCourseServlet extends HttpServlet {
                 request.getSession().setAttribute("successMessage", "Course added successfully!");
             } else {
                 request.setAttribute("error", "Failed to add course");
-                request.setAttribute("description", description);
+                request.setAttribute("course", course);
                 request.setAttribute("categories", courseDAO.getAllCategoriesFromSettings());
                 request.setAttribute("instructors", courseDAO.getAllUsersAsInstructors());
                 request.getRequestDispatcher("WEB-INF/views/add-course.jsp").forward(request, response);

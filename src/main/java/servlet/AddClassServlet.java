@@ -140,7 +140,7 @@ public class AddClassServlet extends HttpServlet {
                 return;
             }
 
-            if (listedPrice.compareTo(salePrice) < 0) {
+            if (listedPrice.compareTo(salePrice) < 0 && salePrice != null) {
                 request.getSession().setAttribute("errorMessage", "Listed Price must be greater than Sale Price!");
                 request.setAttribute("clazz", c);
                 request.setAttribute("description", description);

@@ -56,7 +56,7 @@
 
             <div class="class-thumb-wrapper mb-3">
               <img id="thumbnailPreview"
-                   src="https://via.placeholder.com/300/4a90e2/ffffff?text=Course"
+                   src="${clazz.thumbnailUrl}"
                    alt="Thumbnail"
                    class="class-thumb">
             </div>
