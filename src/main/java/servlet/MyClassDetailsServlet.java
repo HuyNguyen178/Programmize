@@ -12,6 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.*;
 import configuration.SessionConfig;
 import model.Class;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 import java.io.IOException;
 import java.util.Date;
@@ -49,6 +52,13 @@ public class MyClassDetailsServlet extends HttpServlet {
         else {
             clazz.setClassStatus("Ongoing");
         }
+
+        String html = clazz.getDescription();
+        String decoded = StringEscapeUtils.unescapeHtml4(html);
+        Safelist safelist = Safelist.none().addTags("b", "strong", "i", "em", "u", "br", "ul", "ol", "li");
+        String text = Jsoup.clean(decoded, safelist);
+        clazz.setDescription(text);
+
         Syllabus syllabus = syllabusDAO.getSyllabusByClassId(Integer.parseInt(classId));
         List<Setting> categories = classDAO.getCategoriesByClassId(Integer.parseInt(classId));
         ClassEnrollment classEnrollment = enrollmentDAO.getEnrollmentByUserIdAndClassId(user.getId(), Integer.parseInt(classId));
