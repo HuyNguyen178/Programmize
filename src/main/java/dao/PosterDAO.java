@@ -13,6 +13,90 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PosterDAO {
+    public List<Poster> getAllPosters(String keyword, Integer categoryId, String sortColumn, String sortOrder) {
+        List<Poster> posters = new ArrayList<>();
+        try (Connection connection = DBUtil.getConnection()) {
+            StringBuilder sql = new StringBuilder("SELECT p.*, s.setting_name AS category, u.username, u.user_id FROM poster p " +
+                    "JOIN user u ON p.user_id = u.user_id " +
+                    "LEFT JOIN setting s ON p.category_id = s.setting_id " +
+                    "WHERE p.status = 1 ");
+
+
+            if (keyword != null && !keyword.isEmpty()) {
+                sql.append("AND p.title LIKE ? ");
+            }
+            if (categoryId != null) {
+                sql.append("AND p.category_id = ? ");
+            }
+
+            String orderBy = "p.post_id";
+
+            if (sortColumn != null) {
+                switch (sortColumn) {
+                    case "id":
+                        orderBy = "p.post_id";
+                        break;
+                    case "title":
+                        orderBy = "p.title";
+                        break;
+                    case "publisher":
+                        orderBy = "u.username";
+                        break;
+                    case "published_at":
+                        orderBy = "p.published_at";
+                        break;
+                    case "created_at":
+                        orderBy = "p.created_at";
+                        break;
+                }
+            }
+
+            String direction = "ASC";
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                direction = "DESC";
+            }
+
+            sql.append("ORDER BY ").append(orderBy).append(" ").append(direction);
+
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            int index = 1;
+            if (keyword != null && !keyword.isEmpty()) {
+                statement.setString(index++, "%" + keyword + "%");
+            }
+            if (categoryId != null) {
+                statement.setInt(index++, categoryId);
+            }
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Poster poster = new Poster();
+                poster.setPostId(resultSet.getInt("post_id"));
+                poster.setThumbnailUrl(resultSet.getString("thumbnail_url"));
+                poster.setTitle(resultSet.getString("title"));
+                poster.setSlug(resultSet.getString("slug"));
+                poster.setExcerpt(resultSet.getString("excerpt"));
+                poster.setPublishedAt(resultSet.getTimestamp("published_at"));
+                poster.setCreatedAt(resultSet.getTimestamp("created_at"));
+
+                Setting category = new Setting();
+                category.setName(resultSet.getString("category"));
+                poster.setCategory(category);
+
+                User user = new User();
+                user.setId(resultSet.getInt("user_id"));
+                user.setUsername(resultSet.getString("username"));
+                poster.setUser(user);
+
+                posters.add(poster);
+            }
+            return posters;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public int getTotalPublishedPosterByUserId(Integer userId) {
         try (Connection connection = DBUtil.getConnection()) {
             String sql = "SELECT COUNT(*) FROM poster WHERE status = 1 AND user_id = ?";

@@ -32,5 +32,10 @@
                 <i class="fa fa-tags me-2"></i> <span class="label">Settings</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="poster-list" class="nav-link text-white">
+                <i class="fa-regular fa-file-lines me-2"></i> <span class="label">Posters</span>
+            </a>
+        </li>
     </ul>
 </div>
