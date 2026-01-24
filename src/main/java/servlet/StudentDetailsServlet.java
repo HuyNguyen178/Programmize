@@ -48,7 +48,7 @@ public class StudentDetailsServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student not found.");
             }
         } else {
-            response.sendRedirect(request.getContextPath() + "/student-list?classId=" +  classIdParam);
+            response.sendRedirect(request.getContextPath() + "/class-students?classId=" +  classIdParam);
         }
     }
 

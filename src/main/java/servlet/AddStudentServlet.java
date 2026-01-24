@@ -67,7 +67,7 @@ public class AddStudentServlet extends HttpServlet {
 
             if (success) {
                 String message = java.net.URLEncoder.encode("Student added to class successfully!", "UTF-8");
-                String redirectUrl = request.getContextPath() + "/student-list?message=" + message;
+                String redirectUrl = request.getContextPath() + "/class-students?message=" + message;
                 if (classIdParam != null && !classIdParam.isEmpty()) {
                     redirectUrl += "&classId=" + classIdParam;
                 }

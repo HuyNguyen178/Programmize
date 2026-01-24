@@ -152,7 +152,7 @@
                                         </small>
                                     </div>
                                     <div>
-                                        <a href="${pageContext.request.contextPath}/student-list?courseId=${course.courseId}"
+                                        <a href="${pageContext.request.contextPath}/course-students?courseId=${course.courseId}"
                                            class="btn btn-outline-success btn-sm me-2"
                                            onclick="event.stopPropagation()">
                                             <i class="bi bi-people me-1"></i> Student List

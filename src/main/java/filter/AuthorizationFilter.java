@@ -56,7 +56,7 @@ public class AuthorizationFilter implements Filter {
     // Danh sách các URL CHỈ DÀNH CHO Instructor (Admin cũng có thể vào)
     private static final List<String> INSTRUCTOR_URLS = Arrays.asList(
             "/course-content",
-            "/student-list",
+            "/class-students",
             "/student-details",
             "/add-student",
             "/add-chapter",

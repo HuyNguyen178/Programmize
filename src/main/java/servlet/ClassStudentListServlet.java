@@ -3,7 +3,6 @@ package servlet;
 import dao.ClassDAO;
 import dao.StudentDAO;
 import jakarta.servlet.http.HttpSession;
-import model.Class;
 import model.Student;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,8 +13,8 @@ import model.User;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/student-list")
-public class StudentListServlet extends HttpServlet {
+@WebServlet("/class-students")
+public class ClassStudentListServlet extends HttpServlet {
 
     private StudentDAO studentDAO;
     private ClassDAO classDAO;
@@ -51,7 +50,7 @@ public class StudentListServlet extends HttpServlet {
                 int studentId = Integer.parseInt(idParam);
                 boolean newStatus = "1".equals(statusParam);
 
-                boolean success = studentDAO.updateStudentStatus(studentId, classId, newStatus);
+                boolean success = studentDAO.updateClassStudentStatus(studentId, classId, newStatus);
 
                 if (success) {
                     String fullname = studentDAO.getFullnameById(studentId);
@@ -97,7 +96,7 @@ public class StudentListServlet extends HttpServlet {
         request.setAttribute("totalPage", totalPage);
         request.setAttribute("actionMessage", actionMessage);
 
-        request.getRequestDispatcher("/WEB-INF/views/student-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/class-students.jsp").forward(request, response);
     }
 
     @Override

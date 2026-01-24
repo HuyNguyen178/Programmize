@@ -6,7 +6,7 @@
     User loginUser = (User) session.getAttribute(SessionConfig.ATTR_LOGIN_USER);
     if (loginUser != null) {
         if(loginUser.getRoleName().equals("Student")) response.sendRedirect("home");
-        if(loginUser.getRoleName().equals("Instructor")) response.sendRedirect("student-list");
+        if(loginUser.getRoleName().equals("Instructor")) response.sendRedirect("class-students");
     }else {
         response.sendRedirect("login");
         return;

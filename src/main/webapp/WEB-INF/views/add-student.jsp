@@ -142,7 +142,7 @@
                     <%-- ACTIONS --%>
                     <div class="col-12 pt-3 border-top">
                         <div class="d-flex justify-content-between">
-                            <a href="student-list?classId=${param.classId}" class="btn btn-secondary">
+                            <a href="class-students?classId=${param.classId}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Back to List
                             </a>
                             <button type="submit" class="btn btn-primary">

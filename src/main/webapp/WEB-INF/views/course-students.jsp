@@ -25,7 +25,7 @@
     <div class="container-fluid">
         <h2 class="fw-bold mb-4 text-primary">
             <i class="fas fa-users-graduate me-2"></i> Student List
-            <c:if test="${not empty className}"> (Class: ${className})</c:if>
+            <c:if test="${not empty courseName}"> (Course: ${courseName})</c:if>
         </h2>
 
         <c:if test="${not empty param.success}">
@@ -74,9 +74,8 @@
             <div class="card-body">
 
                 <%-- FILTER BAR --%>
-                <form class="row g-3 align-items-center mb-4" method="GET" action="student-list">
-                    <%-- Quan trọng: Giữ classId để lọc trong phạm vi lớp đó --%>
-                    <input type="hidden" name="classId" value="${classId}">
+                <form class="row g-3 align-items-center mb-4" method="GET" action="course-students">
+                    <input type="hidden" name="courseId" value="${courseId}">
                     <input type="hidden" name="pageIndex" value="1">
 
                     <%-- 1. FILTER BY STATUS --%>
@@ -101,32 +100,32 @@
                     </div>
 
                     <%-- 3. CÁC NÚT ACTION --%>
-                    <div class="col-md-6 d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-tools me-1"></i> Tools
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="${pageContext.request.contextPath}/download-template?type=student">
-                                    <i class="fas fa-download me-2"></i>Download Import Template
-                                </a>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item" onclick="triggerImport()">
-                                    <i class="fas fa-file-import me-2"></i>Import Students (.xlsx)
-                                </button>
-                            </li>
-                        </ul>
-                        <a href="add-student?classId=${classId}" class="btn btn-success">
-                            <i class="fas fa-user-plus"></i> Add Student
-                        </a>
-                    </div>
+<%--                    <div class="col-md-6 d-flex justify-content-end gap-2">--%>
+<%--                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
+<%--                            <i class="fas fa-tools me-1"></i> Tools--%>
+<%--                        </button>--%>
+<%--                        <ul class="dropdown-menu">--%>
+<%--                            <li>--%>
+<%--                                <a class="dropdown-item" href="${pageContext.request.contextPath}/download-template?type=student">--%>
+<%--                                    <i class="fas fa-download me-2"></i>Download Import Template--%>
+<%--                                </a>--%>
+<%--                            </li>--%>
+<%--                            <li>--%>
+<%--                                <button type="button" class="dropdown-item" onclick="triggerImport()">--%>
+<%--                                    <i class="fas fa-file-import me-2"></i>Import Students (.xlsx)--%>
+<%--                                </button>--%>
+<%--                            </li>--%>
+<%--                        </ul>--%>
+<%--                        <a href="add-student?classId=${courseId}" class="btn btn-success">--%>
+<%--                            <i class="fas fa-user-plus"></i> Add Student--%>
+<%--                        </a>--%>
+<%--                    </div>--%>
                 </form>
 
                 <%-- Form ẩn để Import file --%>
                 <form id="importForm" action="import-students" method="post" enctype="multipart/form-data" style="display:none;">
                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                    <input type="hidden" name="classId" value="${classId}">
+                    <input type="hidden" name="courseId" value="${courseId}">
                     <input type="file" id="studentFile" name="studentFile" accept=".xlsx" onchange="submitImport()">
                 </form>
 
@@ -160,21 +159,21 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group">
-                                        <a href="student-details?id=${student.id}&classId=${classId}"
+                                        <a href="student-details?id=${student.id}&courseId=${courseId}"
                                            class="btn btn-sm btn-outline-primary" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
 
                                         <c:choose>
                                             <c:when test="${student.status}">
-                                                <a href="student-list?action=toggleStatus&id=${student.id}&newStatus=0&classId=${classId}&search=${search}&status=${status}&pageIndex=${pageIndex}"
+                                                <a href="class-students?action=toggleStatus&id=${student.id}&newStatus=0&courseId=${courseId}&search=${search}&status=${status}&pageIndex=${pageIndex}"
                                                    class="btn btn-sm btn-outline-warning" title="Deactivate"
                                                    onclick="return confirm('Deactivate ${student.fullname}?');">
                                                     <i class="fas fa-ban"></i>
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <a href="student-list?action=toggleStatus&id=${student.id}&newStatus=1&classId=${classId}&search=${search}&status=${status}&pageIndex=${pageIndex}"
+                                                <a href="class-students?action=toggleStatus&id=${student.id}&newStatus=1&courseId=${courseId}&search=${search}&status=${status}&pageIndex=${pageIndex}"
                                                    class="btn btn-sm btn-outline-success" title="Activate"
                                                    onclick="return confirm('Activate ${student.fullname}?');">
                                                     <i class="fas fa-check-circle"></i>
@@ -203,7 +202,7 @@
                         <ul class="pagination justify-content-end mt-4">
                                 <%-- Nút Previous --%>
                             <li class="page-item ${pageIndex == 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="student-list?pageIndex=${pageIndex - 1}&classId=${classId}&search=${search}&status=${status}">Previous</a>
+                                <a class="page-link" href="course-students?pageIndex=${pageIndex - 1}&courseId=${courseId}&search=${search}&status=${status}">Previous</a>
                             </li>
 
                                 <%-- Tính toán dải trang (Logic tương đương Account List) --%>
@@ -215,13 +214,13 @@
 
                             <c:forEach begin="${startPage}" end="${endPage}" var="i">
                                 <li class="page-item ${i == pageIndex ? 'active' : ''}">
-                                    <a class="page-link" href="student-list?pageIndex=${i}&classId=${classId}&search=${search}&status=${status}">${i}</a>
+                                    <a class="page-link" href="course-students?pageIndex=${i}&couresId=${courseId}&search=${search}&status=${status}">${i}</a>
                                 </li>
                             </c:forEach>
 
                                 <%-- Nút Next --%>
                             <li class="page-item ${pageIndex == totalPage ? 'disabled' : ''}">
-                                <a class="page-link" href="student-list?pageIndex=${pageIndex + 1}&classId=${classId}&search=${search}&status=${status}">Next</a>
+                                <a class="page-link" href="course-students?pageIndex=${pageIndex + 1}&courseId=${courseId}&search=${search}&status=${status}">Next</a>
                             </li>
                         </ul>
                     </nav>

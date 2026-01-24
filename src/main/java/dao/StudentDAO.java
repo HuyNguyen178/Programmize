@@ -3,7 +3,6 @@ package dao;
 import model.Student;
 import utils.DBUtil;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,140 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 public class StudentDAO {
-
-    private StringBuilder buildBaseSql(String keyword, String status, String className) {
-        StringBuilder sql = new StringBuilder(
-                "FROM user u " +
-                        "JOIN setting s ON u.role_id = s.setting_id " +
-                        "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
-                        "LEFT JOIN class c ON ce.class_id = c.class_id " +
-                        "WHERE s.setting_name = 'Student' " +
-                        "AND c.instructor_id = ? "
-        );
-
-        if (status != null && !status.isEmpty()) {
-            sql.append(" AND ce.status = ? ");
-        }
-
-        if (className != null && !className.isEmpty()) {
-            sql.append(" AND c.class_name = ? ");
-        }
-
-        if (keyword != null && !keyword.isEmpty()) {
-            sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
-        }
-
-        return sql;
-    }
-
-    private List<Object> getSearchParams(String keyword, String status, String className) {
-        List<Object> params = new ArrayList<>();
-
-
-        if (status != null && !status.isEmpty()) {
-            params.add(Integer.parseInt(status));
-        }
-
-        if (className != null && !className.isEmpty()) {
-            params.add(className);
-        }
-
-        if (keyword != null && !keyword.isEmpty()) {
-            String keywordWithWildcards = "%" + keyword + "%";
-
-            params.add(keywordWithWildcards);
-            params.add(keywordWithWildcards);
-        }
-
-        return params;
-    }
-
-    public int countStudents(String keyword, String status, String className, int instructorId) {
-        StringBuilder baseSql = buildBaseSql(keyword, status, className);
-
-        String sql = "SELECT COUNT(DISTINCT u.user_id) " + baseSql;
-
-        List<Object> params = getSearchParams(keyword, status, className);
-        params.add(instructorId);
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            int idx = 1;
-            for (Object p : params) {
-                if (p instanceof String) ps.setString(idx++, (String) p);
-                else if (p instanceof Integer) ps.setInt(idx++, (Integer) p);
-            }
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-
-
-    public List<Student> searchStudents(String keyword, String status, String className,
-                                        int pageIndex, int pageSize, int instructorId) {
-        List<Student> students = new ArrayList<>();
-
-        StringBuilder baseSql = buildBaseSql(keyword, status, className);
-
-        String finalSql = "SELECT u.user_id, u.fullname, u.email, "
-                + "ce.status AS enrollment_status, "
-                + "u.avatar_url, "
-                + "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name "
-                + baseSql.toString()
-                + "GROUP BY u.user_id, u.fullname, u.email, ce.status, u.avatar_url "
-                + "ORDER BY u.fullname ASC "
-                + "LIMIT ? OFFSET ?";
-
-        List<Object> params = getSearchParams(keyword, status, className);
-
-        int offset = (pageIndex - 1) * pageSize;
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(finalSql)) {
-
-            int index = 1;
-            
-            ps.setInt(index++, instructorId);
-
-            for (Object param : params) {
-                if (param instanceof Integer) {
-                    ps.setInt(index++, (Integer) param);
-                } else if (param instanceof String) {
-                    ps.setString(index++, (String) param);
-                }
-            }
-
-            ps.setInt(index++, pageSize); // LIMIT
-            ps.setInt(index++, offset);  // OFFSET
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Student student = new Student();
-                    student.setId(rs.getInt("user_id"));
-                    student.setFullname(rs.getString("fullname"));
-                    student.setEmail(rs.getString("email"));
-                    student.setStatus(rs.getBoolean("enrollment_status"));
-                    student.setAvatarUrl(rs.getString("avatar_url"));
-                    student.setClassName(rs.getString("class_name"));
-                    students.add(student);
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return students;
-    }
-
-
-
     public boolean addStudentToClasses(String identifier, boolean isEmail, String[] classNames)
             throws SQLException {
 
@@ -297,8 +162,26 @@ public class StudentDAO {
     }
 
 
-    public boolean updateStudentStatus(int userId, int classId, boolean newStatus) {
+    public boolean updateClassStudentStatus(int userId, int classId, boolean newStatus) {
         String sql = "UPDATE class_enrollment SET status = ? WHERE user_id = ? AND class_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setBoolean(1, newStatus);
+            ps.setInt(2, userId);
+            ps.setInt(3, classId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateCourseStudentStatus(int userId, int classId, boolean newStatus) {
+        String sql = "UPDATE course_enrollment SET status = ? WHERE user_id = ? AND class_id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -356,17 +239,15 @@ public class StudentDAO {
     }
 
     public int countStudentsByClassId(String keyword, String status, Integer classId, int instructorId) {
-        // Tận dụng buildBaseSql nhưng thay vì truyền className, ta xử lý classId trực tiếp
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(DISTINCT u.user_id) FROM user u " +
-                        "JOIN setting s ON u.role_id = s.setting_id " +
                         "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
                         "LEFT JOIN class c ON ce.class_id = c.class_id " +
-                        "WHERE s.setting_name = 'Student' AND c.instructor_id = ? "
+                        "WHERE c.instructor_id = ? "
         );
 
         if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
-        if (classId != null) sql.append(" AND c.class_id = ? "); // Lọc theo ID
+        if (classId != null) sql.append(" AND c.class_id = ? ");
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
 
         try (Connection conn = DBUtil.getConnection();
@@ -386,24 +267,49 @@ public class StudentDAO {
         return 0;
     }
 
+    public int countStudentsByCourseId(String keyword, String status, Integer courseId, int instructorId) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(DISTINCT u.user_id) FROM user u " +
+                        "LEFT JOIN course_enrollment ce ON u.user_id = ce.user_id " +
+                        "LEFT JOIN course c ON ce.course_id = c.course_id " +
+                        "WHERE c.instructor_id = ? "
+        );
+
+        if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
+        if (courseId != null) sql.append(" AND c.course_id = ? ");
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (status != null && !status.isEmpty()) ps.setInt(idx++, Integer.parseInt(status));
+            if (courseId != null) ps.setInt(idx++, courseId);
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                ps.setString(idx++, kw);
+                ps.setString(idx++, kw);
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
     public List<Student> searchStudentsByClassId(String keyword, String status, Integer classId,
                                                  int pageIndex, int pageSize, int instructorId) {
         List<Student> students = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT u.user_id, u.fullname, u.email, ce.status AS enrollment_status, u.avatar_url, " +
-                        "GROUP_CONCAT(c.class_name SEPARATOR ', ') AS class_name " +
+                "SELECT u.user_id, u.fullname, u.email, ce.status AS enrollment_status, u.avatar_url, c.class_name " +
                         "FROM user u " +
-                        "JOIN setting s ON u.role_id = s.setting_id " +
                         "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
                         "LEFT JOIN class c ON ce.class_id = c.class_id " +
-                        "WHERE s.setting_name = 'Student' AND c.instructor_id = ? "
+                        "WHERE c.instructor_id = ? "
         );
 
         if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
         if (classId != null) sql.append(" AND c.class_id = ? ");
         if (keyword != null && !keyword.isEmpty()) sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
-
-        sql.append(" GROUP BY u.user_id, u.fullname, u.email, ce.status, u.avatar_url ");
         sql.append(" ORDER BY u.fullname ASC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBUtil.getConnection();
@@ -427,8 +333,49 @@ public class StudentDAO {
                 student.setFullname(rs.getString("fullname"));
                 student.setEmail(rs.getString("email"));
                 student.setStatus(rs.getBoolean("enrollment_status"));
-                student.setAvatarUrl(rs.getString("avatar_url"));
-                student.setClassName(rs.getString("class_name"));
+                students.add(student);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return students;
+    }
+
+    public List<Student> searchStudentsByCourseId(String keyword, String status, Integer courseId,
+                                                  int pageIndex, int pageSize, int instructorId){
+        List<Student> students = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT u.user_id, u.fullname, u.email, ce.status AS enrollment_status, u.avatar_url, c.course_name " +
+                        "FROM user u " +
+                        "LEFT JOIN course_enrollment ce ON u.user_id = ce.user_id " +
+                        "LEFT JOIN course c ON ce.course_id = c.course_id " +
+                        "WHERE c.instructor_id = ? "
+        );
+
+        if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
+        if (courseId != null) sql.append(" AND c.course_id = ? ");
+        if (keyword != null && !keyword.isEmpty()) sql.append(" AND (u.fullname LIKE ? OR u.email LIKE ?) ");
+        sql.append(" ORDER BY u.fullname ASC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, instructorId);
+            if (status != null && !status.isEmpty()) ps.setInt(idx++, Integer.parseInt(status));
+            if (courseId != null) ps.setInt(idx++, courseId);
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                ps.setString(idx++, kw);
+                ps.setString(idx++, kw);
+            }
+            ps.setInt(idx++, pageSize);
+            ps.setInt(idx++, (pageIndex - 1) * pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Student student = new Student();
+                student.setId(rs.getInt("user_id"));
+                student.setFullname(rs.getString("fullname"));
+                student.setEmail(rs.getString("email"));
+                student.setStatus(rs.getBoolean("enrollment_status"));
                 students.add(student);
             }
         } catch (SQLException e) { e.printStackTrace(); }
