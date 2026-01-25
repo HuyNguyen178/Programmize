@@ -1,12 +1,14 @@
-package filter;
+package listener;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import java.io.File;
+
+import jakarta.servlet.annotation.WebListener;
 import org.apache.log4j.PropertyConfigurator;
 
-
+@WebListener
 public class LogInitializer implements ServletContextListener {
 
     @Override
