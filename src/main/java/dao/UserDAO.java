@@ -98,18 +98,6 @@ public class UserDAO {
         return false;
     }
 
-    public void updateStatusByEmail(String email) {
-        String sql = "UPDATE user SET status = TRUE WHERE email = ?";
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            stmt.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean updatePasswordByEmail(String email, String newPassword) {
         String sql = "UPDATE user SET password = ? WHERE email = ?";
 

@@ -18,7 +18,6 @@ public class VerificationServlet extends HttpServlet {
         String step = request.getParameter("step");
         HttpSession session = request.getSession();
 
-        // ====== XỬ LÝ RESEND CODE ======
         if ("resend".equals(step)) {
             String email = (String) session.getAttribute("verifyEmail");
 
@@ -43,7 +42,6 @@ public class VerificationServlet extends HttpServlet {
             return;
         }
 
-        // ====== LẦN ĐẦU GỬI MÃ SAU KHI ĐĂNG KÝ ======
         String email = request.getParameter("email");
         if (email == null || email.isEmpty()) {
             response.sendRedirect("register");
@@ -106,13 +104,8 @@ public class VerificationServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/views/verify-email.jsp").forward(request, response);
                 }
             } else {
-                UserDAO dao = new UserDAO();
-                dao.updateStatusByEmail(email);
-
-                session.removeAttribute("verifyCode");
-                session.removeAttribute("verifyEmail");
-
-                request.getRequestDispatcher("/WEB-INF/views/verify-success.jsp").forward(request, response);
+                request.setAttribute("error", "Could not create account. Please try again.");
+                request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
             }
 
         } else {
