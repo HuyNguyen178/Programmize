@@ -100,7 +100,7 @@
                     </div>
 
                     <%-- 3. CÁC NÚT ACTION --%>
-<%--                    <div class="col-md-6 d-flex justify-content-end gap-2">--%>
+                    <div class="col-md-6 d-flex justify-content-end gap-2">
 <%--                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
 <%--                            <i class="fas fa-tools me-1"></i> Tools--%>
 <%--                        </button>--%>
@@ -116,10 +116,10 @@
 <%--                                </button>--%>
 <%--                            </li>--%>
 <%--                        </ul>--%>
-<%--                        <a href="add-student?classId=${courseId}" class="btn btn-success">--%>
-<%--                            <i class="fas fa-user-plus"></i> Add Student--%>
-<%--                        </a>--%>
-<%--                    </div>--%>
+                        <a href="add-course-student?courseId=${courseId}" class="btn btn-success">
+                            <i class="fas fa-user-plus"></i> Add Student
+                        </a>
+                    </div>
                 </form>
 
                 <%-- Form ẩn để Import file --%>

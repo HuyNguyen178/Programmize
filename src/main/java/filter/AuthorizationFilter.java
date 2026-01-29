@@ -36,7 +36,8 @@ public class AuthorizationFilter implements Filter {
             "/lesson-details",
             "/verify",
             "/blog",
-            "/poster-details"
+            "/poster-details",
+            "/vnpay-payment-return"
     );
 
     // Danh sách các URL dành riêng cho Admin
@@ -59,6 +60,7 @@ public class AuthorizationFilter implements Filter {
             "/class-students",
             "/student-details",
             "/add-student",
+            "/add-course-student",
             "/add-chapter",
             "/edit-chapter",
             "/add-lesson",

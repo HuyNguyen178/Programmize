@@ -97,6 +97,85 @@ public class StudentDAO {
         }
     }
 
+    public boolean addStudentToCourses(String identifier, boolean isEmail, String[] courseNames)
+            throws SQLException {
+
+        if (courseNames == null || courseNames.length == 0) return false;
+
+        String findUserSql = isEmail
+                ? "SELECT user_id FROM user WHERE email = ?"
+                : "SELECT user_id FROM user WHERE username = ?";
+
+        String findClassSql = "SELECT course_id FROM course WHERE course_name = ?";
+
+        String checkEnrollmentSql = "SELECT 1 FROM course_enrollment WHERE user_id = ? AND course_id = ?";
+
+        String insertEnrollSql = "INSERT INTO course_enrollment (user_id, course_id, price_paid, payment_method, enrolled_at, status) " +
+                "VALUES (?, ?, ?, ?, NOW(), ?)";
+
+        Connection conn = null;
+        try {
+            conn = DBUtil.getConnection();
+            conn.setAutoCommit(false);
+
+            int userId;
+            try (PreparedStatement ps = conn.prepareStatement(findUserSql)) {
+                ps.setString(1, identifier);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        conn.rollback();
+                        return false;
+                    }
+                    userId = rs.getInt("user_id");
+                }
+            }
+
+            boolean success = false;
+
+            for (String courseName : courseNames) {
+                if (courseName == null || courseName.trim().isEmpty()) continue;
+
+                int courseId;
+                try (PreparedStatement ps = conn.prepareStatement(findClassSql)) {
+                    ps.setString(1, courseName.trim());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) continue;
+                        courseId = rs.getInt("course_id");
+                    }
+                }
+
+                try (PreparedStatement ps = conn.prepareStatement(checkEnrollmentSql)) {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, courseId);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            continue;
+                        }
+                    }
+                }
+
+                try (PreparedStatement ps = conn.prepareStatement(insertEnrollSql)) {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, courseId);
+                    ps.setBigDecimal(3, java.math.BigDecimal.ZERO);
+                    ps.setString(4, "Teacher Added");
+                    ps.setBoolean(5, true);
+                    if(ps.executeUpdate() > 0 ){
+                        success = true;
+                    };
+                }
+
+
+            }
+            conn.commit();
+            return success;
+        } catch (SQLException e) {
+            if (conn != null) conn.rollback();
+            throw e;
+        } finally {
+            if (conn != null) conn.close();
+        }
+    }
 
 
     public Student getStudentById(int id) {
@@ -393,5 +472,31 @@ public class StudentDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<String> getAllCourseNames(int instructorId){
+        List<String> list = new ArrayList<>();
+
+        String sql = "SELECT course_name " +
+                "FROM course " +
+                "WHERE status = 1 AND instructor_id = ? " +
+                "ORDER BY course_name ASC";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, instructorId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(rs.getString("course_name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+
     }
 }
