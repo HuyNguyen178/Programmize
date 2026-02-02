@@ -302,7 +302,7 @@
 
 
         new Chart(revenueCtx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
@@ -312,11 +312,10 @@
                         ${value}${!status.last ? ',' : ''}
                         </c:forEach>
                     ],
+                    backgroundColor: 'rgba(13, 110, 253, 0.7)',
                     borderColor: 'rgb(13, 110, 253)',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4
+                    borderWidth: 1,
+                    borderRadius: 5
                 }]
             },
             options: {
