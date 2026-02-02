@@ -11,6 +11,7 @@ import model.Class;
 import model.Setting;
 import model.User;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/class-content")
@@ -46,7 +47,14 @@ public class ClassContentServlet extends HttpServlet {
         }
 
         User user = (User) request.getSession().getAttribute("loginUser");
-        List<Class> classes = classDAO.getClassContentByInstructor(user.getId(), categoryId, keyword, status);
+        List<Class> classes = new ArrayList<>();
+
+        if(user.getRoleName().equals("Instructor")){
+            classes = classDAO.getClassContentByInstructor(user.getId(), categoryId, keyword, status);
+        } else if (user.getRoleName().equals("Admin")){
+            classes = classDAO.getAllClasses(null, null , null, null, null,null);
+        }
+
         List<Setting> allCategories = settingDAO.getAllCategories();
 
         request.setAttribute("classes", classes);

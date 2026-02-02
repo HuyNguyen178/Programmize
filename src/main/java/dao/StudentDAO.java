@@ -376,14 +376,14 @@ public class StudentDAO {
     }
 
     public List<Student> searchStudentsByClassId(String keyword, String status, Integer classId,
-                                                 int pageIndex, int pageSize, int instructorId) {
+                                                 int pageIndex, int pageSize) {
         List<Student> students = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT u.user_id, u.fullname, u.email, ce.status AS enrollment_status, u.avatar_url, c.class_name " +
                         "FROM user u " +
                         "LEFT JOIN class_enrollment ce ON u.user_id = ce.user_id " +
                         "LEFT JOIN class c ON ce.class_id = c.class_id " +
-                        "WHERE c.instructor_id = ? "
+                        "WHERE true "
         );
 
         if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
@@ -394,7 +394,6 @@ public class StudentDAO {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int idx = 1;
-            ps.setInt(idx++, instructorId);
             if (status != null && !status.isEmpty()) ps.setInt(idx++, Integer.parseInt(status));
             if (classId != null) ps.setInt(idx++, classId);
             if (keyword != null && !keyword.isEmpty()) {
@@ -419,14 +418,14 @@ public class StudentDAO {
     }
 
     public List<Student> searchStudentsByCourseId(String keyword, String status, Integer courseId,
-                                                  int pageIndex, int pageSize, int instructorId){
+                                                  int pageIndex, int pageSize){
         List<Student> students = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT u.user_id, u.fullname, u.email, ce.status AS enrollment_status, u.avatar_url, c.course_name " +
                         "FROM user u " +
                         "LEFT JOIN course_enrollment ce ON u.user_id = ce.user_id " +
                         "LEFT JOIN course c ON ce.course_id = c.course_id " +
-                        "WHERE c.instructor_id = ? "
+                        "WHERE true "
         );
 
         if (status != null && !status.isEmpty()) sql.append(" AND ce.status = ? ");
@@ -437,7 +436,6 @@ public class StudentDAO {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int idx = 1;
-            ps.setInt(idx++, instructorId);
             if (status != null && !status.isEmpty()) ps.setInt(idx++, Integer.parseInt(status));
             if (courseId != null) ps.setInt(idx++, courseId);
             if (keyword != null && !keyword.isEmpty()) {

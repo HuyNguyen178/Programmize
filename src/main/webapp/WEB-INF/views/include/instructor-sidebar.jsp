@@ -9,7 +9,7 @@
     <ul class="nav flex-column px-0">
         <li class="nav-item">
             <a href="class-content" class="nav-link text-white">
-                <i class="fa fa-chalkboard me-2"></i> <span class="label">Class List</span>
+                <i class="fa fa-person-chalkboard me-2"></i> <span class="label">Class List</span>
             </a>
         </li>
         <li class="nav-item">

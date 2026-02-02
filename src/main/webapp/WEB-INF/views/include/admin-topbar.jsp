@@ -22,6 +22,9 @@
         <a href="<%=request.getContextPath()%>/home" class="btn btn-link text-decoration-none">
             <i class="fa fa-home me-2"></i>Home Page
         </a>
+        <a href="<%=request.getContextPath()%>/class-content" class="btn btn-link text-decoration-none">
+            <i class="fa fa-chalkboard-teacher me-2"></i>Instructor Page
+        </a>
     </form>
 
     <div class="d-flex align-items-center ms-auto">

@@ -56,9 +56,12 @@ public class CourseContentServlet extends HttpServlet {
 
         User user = (User) request.getSession().getAttribute("loginUser");
 
-        // query 1: get all courses
-        List<Course> courses = courseDAO.getCoursesByInstructor(user.getId(), categoryId, search, status);
-        System.out.println("Query 1 - Courses loaded: " + courses.size() + " (" + (System.currentTimeMillis() - startTime) + "ms)");
+        List<Course> courses = new ArrayList<>();
+        if(user.getRoleName().equals("Instructor")){
+            courses = courseDAO.getCoursesByInstructor(user.getId(), categoryId, search, status);
+        } else if (user.getRoleName().equals("Admin")) {
+            courses = courseDAO.getAllCourses(null,null,null,null,null,null);
+        }
 
         // fixed: Get all chapters in 1 query instead of N
         Map<Integer, List<Chapter>> courseChaptersMap;

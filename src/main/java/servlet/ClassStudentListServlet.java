@@ -84,7 +84,7 @@ public class ClassStudentListServlet extends HttpServlet {
         if (pageIndex > totalPage) pageIndex = totalPage;
         if (pageIndex < 1) pageIndex = 1;
 
-        List<Student> students = studentDAO.searchStudentsByClassId(keyword, status, classId, pageIndex, PAGE_SIZE, loginUser.getId());
+        List<Student> students = studentDAO.searchStudentsByClassId(keyword, status, classId, pageIndex, PAGE_SIZE);
 
 
         request.setAttribute("students", students);
