@@ -8,9 +8,9 @@ public class CloudinaryUtil {
 
     static {
         cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "dlecit4kf",
-                "api_key", "918872146712184",
-                "api_secret", "kWyR4EfEzxBfPMWMEijl600yNmI",
+                "cloud_name", "",
+                "api_key", "",
+                "api_secret", "",
                 "secure", true
         ));
     }
